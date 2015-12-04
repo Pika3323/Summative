@@ -9,7 +9,7 @@ int main() {
 	ALLEGRO_EVENT_QUEUE *event_queue;	//The "event_queue"
 	ALLEGRO_TIMER *timer;				//The loop timer
 	int wWidth = 640, wHeight = 480;
-	World CurrentWorld = World(Vector2D(8192, 4092), 64);
+	World CurrentWorld = World(Vector2D(8192, 4092), 16);
 
 	//Load Allegro and all required modules
 	if (!al_init()) {
@@ -87,9 +87,9 @@ int main() {
 	
 		for (int i = 0; i < 128; i++){
 			for (int j = 0; j < 64; j++){
-				al_draw_line(i * 64, (j + 1) * 64, (i + 1) * 64, (j + 1) * 64, al_map_rgb(255, 0, 0), 1);
+				al_draw_line(i * CurrentWorld.gridSize, (j + 1) * CurrentWorld.gridSize, (i + 1) * CurrentWorld.gridSize, (j + 1) * CurrentWorld.gridSize, al_map_rgb(255, 0, 0), 1);
+				al_draw_line((i + 1) * CurrentWorld.gridSize, j * CurrentWorld.gridSize, (i + 1) * CurrentWorld.gridSize, (j + 1) * CurrentWorld.gridSize, al_map_rgb(255, 0, 0), 1);
 			}
-
 		}
 		
 		//Draws the framerate of the program on the screen
