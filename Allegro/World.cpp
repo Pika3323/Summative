@@ -16,5 +16,5 @@ World::World(Vector2D s, int gs){
 }
 
 GridTile World::getClickedTile(Vector2D inLoc){
-	return Tile[(int)floor(inLoc.x) % gridSize][(int)floor(inLoc.y) % gridSize];
+	return Tile[(int)floor(inLoc.x) / gridSize][(int)floor(inLoc.y) / gridSize];
 }
