@@ -11,7 +11,7 @@ class World{
 public:
 	Vector2D dimensions;
 	int gridSize;
-	GridTile Tile[128][64];
+	GridTile Tile[20][15];
 
 	World(){}
 	World(Vector2D s, int gs);
