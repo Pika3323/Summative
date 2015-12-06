@@ -7,8 +7,8 @@ World::World(Vector2D s, int gs){
 
 	int index = 0;
 
-	for (int i = 0; i < 20; i++){
-		for (int j = 0; j < 15; j++){
+	for (int i = 0; i < 128; i++){
+		for (int j = 0; j < 64; j++){
 			Tile[i][j].location = Vector2D(i * gridSize, j * gridSize);
 			Tile[i][j].id = index;
 			index++;
