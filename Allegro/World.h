@@ -5,6 +5,8 @@ struct GridTile{
 	Vector2D location;
 	bool occupied;
 	int id;
+
+	GridTile(){ occupied = false; }
 };
 
 class World{

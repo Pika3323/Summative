@@ -9,6 +9,7 @@ int main() {
 	ALLEGRO_EVENT_QUEUE *event_queue;	//The "event_queue"
 	ALLEGRO_TIMER *timer;				//The loop timer
 	ALLEGRO_BITMAP *dubBuff = NULL;
+	ALLEGRO_BITMAP *blockTex = NULL;
 	int wWidth = 640, wHeight = 480;
 	bool done = false;
 	bool bOpenGL = true, bDirect3D = false;
@@ -17,6 +18,7 @@ int main() {
 	GridTile clickedTile;
 	bool bClicked = false;
 	bool bRedraw = false;
+	Block blocks[300];
 
 	//Load Allegro and all required modules
 	if (!al_init()) {
@@ -32,6 +34,13 @@ int main() {
 	}
 	else {
 		printf("Loaded Allegro Primitives Addon %s\n", ALLEGRO_VERSION_STR);
+	}
+	if (!al_init_image_addon()) {
+		fprintf(stderr, "Allegro Image Addon could not initialize\n");
+		return -1;
+	}
+	else {
+		printf("Loaded Allegro Image Addon %s\n", ALLEGRO_VERSION_STR);
 	}
 	if (!al_install_keyboard()) {
 		fprintf(stderr, "Keyboard drivers could not be installed\n");
@@ -61,6 +70,9 @@ int main() {
 		printf("Loaded font\n");
 	}
 
+	
+	
+
 	//create event loop stuff
 	event_queue = al_create_event_queue();
 	timer = al_create_timer(1.0 / 60);	//Run the program at 60FPS
@@ -81,6 +93,7 @@ int main() {
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
 	al_register_event_source(event_queue, al_get_mouse_event_source());
+	blockTex = al_load_bitmap("Textures/TEST.png");
 
 	//Clear screen to black
 	al_clear_to_color(al_map_rgb(0, 0, 0));
@@ -111,7 +124,6 @@ int main() {
 		ALLEGRO_MOUSE_STATE state;
 		al_get_mouse_state(&state);
 
-
 		if (ev.type == ALLEGRO_EVENT_TIMER){
 			bRedraw = true;
 		}
@@ -132,6 +144,12 @@ int main() {
 			bClicked = true;
 			Clicked = Vector2D(state.x, state.y);
 			clickedTile = CurrentWorld.getClickedTile(Clicked);
+			if (!clickedTile.occupied){
+				blocks[clickedTile.id] = Block(clickedTile.location, blockTex);
+				blocks[clickedTile.id].bSpawned = true;
+				clickedTile.occupied = true;
+			}
+			
 		}
 
 		else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
@@ -141,17 +159,6 @@ int main() {
 		//Close the window if the window's close button is closed, OR if the escape hey is pressed
 		
 		if(bRedraw && al_event_queue_is_empty(event_queue)){
-			al_draw_bitmap(dubBuff, 0, 0, 0);
-
-			if (bClicked) {
-				al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 96, 0, "%d", clickedTile.id);
-			}
-
-			
-
-			al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 112, 0, "x : %d", state.x);
-			al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 128, 0, "y : %d", state.y);
-
 			//Draws the framerate of the program on the screen
 			double new_time = al_get_time();
 			double delta = new_time - old_time;
@@ -166,6 +173,21 @@ int main() {
 			else {
 				tColor = al_map_rgb(255, 0, 0);
 			}
+
+			al_draw_bitmap(dubBuff, 0, 0, 0);
+
+			if (bClicked) {
+				al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 96, 0, "%d", clickedTile.id);
+			}
+
+			for (auto& elem : blocks){
+				if (elem.bSpawned){
+					al_draw_bitmap(elem.texture, elem.position.x, elem.position.y, 0);
+				}
+			}
+
+			al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 112, 0, "x : %d", state.x);
+			al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 128, 0, "y : %d", state.y);
 
 			al_draw_textf(font, al_map_rgb(0, 0, 0), al_get_display_width(display) - 74, 17, 0, "%.2f FPS", fps);
 			al_draw_textf(font, al_map_rgb(0, 0, 0), al_get_display_width(display) - 74, 33, 0, "%.2fMS", delta * 1000);
