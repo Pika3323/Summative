@@ -5,17 +5,25 @@ struct GridTile{
 	Vector2D location;
 	bool occupied;
 	int id;
+
+	GridTile(){ occupied = false; }
 };
 
 class World{
 public:
 	Vector2D dimensions;
 	int gridSize;
-	GridTile Tile[128][64];
+	GridTile Tile[20][15];
 
 	World(){}
 	World(Vector2D s, int gs);
+
+	
+
 	GridTile getClickedTile(Vector2D inLoc);
+
+	void Tick();
+
 private:
 };
 
