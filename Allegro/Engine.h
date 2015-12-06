@@ -1,3 +1,6 @@
+//Standard Engine header
+//Contains all the nescessary headers for anything using the Engine
+
 #pragma once
 
 #include <allegro5/allegro.h>

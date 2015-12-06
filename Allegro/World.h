@@ -17,7 +17,13 @@ public:
 
 	World(){}
 	World(Vector2D s, int gs);
+
+	
+
 	GridTile getClickedTile(Vector2D inLoc);
+
+	void Tick();
+
 private:
 };
 

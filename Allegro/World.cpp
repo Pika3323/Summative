@@ -1,5 +1,6 @@
 #include "World.h"
 
+//World Constructor
 World::World(Vector2D s, int gs){
 	dimensions = s;
 	gridSize = gs;
@@ -15,6 +16,11 @@ World::World(Vector2D s, int gs){
 	}
 }
 
+//Returns which tile was clicked based on the location of the click
 GridTile World::getClickedTile(Vector2D inLoc){
 	return Tile[(int)ceil(inLoc.x) / gridSize][(int)ceil(inLoc.y) / gridSize];
+}
+
+void World::Tick(){
+	//Put all world tick code here
 }

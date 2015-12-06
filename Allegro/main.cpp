@@ -2,6 +2,7 @@
 #include "World.h"
 
 #define GRID_SIZE 32
+const int FPS = 60;
 
 int main() {
 	ALLEGRO_FONT *font = NULL;	//A font for debugging purposes
@@ -9,16 +10,16 @@ int main() {
 	ALLEGRO_EVENT_QUEUE *event_queue;	//The "event_queue"
 	ALLEGRO_TIMER *timer;				//The loop timer
 	ALLEGRO_BITMAP *dubBuff = NULL;
-	ALLEGRO_BITMAP *blockTex = NULL;
-	int wWidth = 640, wHeight = 480;
-	bool done = false;
-	bool bOpenGL = true, bDirect3D = false;
-	World CurrentWorld = World(Vector2D(8192, 4092), GRID_SIZE);
-	Vector2D Clicked;
-	GridTile clickedTile;
-	bool bClicked = false;
-	bool bRedraw = false;
-	Block blocks[300];
+	ALLEGRO_BITMAP *blockTex = NULL;	//The test texture for block
+	int wWidth = 640, wHeight = 480;	//Width and height of the window
+	bool done = false;					//Whether the main loop is "done" (aka terminated)
+	bool bOpenGL = true, bDirect3D = false;		//Whether to use OpenGL or Direct3D
+	World* CurrentWorld = new World(Vector2D(8192, 4092), GRID_SIZE);	//Creates the current world as well as a grid to store all the blocks
+	Vector2D Clicked;	//The location of a click
+	GridTile clickedTile;	//The clicked tile from the world grid
+	bool bClicked = false;	//Whether a click was registered
+	bool bRedraw = false;	//Whether to redraw the screen
+	Block blocks[300];	//Array of all block in the world
 
 	//Load Allegro and all required modules
 	if (!al_init()) {
@@ -59,6 +60,8 @@ int main() {
 
 	//FOR DEBUG
 	al_init_font_addon();
+	//END LOADING OF ALL MODULES
+
 
 	//Creates a builtin font that can be used on any computer without require ttf font files everywhere
 	font = al_create_builtin_font();
@@ -70,14 +73,13 @@ int main() {
 		printf("Loaded font\n");
 	}
 
-	
-	
 
 	//create event loop stuff
 	event_queue = al_create_event_queue();
-	timer = al_create_timer(1.0 / 60);	//Run the program at 60FPS
-	dubBuff = al_create_bitmap(640, 480);
+	timer = al_create_timer(1.0 / FPS);	//Run the program at 60FPS
+	dubBuff = al_create_bitmap(wWidth, wHeight);
 
+	//Set ALLEGRO_DISPLAY flags
 	if (bOpenGL){
 		al_set_new_display_flags(ALLEGRO_OPENGL);
 	}
@@ -98,52 +100,72 @@ int main() {
 	//Clear screen to black
 	al_clear_to_color(al_map_rgb(0, 0, 0));
 	al_flip_display();
+
+	//Sets the draw target to the grid bitmap
 	al_set_target_bitmap(dubBuff);
 	int sum = 0;
+
+	//Draws a grid based on the tiles of the world
 	for (int i = 0; i < 20; i++){
 		for (int j = 0; j < 15; j++){
-			al_draw_line(i * CurrentWorld.gridSize, (j + 1) * CurrentWorld.gridSize, (i + 1) * CurrentWorld.gridSize, (j + 1) * CurrentWorld.gridSize, al_map_rgb(255, 0, 0), 1);
-			al_draw_line((i + 1) * CurrentWorld.gridSize, j * CurrentWorld.gridSize, (i + 1) * CurrentWorld.gridSize, (j + 1) * CurrentWorld.gridSize, al_map_rgb(255, 0, 0), 1);
-			al_draw_textf(font, al_map_rgb(255, 0, 0), i * CurrentWorld.gridSize, j * CurrentWorld.gridSize, 0, "%d", sum);
+			al_draw_line(i * CurrentWorld->gridSize, (j + 1) * CurrentWorld->gridSize, (i + 1) * CurrentWorld->gridSize, (j + 1) * CurrentWorld->gridSize, al_map_rgb(255, 0, 0), 1);
+			al_draw_line((i + 1) * CurrentWorld->gridSize, j * CurrentWorld->gridSize, (i + 1) * CurrentWorld->gridSize, (j + 1) * CurrentWorld->gridSize, al_map_rgb(255, 0, 0), 1);
+			al_draw_textf(font, al_map_rgb(255, 0, 0), i * CurrentWorld->gridSize, j * CurrentWorld->gridSize, 0, "%d", sum);
 			sum++;
 		}
 	}
+	//Sets the target bitmap back to the default buffer
 	al_set_target_bitmap(al_get_backbuffer(display));
-
-
+	
+	//Draws everything to the screen
 	al_flip_display();
 
 	//Starts the timer which runs the following while loop at a certain rate (60FPS)	
 	al_start_timer(timer);
 
+	//Gets a starting time in order to calculate a delta time
 	double old_time = al_get_time();
 
+	//Main tick loop
 	while (!done) {
 		ALLEGRO_EVENT ev;
 		al_wait_for_event(event_queue, &ev);
+
+		//Gets current state of the mouse
 		ALLEGRO_MOUSE_STATE state;
 		al_get_mouse_state(&state);
 
+		//Tick
 		if (ev.type == ALLEGRO_EVENT_TIMER){
 			bRedraw = true;
+			CurrentWorld->Tick();
 		}
+		//End the loop if the window's close button is clicked
 		else if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
 			done = true;
 		}
 		//On KeyDown
 		else if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
 			switch (ev.keyboard.keycode) {
-			case ALLEGRO_KEY_ESCAPE:
-				done = true;
-				break;
-			default:
-				break;
+				//Close window if escape key is pressed
+				case ALLEGRO_KEY_ESCAPE:
+					done = true;
+					break;
+				default:
+					break;
 			}
 		}
+		//On mouse click
 		else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
 			bClicked = true;
+
+			//Get the mouse's location
 			Clicked = Vector2D(state.x, state.y);
-			clickedTile = CurrentWorld.getClickedTile(Clicked);
+
+			//Get the tile that was clicked
+			clickedTile = CurrentWorld->getClickedTile(Clicked);
+
+			//if the tile is not already occupied by a block, create a new block
 			if (!clickedTile.occupied){
 				blocks[clickedTile.id] = Block(clickedTile.location, blockTex);
 				blocks[clickedTile.id].bSpawned = true;
@@ -151,19 +173,17 @@ int main() {
 			}
 			
 		}
-
 		else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
 			bClicked = false;
 		}
-
-		//Close the window if the window's close button is closed, OR if the escape hey is pressed
 		
+		//Redraw the screen 
+		//DO NOT PUT TICK CODE HERE!!!
 		if(bRedraw && al_event_queue_is_empty(event_queue)){
 			//Draws the framerate of the program on the screen
 			double new_time = al_get_time();
 			double delta = new_time - old_time;
 			double fps = 1 / (delta);	bClicked = true;
-
 			old_time = new_time;
 			ALLEGRO_COLOR tColor;
 
@@ -180,15 +200,19 @@ int main() {
 				al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 96, 0, "%d", clickedTile.id);
 			}
 
+			//Foreach loop that goes through every block
 			for (auto& elem : blocks){
+				//If the clock has been created, draw it!
 				if (elem.bSpawned){
 					al_draw_bitmap(elem.texture, elem.position.x, elem.position.y, 0);
 				}
 			}
 
+			//Draw mouse position
 			al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 112, 0, "x : %d", state.x);
 			al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 128, 0, "y : %d", state.y);
 
+			//Draw FPS
 			al_draw_textf(font, al_map_rgb(0, 0, 0), al_get_display_width(display) - 74, 17, 0, "%.2f FPS", fps);
 			al_draw_textf(font, al_map_rgb(0, 0, 0), al_get_display_width(display) - 74, 33, 0, "%.2fMS", delta * 1000);
 			al_draw_textf(font, tColor, al_get_display_width(display) - 75, 16, 0, "%.2f FPS", fps);
@@ -209,6 +233,8 @@ int main() {
 	al_destroy_timer(timer);
 	al_destroy_event_queue(event_queue);
 	al_shutdown_primitives_addon();
+
+	delete CurrentWorld;
 
 	return 0;
 }
