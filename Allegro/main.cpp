@@ -3,6 +3,7 @@
 
 #define GRID_SIZE 32
 const int FPS = 60;
+const char myLevel[20] = "testLevel.bvl";
 
 int main() {
 	ALLEGRO_FONT *font = NULL;	//A font for debugging purposes
@@ -20,6 +21,7 @@ int main() {
 	bool bClicked = false;	//Whether a click was registered
 	bool bRedraw = false;	//Whether to redraw the screen
 	Block blocks[300];	//Array of all block in the world
+	FILE *fptr;
 
 	//Load Allegro and all required modules
 	if (!al_init()) {
@@ -120,6 +122,19 @@ int main() {
 	//Draws everything to the screen
 	al_flip_display();
 
+	printf("Read saved level? (y/n): ");
+	char cRead;
+	scanf("%c", &cRead);
+	if (tolower(cRead) == 'y'){
+		fptr = fopen(myLevel, "rb");
+
+		for (int i = 0; i < 300; i++){
+			fseek(fptr, sizeof(Block)*i, SEEK_SET);
+			fread(&blocks[i], sizeof(Block), 1, fptr);
+		}
+		fclose(fptr);
+		fptr = NULL;
+	}
 	//Starts the timer which runs the following while loop at a certain rate (60FPS)	
 	al_start_timer(timer);
 
@@ -225,6 +240,20 @@ int main() {
 			al_clear_to_color(al_map_rgb(0, 0, 0));
 			bRedraw = false;
 		}
+	}
+	fflush(stdin);
+
+	printf("Save level? (y/n): ");
+	char cSave;
+	scanf("%c", &cSave);
+	if (tolower(cSave) == 'y'){
+		fptr = fopen(myLevel, "wb+");
+
+		for (auto& b : blocks){
+			fwrite(&b, sizeof(Block), 1, fptr);
+		}
+
+		fclose(fptr);
 	}
 
 	//Destroy everything after the loop is exited

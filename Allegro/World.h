@@ -12,6 +12,7 @@ struct GridTile{
 class World{
 public:
 	Vector2D dimensions;
+	Vector2D offset;
 	int gridSize;
 	GridTile Tile[20][15];
 
