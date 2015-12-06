@@ -1,5 +1,6 @@
 #include "Engine.h"
 #include "World.h"
+#include "Buffer.h"
 
 #define GRID_SIZE 32
 const int FPS = 60;
@@ -9,9 +10,9 @@ int main() {
 	ALLEGRO_DISPLAY *display;			//The display window
 	ALLEGRO_EVENT_QUEUE *event_queue;	//The "event_queue"
 	ALLEGRO_TIMER *timer;				//The loop timer
-	ALLEGRO_BITMAP *dubBuff = NULL;
+	Buffer dubBuff = { NULL, 0, 0, 5, 5, false, false };
 	ALLEGRO_BITMAP *blockTex = NULL;	//The test texture for block
-	int wWidth = 640, wHeight = 480;	//Width and height of the window
+	int wWidth = 1400, wHeight = 800;	//Width and height of the window
 	bool done = false;					//Whether the main loop is "done" (aka terminated)
 	bool bOpenGL = true, bDirect3D = false;		//Whether to use OpenGL or Direct3D
 	World* CurrentWorld = new World(Vector2D(8192, 4092), GRID_SIZE);	//Creates the current world as well as a grid to store all the blocks
@@ -19,7 +20,7 @@ int main() {
 	GridTile clickedTile;	//The clicked tile from the world grid
 	bool bClicked = false;	//Whether a click was registered
 	bool bRedraw = false;	//Whether to redraw the screen
-	Block blocks[300];	//Array of all block in the world
+	Block blocks[8192];	//Array of all block in the world
 
 	//Load Allegro and all required modules
 	if (!al_init()) {
@@ -77,7 +78,7 @@ int main() {
 	//create event loop stuff
 	event_queue = al_create_event_queue();
 	timer = al_create_timer(1.0 / FPS);	//Run the program at 60FPS
-	dubBuff = al_create_bitmap(wWidth, wHeight);
+	dubBuff.image = al_create_bitmap(4096, 2048);
 
 	//Set ALLEGRO_DISPLAY flags
 	if (bOpenGL){
@@ -102,12 +103,12 @@ int main() {
 	al_flip_display();
 
 	//Sets the draw target to the grid bitmap
-	al_set_target_bitmap(dubBuff);
+	al_set_target_bitmap(dubBuff.image);
 	int sum = 0;
 
 	//Draws a grid based on the tiles of the world
-	for (int i = 0; i < 20; i++){
-		for (int j = 0; j < 15; j++){
+	for (int i = 0; i < 128; i++){
+		for (int j = 0; j < 64; j++){
 			al_draw_line(i * CurrentWorld->gridSize, (j + 1) * CurrentWorld->gridSize, (i + 1) * CurrentWorld->gridSize, (j + 1) * CurrentWorld->gridSize, al_map_rgb(255, 0, 0), 1);
 			al_draw_line((i + 1) * CurrentWorld->gridSize, j * CurrentWorld->gridSize, (i + 1) * CurrentWorld->gridSize, (j + 1) * CurrentWorld->gridSize, al_map_rgb(255, 0, 0), 1);
 			al_draw_textf(font, al_map_rgb(255, 0, 0), i * CurrentWorld->gridSize, j * CurrentWorld->gridSize, 0, "%d", sum);
@@ -135,13 +136,8 @@ int main() {
 		ALLEGRO_MOUSE_STATE state;
 		al_get_mouse_state(&state);
 
-		//Tick
-		if (ev.type == ALLEGRO_EVENT_TIMER){
-			bRedraw = true;
-			CurrentWorld->Tick();
-		}
 		//End the loop if the window's close button is clicked
-		else if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+		if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
 			done = true;
 		}
 		//On KeyDown
@@ -151,10 +147,42 @@ int main() {
 				case ALLEGRO_KEY_ESCAPE:
 					done = true;
 					break;
+				case ALLEGRO_KEY_D:
+					dubBuff.bdx = true;
+					dubBuff.dx = -5;
+					break;
+				case ALLEGRO_KEY_A:
+					dubBuff.bdx = true;
+					dubBuff.dx = 5;
+					break;
+				case ALLEGRO_KEY_S:
+					dubBuff.bdy = true;
+					dubBuff.dy = -5;
+					break;
+				case ALLEGRO_KEY_W:
+					dubBuff.bdy = true;
+					dubBuff.dy = 5;
+					break;
 				default:
 					break;
 			}
 		}
+
+		else if (ev.type == ALLEGRO_EVENT_KEY_UP) {
+			switch (ev.keyboard.keycode) {
+			case ALLEGRO_KEY_D:
+			case ALLEGRO_KEY_A:
+				dubBuff.bdx = false;
+				break;
+			case ALLEGRO_KEY_S:
+			case ALLEGRO_KEY_W:
+				dubBuff.bdy = false;
+				break;
+			default:
+				break;
+			}
+		}
+
 		//On mouse click
 		else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
 			bClicked = true;
@@ -176,14 +204,30 @@ int main() {
 		else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
 			bClicked = false;
 		}
+
+		//Tick
+		if (ev.type == ALLEGRO_EVENT_TIMER){
+			bRedraw = true;
+			if (dubBuff.bdx) {
+				dubBuff.x += dubBuff.dx;
+				state.x -= dubBuff.dx;
+			}
+			if (dubBuff.bdy) {
+				dubBuff.y += dubBuff.dy;
+				state.y -= dubBuff.dy;
+			}
+			CurrentWorld->Tick();
+		}
+		
 		
 		//Redraw the screen 
 		//DO NOT PUT TICK CODE HERE!!!
 		if(bRedraw && al_event_queue_is_empty(event_queue)){
+
 			//Draws the framerate of the program on the screen
 			double new_time = al_get_time();
 			double delta = new_time - old_time;
-			double fps = 1 / (delta);	bClicked = true;
+			double fps = 1 / (delta);
 			old_time = new_time;
 			ALLEGRO_COLOR tColor;
 
@@ -194,12 +238,7 @@ int main() {
 				tColor = al_map_rgb(255, 0, 0);
 			}
 
-			al_draw_bitmap(dubBuff, 0, 0, 0);
-
-			if (bClicked) {
-				al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 96, 0, "%d", clickedTile.id);
-			}
-
+			al_set_target_bitmap(dubBuff.image);
 			//Foreach loop that goes through every block
 			for (auto& elem : blocks){
 				//If the clock has been created, draw it!
@@ -207,16 +246,24 @@ int main() {
 					al_draw_bitmap(elem.texture, elem.position.x, elem.position.y, 0);
 				}
 			}
+			al_set_target_bitmap(al_get_backbuffer(display));
+
+			al_draw_bitmap(dubBuff.image, dubBuff.x, dubBuff.y, 0);
 
 			//Draw mouse position
 			al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 112, 0, "x : %d", state.x);
 			al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 128, 0, "y : %d", state.y);
 
+			if (bClicked) {
+				al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 96, 0, "%d", clickedTile.id);
+			}
+			
 			//Draw FPS
 			al_draw_textf(font, al_map_rgb(0, 0, 0), al_get_display_width(display) - 74, 17, 0, "%.2f FPS", fps);
 			al_draw_textf(font, al_map_rgb(0, 0, 0), al_get_display_width(display) - 74, 33, 0, "%.2fMS", delta * 1000);
 			al_draw_textf(font, tColor, al_get_display_width(display) - 75, 16, 0, "%.2f FPS", fps);
 			al_draw_textf(font, tColor, al_get_display_width(display) - 75, 32, 0, "%.2fMS", delta * 1000);
+			
 
 			//Flips the buffer to the screen
 			al_flip_display();
@@ -228,7 +275,7 @@ int main() {
 	}
 
 	//Destroy everything after the loop is exited
-	al_destroy_bitmap(dubBuff);
+	al_destroy_bitmap(dubBuff.image);
 	al_destroy_display(display);
 	al_destroy_timer(timer);
 	al_destroy_event_queue(event_queue);
