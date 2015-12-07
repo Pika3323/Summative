@@ -4,6 +4,9 @@
 
 enum class BlockType{
 	B_Brick,
+	B_Grass,
+	B_Dirt,
+	B_Stone,
 	B_Fancy,
 	B_Rainbow
 };

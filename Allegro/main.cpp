@@ -11,19 +11,19 @@ int main() {
 	ALLEGRO_DISPLAY *display;			//The display window
 	ALLEGRO_EVENT_QUEUE *event_queue;	//The "event_queue"
 	ALLEGRO_TIMER *timer;				//The loop timer
-	Buffer dubBuff = { NULL, 0, 0, 5, 5, false, false };
+	Buffer dubBuff = { NULL, 0.f, 0.f, 5.f, 5.f, false, false };
 	ALLEGRO_BITMAP *blockTex = NULL;	//The test texture for block
 	int wWidth = 1400, wHeight = 800;	//Width and height of the window
 	bool done = false;					//Whether the main loop is "done" (aka terminated)
 	bool bOpenGL = true, bDirect3D = false;		//Whether to use OpenGL or Direct3D
-	World* CurrentWorld = new World(Vector2D(8192, 4092), GRID_SIZE);	//Creates the current world as well as a grid to store all the blocks
+	World* CurrentWorld = new World(Vector2D(8192.f, 4092.f), GRID_SIZE);	//Creates the current world as well as a grid to store all the blocks
 	Vector2D Clicked;	//The location of a click
 	GridTile clickedTile;	//The clicked tile from the world grid
 	bool bClicked = false;	//Whether a click was registered
 	bool bRedraw = false;	//Whether to redraw the screen
 	FILE *fptr;
 	Block blocks[8192];	//Array of all block in the world
-
+	bool bDrawFPS = false, bDrawMouseLoc = false, bDrawClickID = false;
 
 	//Load Allegro and all required modules
 	if (!al_init()) {
@@ -112,9 +112,9 @@ int main() {
 	//Draws a grid based on the tiles of the world
 	for (int i = 0; i < 128; i++){
 		for (int j = 0; j < 64; j++){
-			al_draw_line(i * CurrentWorld->gridSize, (j + 1) * CurrentWorld->gridSize, (i + 1) * CurrentWorld->gridSize, (j + 1) * CurrentWorld->gridSize, al_map_rgb(255, 0, 0), 1);
-			al_draw_line((i + 1) * CurrentWorld->gridSize, j * CurrentWorld->gridSize, (i + 1) * CurrentWorld->gridSize, (j + 1) * CurrentWorld->gridSize, al_map_rgb(255, 0, 0), 1);
-			al_draw_textf(font, al_map_rgb(255, 0, 0), i * CurrentWorld->gridSize, j * CurrentWorld->gridSize, 0, "%d", sum);
+			al_draw_line(i * CurrentWorld->gridSize, (j + 1) * CurrentWorld->gridSize, (i + 1) * CurrentWorld->gridSize, (j + 1) * CurrentWorld->gridSize, al_map_rgb(0, 255, 0), 1);
+			al_draw_line((i + 1) * CurrentWorld->gridSize, j * CurrentWorld->gridSize, (i + 1) * CurrentWorld->gridSize, (j + 1) * CurrentWorld->gridSize, al_map_rgb(0, 255, 0), 1);
+			al_draw_textf(font, al_map_rgb(0, 255, 0), i * CurrentWorld->gridSize, j * CurrentWorld->gridSize, 0, "%d", sum);
 			sum++;
 		}
 	}
@@ -128,6 +128,11 @@ int main() {
 	char cRead;
 	scanf("%c", &cRead);
 	if (tolower(cRead) == 'y'){
+		char loadLevel[64];
+		printf("Enter level name: ");
+		scanf("%s", loadLevel);
+		fflush(stdin);
+		strcat(loadLevel, ".bvl");
 		fptr = fopen(myLevel, "rb");
 
 		for (int i = 0; i < 300; i++){
@@ -164,20 +169,33 @@ int main() {
 					done = true;
 					break;
 				case ALLEGRO_KEY_D:
+				case ALLEGRO_KEY_RIGHT:
 					dubBuff.bdx = true;
 					dubBuff.dx = -5;
 					break;
 				case ALLEGRO_KEY_A:
+				case ALLEGRO_KEY_LEFT:
 					dubBuff.bdx = true;
 					dubBuff.dx = 5;
 					break;
 				case ALLEGRO_KEY_S:
+				case ALLEGRO_KEY_DOWN:
 					dubBuff.bdy = true;
 					dubBuff.dy = -5;
 					break;
 				case ALLEGRO_KEY_W:
+				case ALLEGRO_KEY_UP:
 					dubBuff.bdy = true;
 					dubBuff.dy = 5;
+					break;
+				case ALLEGRO_KEY_I:
+					bDrawFPS = !bDrawFPS;
+					break;
+				case ALLEGRO_KEY_O:
+					bDrawClickID = !bDrawClickID;
+					break;
+				case ALLEGRO_KEY_P:
+					bDrawMouseLoc = !bDrawMouseLoc;
 					break;
 				default:
 					break;
@@ -188,10 +206,14 @@ int main() {
 			switch (ev.keyboard.keycode) {
 			case ALLEGRO_KEY_D:
 			case ALLEGRO_KEY_A:
+			case ALLEGRO_KEY_LEFT:
+			case ALLEGRO_KEY_RIGHT:
 				dubBuff.bdx = false;
 				break;
 			case ALLEGRO_KEY_S:
 			case ALLEGRO_KEY_W:
+			case ALLEGRO_KEY_UP:
+			case ALLEGRO_KEY_DOWN:
 				dubBuff.bdy = false;
 				break;
 			default:
@@ -226,11 +248,11 @@ int main() {
 			bRedraw = true;
 			if (dubBuff.bdx) {
 				dubBuff.x += dubBuff.dx;
-				state.x -= dubBuff.dx;
+				CurrentWorld->offset.x += dubBuff.dx;
 			}
 			if (dubBuff.bdy) {
 				dubBuff.y += dubBuff.dy;
-				state.y -= dubBuff.dy;
+				CurrentWorld->offset.y += dubBuff.dy;
 			}
 			CurrentWorld->Tick();
 		}
@@ -257,29 +279,34 @@ int main() {
 			al_set_target_bitmap(dubBuff.image);
 			//Foreach loop that goes through every block
 			for (auto& elem : blocks){
-				//If the clock has been created, draw it!
+				//If the block has been created, draw it!
 				if (elem.bSpawned){
 					al_draw_bitmap(elem.texture, elem.position.x, elem.position.y, 0);
 				}
 			}
 			al_set_target_bitmap(al_get_backbuffer(display));
 
-			al_draw_bitmap(dubBuff.image, dubBuff.x, dubBuff.y, 0);
+			al_draw_bitmap_region(dubBuff.image, dubBuff.x * -1, dubBuff.y * -1, wWidth, wHeight, 0, 0, 0);
+
+			//al_draw_bitmap(dubBuff.image, dubBuff.x, dubBuff.y, 0);
 
 			//Draw mouse position
-			al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 112, 0, "x : %d", state.x);
-			al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 128, 0, "y : %d", state.y);
+			if (bDrawMouseLoc){
+				al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 112, 0, "x : %d", state.x);
+				al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 128, 0, "y : %d", state.y);
+			}
 
-			if (bClicked) {
+			if (bClicked && bDrawClickID) {
 				al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 96, 0, "%d", clickedTile.id);
 			}
 			
 			//Draw FPS
-			al_draw_textf(font, al_map_rgb(0, 0, 0), al_get_display_width(display) - 74, 17, 0, "%.2f FPS", fps);
-			al_draw_textf(font, al_map_rgb(0, 0, 0), al_get_display_width(display) - 74, 33, 0, "%.2fMS", delta * 1000);
-			al_draw_textf(font, tColor, al_get_display_width(display) - 75, 16, 0, "%.2f FPS", fps);
-			al_draw_textf(font, tColor, al_get_display_width(display) - 75, 32, 0, "%.2fMS", delta * 1000);
-			
+			if (bDrawFPS){
+				al_draw_textf(font, al_map_rgb(0, 0, 0), al_get_display_width(display) - 74, 17, 0, "%.2f FPS", fps);
+				al_draw_textf(font, al_map_rgb(0, 0, 0), al_get_display_width(display) - 74, 33, 0, "%.2fMS", delta * 1000);
+				al_draw_textf(font, tColor, al_get_display_width(display) - 75, 16, 0, "%.2f FPS", fps);
+				al_draw_textf(font, tColor, al_get_display_width(display) - 75, 32, 0, "%.2fMS", delta * 1000);
+			}
 
 			//Flips the buffer to the screen
 			al_flip_display();
@@ -294,7 +321,13 @@ int main() {
 	printf("Save level? (y/n): ");
 	char cSave;
 	scanf("%c", &cSave);
+	fflush(stdin);
 	if (tolower(cSave) == 'y'){
+		char levelName[64];
+		printf("Enter a file name: ");
+		scanf("%s", levelName);
+		strcat(levelName, ".bvl");
+
 		fptr = fopen(myLevel, "wb+");
 
 		for (auto& b : blocks){
