@@ -83,6 +83,7 @@ int main() {
 	event_queue = al_create_event_queue();
 	timer = al_create_timer(1.0f / FPS);	//Run the program at 60FPS
 	dubBuff.image = al_create_bitmap(4096, 2048);
+	
 
 	//Set ALLEGRO_DISPLAY flags
 	if (bOpenGL){
@@ -92,8 +93,13 @@ int main() {
 		al_set_new_display_flags(ALLEGRO_DIRECT3D);
 	}
 	
+	
 	//Create the main display window
 	display = al_create_display(wWidth, wHeight);
+
+	printf("%d\n", al_get_display_option(display, ALLEGRO_MAX_BITMAP_SIZE));
+
+	
 
 	//Register event sources
 	al_register_event_source(event_queue, al_get_display_event_source(display));
@@ -104,6 +110,7 @@ int main() {
 
 	Type[0] = BlockType("Rainbow", blockTex);
 
+
 	//Clear screen to black
 	al_clear_to_color(al_map_rgb(0, 0, 0));
 	al_flip_display();
@@ -111,7 +118,7 @@ int main() {
 	//Sets the draw target to the grid bitmap
 	al_set_target_bitmap(dubBuff.image);
 	int sum = 0;
-
+	
 	//Draws a grid based on the tiles of the world
 	for (int i = 0; i < 128; i++){
 		for (int j = 0; j < 64; j++){
@@ -157,6 +164,7 @@ int main() {
 	//Gets a starting time in order to calculate a delta time
 	double old_time = al_get_time();
 
+	printf("%d\n", al_get_bitmap_flags(dubBuff.image));
 	//Main tick loop
 	while (!done) {
 		ALLEGRO_EVENT ev;
@@ -270,7 +278,7 @@ int main() {
 		//Redraw the screen 
 		//DO NOT PUT TICK CODE HERE!!!
 		if(bRedraw && al_event_queue_is_empty(event_queue)){
-
+			al_hold_bitmap_drawing(true);
 			//Draws the framerate of the program on the screen
 			double new_time = al_get_time();
 			double delta = new_time - old_time;
@@ -287,12 +295,15 @@ int main() {
 
 			al_set_target_bitmap(dubBuff.image);
 			//Foreach loop that goes through every block
+			
 			for (auto& elem : blocks){
 				//If the block has been created, draw it!
 				if (elem.bSpawned){
-					al_draw_bitmap(Type[static_cast<int>(elem.type)].texture, elem.position.x, elem.position.y, 0);
+					al_draw_bitmap(Type[static_cast<int>(elem.type)].texture, elem.position.x, elem.position.y, ALLEGRO_VIDEO_BITMAP);
+					al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 112, 0, "%a", al_get_bitmap_flags(Type[static_cast<int>(elem.type)].texture));
 				}
 			}
+			
 			al_set_target_bitmap(al_get_backbuffer(display));
 
 			al_draw_bitmap_region(dubBuff.image, dubBuff.x * -1, dubBuff.y * -1, wWidth, wHeight, 0, 0, 0);
@@ -316,7 +327,7 @@ int main() {
 				al_draw_textf(font, tColor, al_get_display_width(display) - 75, 16, 0, "%.2f FPS", fps);
 				al_draw_textf(font, tColor, al_get_display_width(display) - 75, 32, 0, "%.2fMS", delta * 1000);
 			}
-
+			al_hold_bitmap_drawing(false);
 			//Flips the buffer to the screen
 			al_flip_display();
 
