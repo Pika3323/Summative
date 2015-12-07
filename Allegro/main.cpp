@@ -21,7 +21,7 @@ int main() {
 	bool bClicked = false;	//Whether a click was registered
 	bool bRedraw = false;	//Whether to redraw the screen
 	FILE *fptr;
-	EBlockType SelectedBlock;
+	EBlockType SelectedBlock = EBlockType::B_Brick;
 	BlockType Type[15];
 	Block blocks[8192];	//Array of all block in the world
 	bool bDrawFPS = false, bDrawMouseLoc = false, bDrawClickID = false;
