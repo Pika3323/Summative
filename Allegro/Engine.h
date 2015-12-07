@@ -16,4 +16,5 @@
 #include <math.h>
 #include "Vector2D.h"
 #include "Block.h"
+#include "Buffer.h"
 

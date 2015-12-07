@@ -15,6 +15,7 @@ public:
 	Vector2D offset;
 	int gridSize;
 	GridTile Tile[128][64];
+	Buffer Background;
 
 	World(){}
 	World(Vector2D s, int gs);
