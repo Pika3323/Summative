@@ -12,7 +12,6 @@ int main() {
 	ALLEGRO_EVENT_QUEUE *event_queue;	//The "event_queue"
 	ALLEGRO_TIMER *timer;				//The loop timer
 	Buffer dubBuff = { NULL, 0.f, 0.f, 5.f, 5.f, false, false };
-	ALLEGRO_BITMAP *blockTex = NULL;	//The test texture for block
 	int wWidth = 640, wHeight = 480;	//Width and height of the window
 	bool done = false;					//Whether the main loop is "done" (aka terminated)
 	bool bOpenGL = true, bDirect3D = false;		//Whether to use OpenGL or Direct3D
@@ -22,6 +21,7 @@ int main() {
 	bool bClicked = false;	//Whether a click was registered
 	bool bRedraw = false;	//Whether to redraw the screen
 	FILE *fptr;
+	EBlockType SelectedBlock;
 	BlockType Type[15];
 	Block blocks[8192];	//Array of all block in the world
 	bool bDrawFPS = false, bDrawMouseLoc = false, bDrawClickID = false;
@@ -100,9 +100,12 @@ int main() {
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
 	al_register_event_source(event_queue, al_get_mouse_event_source());
-	blockTex = al_load_bitmap("Textures/TEST.png");
 
-	Type[0] = BlockType("Rainbow", blockTex);
+
+	Type[0] = BlockType("Rainbow", al_load_bitmap("Textures/Rainbow.png"));
+	Type[1] = BlockType("Brick", al_load_bitmap("Textures/Brick.png"));
+	Type[2] = BlockType("Grass", al_load_bitmap("Textures/Grass.png"));
+	Type[3] = BlockType("Dirt", al_load_bitmap("Textures/Dirt.png"));
 
 	//Clear screen to black
 	al_clear_to_color(al_map_rgb(0, 0, 0));
@@ -202,6 +205,18 @@ int main() {
 				case ALLEGRO_KEY_P:
 					bDrawMouseLoc = !bDrawMouseLoc;
 					break;
+				case ALLEGRO_KEY_1:
+					SelectedBlock = EBlockType::B_Rainbow;
+					break;
+				case ALLEGRO_KEY_2:
+					SelectedBlock = EBlockType::B_Brick;
+					break;
+				case ALLEGRO_KEY_3:
+					SelectedBlock = EBlockType::B_Grass;
+					break;
+				case ALLEGRO_KEY_4:
+					SelectedBlock = EBlockType::B_Dirt;
+					break;
 				default:
 					break;
 			}
@@ -237,8 +252,8 @@ int main() {
 			clickedTile = CurrentWorld->getClickedTile(Clicked);
 
 			//if the tile is not already occupied by a block, create a new block
-			if (!clickedTile.occupied){
-				blocks[clickedTile.id] = Block(clickedTile.location, EBlockType::B_Rainbow);
+			if (!clickedTile.occupied) {
+				blocks[clickedTile.id] = Block(clickedTile.location, SelectedBlock);
 				blocks[clickedTile.id].bSpawned = true;
 				clickedTile.occupied = true;
 			}
