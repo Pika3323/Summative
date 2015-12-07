@@ -21,7 +21,7 @@ int main() {
 	bool bClicked = false;	//Whether a click was registered
 	bool bRedraw = false;	//Whether to redraw the screen
 	FILE *fptr;
-	EBlockType SelectedBlock = EBlockType::B_Brick;
+	EBlockType SelectedBlock = EBlockType::B_Brick;		//the block type the user selects
 	BlockType Type[15];
 	Block blocks[8192];	//Array of all block in the world
 	bool bDrawFPS = false, bDrawMouseLoc = false, bDrawClickID = false;
@@ -106,6 +106,8 @@ int main() {
 	Type[1] = BlockType("Brick", al_load_bitmap("Textures/Brick.png"));
 	Type[2] = BlockType("Grass", al_load_bitmap("Textures/Grass.png"));
 	Type[3] = BlockType("Dirt", al_load_bitmap("Textures/Dirt.png"));
+	Type[4] = BlockType("Stone", al_load_bitmap("Textures/Stone.png"));
+	Type[5] = BlockType("Fancy", al_load_bitmap("Textures/Fancy.png"));
 
 	//Clear screen to black
 	al_clear_to_color(al_map_rgb(0, 0, 0));
@@ -216,6 +218,12 @@ int main() {
 					break;
 				case ALLEGRO_KEY_4:
 					SelectedBlock = EBlockType::B_Dirt;
+					break;
+				case ALLEGRO_KEY_5:
+					SelectedBlock = EBlockType::B_Stone;
+					break;
+				case ALLEGRO_KEY_6:
+					SelectedBlock = EBlockType::B_Fancy;
 					break;
 				default:
 					break;
