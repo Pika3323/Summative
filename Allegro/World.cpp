@@ -4,6 +4,7 @@
 World::World(Vector2D s, int gs){
 	dimensions = s;
 	gridSize = gs;
+	offset = Vector2D(0.f, 0.f);
 
 	int index = 0;
 
