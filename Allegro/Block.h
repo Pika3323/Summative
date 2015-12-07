@@ -2,13 +2,22 @@
 
 #include "Engine.h"
 
-enum class BlockType{
+enum class EBlockType{
+	B_Rainbow,
 	B_Brick,
 	B_Grass,
 	B_Dirt,
 	B_Stone,
-	B_Fancy,
-	B_Rainbow
+	B_Fancy
+};
+
+struct BlockType{
+	char name[16];
+	ALLEGRO_BITMAP* texture;
+	bool bLoaded;
+
+	BlockType(){}
+	BlockType(const char n[16], ALLEGRO_BITMAP* tex);
 };
 
 class Block{
@@ -16,12 +25,11 @@ public:
 	Vector2D position;	//The block's location in the level
 	Vector2D offset;	//The block's offset relative to the player (for rendering purposes)
 	bool bSpawned;
-	ALLEGRO_BITMAP *texture;	//The block's texture
-	BlockType type;
+	EBlockType type;
 
 
 	Block(){ bSpawned = false; }
-	Block(Vector2D pos, ALLEGRO_BITMAP *tex);
+	Block(Vector2D pos, EBlockType t);
 private:
 	
 };

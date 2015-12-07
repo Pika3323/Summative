@@ -13,7 +13,7 @@ int main() {
 	ALLEGRO_TIMER *timer;				//The loop timer
 	Buffer dubBuff = { NULL, 0.f, 0.f, 5.f, 5.f, false, false };
 	ALLEGRO_BITMAP *blockTex = NULL;	//The test texture for block
-	int wWidth = 1400, wHeight = 800;	//Width and height of the window
+	int wWidth = 640, wHeight = 480;	//Width and height of the window
 	bool done = false;					//Whether the main loop is "done" (aka terminated)
 	bool bOpenGL = true, bDirect3D = false;		//Whether to use OpenGL or Direct3D
 	World* CurrentWorld = new World(Vector2D(8192.f, 4092.f), GRID_SIZE);	//Creates the current world as well as a grid to store all the blocks
@@ -23,7 +23,8 @@ int main() {
 	bool bRedraw = false;	//Whether to redraw the screen
 	FILE *fptr;
 	Block blocks[8192];	//Array of all block in the world
-	bool bDrawFPS = false, bDrawMouseLoc = false, bDrawClickID = false;
+	BlockType Type[15];
+	bool bDrawFPS = true, bDrawMouseLoc = false, bDrawClickID = false;
 
 	//Load Allegro and all required modules
 	if (!al_init()) {
@@ -80,7 +81,7 @@ int main() {
 
 	//create event loop stuff
 	event_queue = al_create_event_queue();
-	timer = al_create_timer(1.0 / FPS);	//Run the program at 60FPS
+	timer = al_create_timer(1.0f / FPS);	//Run the program at 60FPS
 	dubBuff.image = al_create_bitmap(4096, 2048);
 
 	//Set ALLEGRO_DISPLAY flags
@@ -100,6 +101,8 @@ int main() {
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
 	al_register_event_source(event_queue, al_get_mouse_event_source());
 	blockTex = al_load_bitmap("Textures/TEST.png");
+
+	Type[0] = BlockType("Rainbow", blockTex);
 
 	//Clear screen to black
 	al_clear_to_color(al_map_rgb(0, 0, 0));
@@ -128,6 +131,7 @@ int main() {
 	char cRead;
 	scanf("%c", &cRead);
 	if (tolower(cRead) == 'y'){
+		fflush(stdin);
 		char loadLevel[64];
 		printf("Enter level name: ");
 		scanf("%s", loadLevel);
@@ -135,13 +139,18 @@ int main() {
 		strcat(loadLevel, ".bvl");
 		fptr = fopen(myLevel, "rb");
 
-		for (int i = 0; i < 300; i++){
+		for (int i = 0; i < 8192; i++){
 			fseek(fptr, sizeof(Block)*i, SEEK_SET);
 			fread(&blocks[i], sizeof(Block), 1, fptr);
 		}
 		fclose(fptr);
 		fptr = NULL;
 	}
+
+	for (auto& elem : blocks){
+
+	}
+
 	//Starts the timer which runs the following while loop at a certain rate (60FPS)	
 	al_start_timer(timer);
 
@@ -233,7 +242,7 @@ int main() {
 
 			//if the tile is not already occupied by a block, create a new block
 			if (!clickedTile.occupied){
-				blocks[clickedTile.id] = Block(clickedTile.location, blockTex);
+				blocks[clickedTile.id] = Block(clickedTile.location, EBlockType::B_Rainbow);
 				blocks[clickedTile.id].bSpawned = true;
 				clickedTile.occupied = true;
 			}
@@ -281,7 +290,7 @@ int main() {
 			for (auto& elem : blocks){
 				//If the block has been created, draw it!
 				if (elem.bSpawned){
-					al_draw_bitmap(elem.texture, elem.position.x, elem.position.y, 0);
+					al_draw_bitmap(Type[static_cast<int>(elem.type)].texture, elem.position.x, elem.position.y, 0);
 				}
 			}
 			al_set_target_bitmap(al_get_backbuffer(display));
