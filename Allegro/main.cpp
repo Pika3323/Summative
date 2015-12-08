@@ -13,7 +13,7 @@ int main() {
 	Buffer dubBuff = { NULL, 0.f, 0.f, 5.f, 5.f, false, false };
 	int wWidth = 640, wHeight = 480;	//Width and height of the window
 	bool done = false;					//Whether the main loop is "done" (aka terminated)
-	bool bOpenGL = true, bDirect3D = false;		//Whether to use OpenGL or Direct3D
+	bool bOpenGL = true;		//Whether to use OpenGL
 	World* CurrentWorld = new World(Vector2D(8192.f, 4092.f), GRID_SIZE);	//Creates the current world as well as a grid to store all the blocks
 	Vector2D Clicked;	//The location of a click
 	GridTile clickedTile;	//The clicked tile from the world grid
@@ -95,17 +95,11 @@ int main() {
 	if (bOpenGL){
 		al_set_new_display_flags(ALLEGRO_OPENGL);
 	}
-	else if (bDirect3D){
-		al_set_new_display_flags(ALLEGRO_DIRECT3D);
-	}
 
+	al_set_new_display_option(ALLEGRO_VSYNC, 1, ALLEGRO_REQUIRE);
 
 	//Create the main display window
 	display = al_create_display(wWidth, wHeight);
-
-	printf("%d\n", al_get_display_option(display, ALLEGRO_MAX_BITMAP_SIZE));
-
-
 
 	//Register event sources
 	al_register_event_source(event_queue, al_get_display_event_source(display));
@@ -177,7 +171,6 @@ int main() {
 	//Gets a starting time in order to calculate a delta time
 	double old_time = al_get_time();
 
-	printf("%d\n", al_get_bitmap_flags(dubBuff.image));
 	//Main tick loop
 	while (!done) {
 		ALLEGRO_EVENT ev;
@@ -345,7 +338,7 @@ int main() {
 		//Redraw the screen 
 		//DO NOT PUT TICK CODE HERE!!!
 		if (bRedraw && al_event_queue_is_empty(event_queue)){
-			al_hold_bitmap_drawing(true);
+			//al_hold_bitmap_drawing(true);
 			//Draws the framerate of the program on the screen
 			double new_time = al_get_time();
 			delta = new_time - old_time;
@@ -393,7 +386,7 @@ int main() {
 				al_draw_textf(font, tColor, al_get_display_width(display) - 75, 16, 0, "%.2f FPS", fps);
 				al_draw_textf(font, tColor, al_get_display_width(display) - 75, 32, 0, "%.2fMS", delta * 1000);
 			}
-			al_hold_bitmap_drawing(false);
+			//al_hold_bitmap_drawing(false);
 			//Flips the buffer to the screen
 			al_flip_display();
 
