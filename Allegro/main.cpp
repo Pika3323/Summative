@@ -4,7 +4,6 @@
 
 #define GRID_SIZE 32
 const int FPS = 60;
-const char myLevel[20] = "testLevel.bvl";
 
 int main() {
 	ALLEGRO_FONT *font = NULL;	//A font for debugging purposes
@@ -162,7 +161,7 @@ int main() {
 		scanf("%s", loadLevel);
 		fflush(stdin);
 		strcat(loadLevel, ".bvl");
-		fptr = fopen(myLevel, "rb");
+		fptr = fopen(loadLevel, "rb");
 
 		for (int i = 0; i < 8192; i++){
 			fseek(fptr, sizeof(Block)*i, SEEK_SET);
