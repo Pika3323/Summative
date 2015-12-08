@@ -8,7 +8,8 @@ enum class EBlockType{
 	B_Grass,
 	B_Dirt,
 	B_Stone,
-	B_Fancy
+	B_Fancy,
+	B_Mossy
 };
 
 struct BlockType{
