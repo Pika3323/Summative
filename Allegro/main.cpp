@@ -12,7 +12,6 @@ int main() {
 	ALLEGRO_EVENT_QUEUE *event_queue;	//The "event_queue"
 	ALLEGRO_TIMER *timer;				//The loop timer
 	Buffer dubBuff = { NULL, 0.f, 0.f, 5.f, 5.f, false, false };
-	ALLEGRO_BITMAP *blockTex = NULL;	//The test texture for block
 	int wWidth = 640, wHeight = 480;	//Width and height of the window
 	bool done = false;					//Whether the main loop is "done" (aka terminated)
 	bool bOpenGL = true, bDirect3D = false;		//Whether to use OpenGL or Direct3D
@@ -22,6 +21,7 @@ int main() {
 	bool bClicked = false;	//Whether a click was registered
 	bool bRedraw = false;	//Whether to redraw the screen
 	FILE *fptr;
+	EBlockType SelectedBlock = EBlockType::B_Brick;		//the block type the user selects
 	Block blocks[8192];	//Array of all block in the world
 	BlockType Type[15];
 	bool bDrawFPS = true, bDrawMouseLoc = false, bDrawClickID = false;
@@ -113,10 +113,14 @@ int main() {
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
 	al_register_event_source(event_queue, al_get_mouse_event_source());
-	blockTex = al_load_bitmap("Textures/TEST.png");
 
-	Type[0] = BlockType("Rainbow", blockTex);
 
+	Type[0] = BlockType("Rainbow", al_load_bitmap("Textures/Rainbow.png"));
+	Type[1] = BlockType("Brick", al_load_bitmap("Textures/Brick.png"));
+	Type[2] = BlockType("Grass", al_load_bitmap("Textures/Grass.png"));
+	Type[3] = BlockType("Dirt", al_load_bitmap("Textures/Dirt.png"));
+	Type[4] = BlockType("Stone", al_load_bitmap("Textures/Stone.png"));
+	Type[5] = BlockType("Fancy", al_load_bitmap("Textures/Fancy.png"));
 
 	//Clear screen to black
 	al_clear_to_color(al_map_rgb(0, 0, 0));
@@ -142,8 +146,6 @@ int main() {
 	for (int i = 0; i < 64; i++){
 		al_draw_line(0, i * GRID_SIZE, 4096, i * GRID_SIZE, al_map_rgb(50, 50, 50), 1);
 	}
-
-
 	//Sets the target bitmap back to the default buffer
 	al_set_target_bitmap(al_get_backbuffer(display));
 
@@ -170,10 +172,6 @@ int main() {
 		fptr = NULL;
 	}
 
-	for (auto& elem : blocks){
-
-	}
-
 	//Starts the timer which runs the following while loop at a certain rate (60FPS)	
 	al_start_timer(timer);
 
@@ -198,40 +196,59 @@ int main() {
 		else if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
 			switch (ev.keyboard.keycode) {
 				//Close window if escape key is pressed
-			case ALLEGRO_KEY_ESCAPE:
-				done = true;
-				break;
-			case ALLEGRO_KEY_D:
-			case ALLEGRO_KEY_RIGHT:
-				dubBuff.bdx = true;
-				dubBuff.dx = -5;
-				break;
-			case ALLEGRO_KEY_A:
-			case ALLEGRO_KEY_LEFT:
-				dubBuff.bdx = true;
-				dubBuff.dx = 5;
-				break;
-			case ALLEGRO_KEY_S:
-			case ALLEGRO_KEY_DOWN:
-				dubBuff.bdy = true;
-				dubBuff.dy = -5;
-				break;
-			case ALLEGRO_KEY_W:
-			case ALLEGRO_KEY_UP:
-				dubBuff.bdy = true;
-				dubBuff.dy = 5;
-				break;
-			case ALLEGRO_KEY_I:
-				bDrawFPS = !bDrawFPS;
-				break;
-			case ALLEGRO_KEY_O:
-				bDrawClickID = !bDrawClickID;
-				break;
-			case ALLEGRO_KEY_P:
-				bDrawMouseLoc = !bDrawMouseLoc;
-				break;
-			default:
-				break;
+
+				case ALLEGRO_KEY_ESCAPE:
+					done = true;
+					break;
+				case ALLEGRO_KEY_D:
+				case ALLEGRO_KEY_RIGHT:
+					dubBuff.bdx = true;
+					dubBuff.dx = -5;
+					break;
+				case ALLEGRO_KEY_A:
+				case ALLEGRO_KEY_LEFT:
+					dubBuff.bdx = true;
+					dubBuff.dx = 5;
+					break;
+				case ALLEGRO_KEY_S:
+				case ALLEGRO_KEY_DOWN:
+					dubBuff.bdy = true;
+					dubBuff.dy = -5;
+					break;
+				case ALLEGRO_KEY_W:
+				case ALLEGRO_KEY_UP:
+					dubBuff.bdy = true;
+					dubBuff.dy = 5;
+					break;
+				case ALLEGRO_KEY_I:
+					bDrawFPS = !bDrawFPS;
+					break;
+				case ALLEGRO_KEY_O:
+					bDrawClickID = !bDrawClickID;
+					break;
+				case ALLEGRO_KEY_P:
+					bDrawMouseLoc = !bDrawMouseLoc;
+					break;
+				case ALLEGRO_KEY_1:
+					SelectedBlock = EBlockType::B_Rainbow;
+					break;
+				case ALLEGRO_KEY_2:
+					SelectedBlock = EBlockType::B_Brick;
+					break;
+				case ALLEGRO_KEY_3:
+					SelectedBlock = EBlockType::B_Grass;
+					break;
+				case ALLEGRO_KEY_4:
+					SelectedBlock = EBlockType::B_Dirt;
+					break;
+				case ALLEGRO_KEY_5:
+					SelectedBlock = EBlockType::B_Stone;
+					break;
+				case ALLEGRO_KEY_6:
+					SelectedBlock = EBlockType::B_Fancy;
+					break;
+				default:
+					break;
 			}
 		}
 
@@ -266,10 +283,9 @@ int main() {
 
 				//Get the tile that was clicked
 				clickedTile = CurrentWorld->getClickedTile(Clicked);
-
 				//if the tile is not already occupied by a block, create a new block
 				if (!clickedTile.occupied){
-					blocks[clickedTile.id] = Block(clickedTile.location, EBlockType::B_Rainbow);
+					blocks[clickedTile.id] = Block(clickedTile.location, SelectedBlock);
 					blocks[clickedTile.id].bSpawned = true;
 					clickedTile.occupied = true;
 				}
@@ -283,6 +299,7 @@ int main() {
 			case MOUSE_MB:	
 				printf("mmb pressed\n");
 				break;
+
 			}
 
 		}
@@ -351,7 +368,6 @@ int main() {
 				//If the block has been created, draw it!
 				if (elem.bSpawned){
 					al_draw_bitmap(Type[static_cast<int>(elem.type)].texture, elem.position.x, elem.position.y, ALLEGRO_VIDEO_BITMAP);
-					al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 112, 0, "%a", al_get_bitmap_flags(Type[static_cast<int>(elem.type)].texture));
 				}
 			}
 

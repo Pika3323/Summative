@@ -12,8 +12,9 @@ enum class EBlockType{
 };
 
 struct BlockType{
+
 	char name[16];
-	ALLEGRO_BITMAP* texture;
+	ALLEGRO_BITMAP *texture;
 	bool bLoaded;
 
 	BlockType(){}
