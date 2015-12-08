@@ -3,6 +3,10 @@
 
 #pragma once
 
+#define MOUSE_LB 1
+#define MOUSE_RB 2
+#define MOUSE_MB 3
+
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_image.h>
@@ -16,4 +20,5 @@
 #include <math.h>
 #include "Vector2D.h"
 #include "Block.h"
+#include "Buffer.h"
 
