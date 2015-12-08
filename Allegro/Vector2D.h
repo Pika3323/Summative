@@ -19,10 +19,19 @@ public:
 	Vector2D operator-(const Vector2D &V);
 	Vector2D operator*(float Scale);
 	Vector2D operator/(float Scale);
+
 	Vector2D operator+=(const Vector2D &V);
 	Vector2D operator-=(const Vector2D &V);
+	Vector2D operator*=(float Scale);
+	Vector2D operator/=(float Scale);
+
+	bool operator>(const Vector2D &V);
+	bool operator<(const Vector2D &V);
+	bool operator>=(const Vector2D &V);
+	bool operator<=(const Vector2D &V);
 
 	bool operator==(const Vector2D &V);
+	bool operator!=(const Vector2D &V);
 
 	float operator|(const Vector2D &V);	//dot-product
 	float operator^(const Vector2D &V);	//cross-product

@@ -26,6 +26,9 @@ public:
 
 	void Tick();
 
+	bool Load(const char file[64], const Block b[]);
+	bool Save(const char file[64], const Block b[]);
+
 private:
 };
 

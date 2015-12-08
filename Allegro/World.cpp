@@ -22,6 +22,23 @@ GridTile World::getClickedTile(Vector2D inLoc){
 	return Tile[(int)ceil(inLoc.x) / gridSize][(int)ceil(inLoc.y) / gridSize];
 }
 
+//Called on every frame For Logic Updates.
 void World::Tick(){
 	//Put all world tick code here
+}
+
+//MOVE BLOCKS ARRAY INTO WORLD CLASS?
+bool World::Load(const char file[64], const Block b[]){
+	FILE *fptr = NULL;
+	fptr = fopen(file, "wb+");
+
+	/*for (auto& elem : b){
+		fwrite(&elem, sizeof(Block), 1, fptr);
+	}*/
+
+	fclose(fptr);
+	return true;
+}
+bool World::Save(const char file[64], const Block b[]){
+	return true;
 }
