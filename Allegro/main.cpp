@@ -388,6 +388,9 @@ int main() {
 			}
 			//al_hold_bitmap_drawing(false);
 			//Flips the buffer to the screen
+
+			al_wait_for_vsync();
+
 			al_flip_display();
 
 			//Clears the screen so that no strange overwriting occurs
