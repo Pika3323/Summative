@@ -88,7 +88,6 @@ int main() {
 		printf("Loaded font\n");
 	}
 
-
 	//create event loop stuff
 	event_queue = al_create_event_queue();
 	timer = al_create_timer(1.0f / FPS);	//Run the program at 60FPS
@@ -112,7 +111,6 @@ int main() {
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
 	al_register_event_source(event_queue, al_get_mouse_event_source());
-
 
 	Type[0] = BlockType("Rainbow", al_load_bitmap("Textures/Rainbow.png"));
 	Type[1] = BlockType("Brick", al_load_bitmap("Textures/Brick.png"));
@@ -138,17 +136,6 @@ int main() {
 	al_set_target_bitmap(al_get_backbuffer(display));
 	//Sets the draw target to the grid bitmap
 	al_set_target_bitmap(dubBuff.image);
-	int sum = 0;
-
-	//Draws a grid based on the tiles of the world
-	/*for (int i = 0; i < 128; i++){
-		for (int j = 0; j < 64; j++){
-			al_draw_line(i * CurrentWorld->gridSize, (j + 1) * CurrentWorld->gridSize, (i + 1) * CurrentWorld->gridSize, (j + 1) * CurrentWorld->gridSize, al_map_rgb(0, 255, 0), 1);
-			al_draw_line((i + 1) * CurrentWorld->gridSize, j * CurrentWorld->gridSize, (i + 1) * CurrentWorld->gridSize, (j + 1) * CurrentWorld->gridSize, al_map_rgb(0, 255, 0), 1);
-			al_draw_textf(font, al_map_rgb(0, 255, 0), i * CurrentWorld->gridSize, j * CurrentWorld->gridSize, 0, "%d", sum);
-			sum++;
-		}
-	}*/
 
 	for (int i = 0; i < 128; i++){
 		al_draw_line(i * GRID_SIZE, 0, i * GRID_SIZE, 2048, al_map_rgb(50, 50, 50), 1);
@@ -211,28 +198,24 @@ int main() {
 				case ALLEGRO_KEY_D:
 				case ALLEGRO_KEY_RIGHT:
 					dubBuff.bdx = true;
-					Background.bdx = true;
 					dubBuff.dx = -5;
 					Background.dx = -2.5;
 					break;
 				case ALLEGRO_KEY_A:
 				case ALLEGRO_KEY_LEFT:
 					dubBuff.bdx = true;
-					Background.bdx = true;
 					dubBuff.dx = 5;
 					Background.dx = 2.5;
 					break;
 				case ALLEGRO_KEY_S:
 				case ALLEGRO_KEY_DOWN:
 					dubBuff.bdy = true;
-					Background.bdy = true;
 					dubBuff.dy = -5;
 					Background.dy = -2.5;
 					break;
 				case ALLEGRO_KEY_W:
 				case ALLEGRO_KEY_UP:
 					dubBuff.bdy = true;
-					Background.bdy = true;
 					dubBuff.dy = 5;
 					Background.dy = 2.5;
 					break;
@@ -278,14 +261,12 @@ int main() {
 			case ALLEGRO_KEY_LEFT:
 			case ALLEGRO_KEY_RIGHT:
 				dubBuff.bdx = false;
-				Background.bdx = false;
 				break;
 			case ALLEGRO_KEY_S:
 			case ALLEGRO_KEY_W:
 			case ALLEGRO_KEY_UP:
 			case ALLEGRO_KEY_DOWN:
 				dubBuff.bdy = false;
-				Background.bdy = false;
 				break;
 			default:
 				break;
@@ -352,13 +333,6 @@ int main() {
 
 			}
 
-			//Inertia!!
-			/*if (DragVelocity > Vector2D(0, 0) && !bMouseDrag){
-				DragVelocity -= Vector2D(0.05f, 0.05f);
-				dubBuff.y -= DragStart.y - state.y;
-				dubBuff.x -= DragStart.x - state.x;
-				CurrentWorld->offset -= DragStart - Vector2D(state.x, state.y);
-			}*/
 
 			CurrentWorld->Tick();
 		}
@@ -383,8 +357,9 @@ int main() {
 			//Foreach loop that goes through every block
 
 			for (auto& elem : blocks){
-				//If the block has been created, draw it!
-				if (elem.bSpawned){
+				elem.offset = elem.position + CurrentWorld->offset;		//if moved the dubbuff left, offset is negative (measured from corner of current place to corner of dubbuff
+				//If the block has been created, draw it!				//add it to block position to get relative position from screen, evaluate it there
+				if (elem.bSpawned && InRange(elem.offset.x, -32, wWidth + 32) && InRange(elem.offset.y, -32, wHeight + 32)){
 					al_draw_bitmap(Type[static_cast<int>(elem.type)].texture, elem.position.x, elem.position.y, ALLEGRO_VIDEO_BITMAP);
 				}
 			}
@@ -458,8 +433,4 @@ int main() {
 	delete CurrentWorld;
 
 	return 0;
-}
-
-void printk(){
-	printf("k\n");
 }
