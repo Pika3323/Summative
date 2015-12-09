@@ -26,7 +26,6 @@ int main() {
 	Block blocks[8192];	//Array of all block in the world
 	BlockType Type[15];
 	bool bDrawFPS = true, bDrawMouseLoc = false, bDrawClickID = false;
-	Input *InputHandler = new Input();
 
 	//Mouse Drag
 	bool bMouseDrag = false;
@@ -34,8 +33,6 @@ int main() {
 	float DragTime = 0.f;
 	double fps, delta;
 	Vector2D DragVelocity = Vector2D(-1.f, -1.f);
-
-	InputHandler->bindInputfunction('k', &printk);
 
 	//Load Allegro and all required modules
 	if (!al_init()) {
@@ -241,9 +238,6 @@ int main() {
 					break;
 				case ALLEGRO_KEY_6:
 					SelectedBlock = EBlockType::B_Fancy;
-					break;
-				case ALLEGRO_KEY_K:
-					InputHandler->onKeyDown('k');
 					break;
 				default:
 					break;
