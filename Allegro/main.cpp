@@ -184,11 +184,10 @@ int main() {
 		if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
 			done = true;
 		}
-		//On KeyDown
+		//On KeyDown event
 		else if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
 			switch (ev.keyboard.keycode) {
 				//Close window if escape key is pressed
-
 				case ALLEGRO_KEY_ESCAPE:
 					done = true;
 					break;
@@ -243,7 +242,7 @@ int main() {
 					break;
 			}
 		}
-
+		//On KeyUp
 		else if (ev.type == ALLEGRO_EVENT_KEY_UP) {
 			switch (ev.keyboard.keycode) {
 			case ALLEGRO_KEY_D:
@@ -290,6 +289,7 @@ int main() {
 				break;
 			}
 		}
+		//On MouseUp
 		else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
 			bClicked = false;
 
@@ -298,7 +298,6 @@ int main() {
 				DragVelocity = DragStart / DragTime;
 			}
 		}
-
 		//Tick
 		if (ev.type == ALLEGRO_EVENT_TIMER){
 			bRedraw = true;
@@ -316,6 +315,7 @@ int main() {
 				CurrentWorld->offset -= DragStart - Vector2D(state.x, state.y);
 				DragStart = Vector2D(state.x, state.y);
 				DragTime += delta;
+
 			}
 
 			//Inertia!!
@@ -328,8 +328,6 @@ int main() {
 
 			CurrentWorld->Tick();
 		}
-
-
 		//Redraw the screen 
 		//DO NOT PUT TICK CODE HERE!!!
 		if (bRedraw && al_event_queue_is_empty(event_queue)){
