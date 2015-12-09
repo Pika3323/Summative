@@ -5,6 +5,8 @@ struct GridTile{
 	Vector2D location;
 	bool occupied;
 	int id;
+	int x;
+	int y;
 
 	GridTile(){ occupied = false; }
 };
@@ -16,7 +18,7 @@ public:
 	int gridSize;
 	GridTile Tile[128][64];
 	Buffer Background;
-	Block Blocks[8192];
+	Block Blocks[128][64];
 	BlockType Type[15];
 
 	World(){}

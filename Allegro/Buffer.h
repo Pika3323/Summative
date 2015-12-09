@@ -6,12 +6,12 @@ struct Buffer {
 public:
 	//main components of struct
 	ALLEGRO_BITMAP *image;
-	float x;
-	float y;
-	float dx;
-	float dy;
+	Vector2D offset;
+	Vector2D delta;
 	bool bdx;
 	bool bdy;
+
+
 
 protected:
 };
