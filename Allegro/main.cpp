@@ -5,8 +5,6 @@
 #define GRID_SIZE 32
 const int FPS = 60;
 
-void printk();
-
 int main() {
 	ALLEGRO_FONT *font = NULL;	//A font for debugging purposes
 	ALLEGRO_DISPLAY *display;			//The display window
@@ -25,8 +23,6 @@ int main() {
 	bool bRedraw = false;	//Whether to redraw the screen
 	FILE *fptr;
 	EBlockType SelectedBlock = EBlockType::B_Brick;		//the block type the user selects
-	Block blocks[8192];	//Array of all block in the world
-	BlockType Type[15];
 	bool bDrawFPS = true, bDrawMouseLoc = false, bDrawClickID = false;
 
 	//Mouse Drag
@@ -114,13 +110,13 @@ int main() {
 	al_register_event_source(event_queue, al_get_mouse_event_source());
 
 
-	Type[0] = BlockType("Rainbow", al_load_bitmap("Textures/Rainbow.png"));
-	Type[1] = BlockType("Brick", al_load_bitmap("Textures/Brick.png"));
-	Type[2] = BlockType("Grass", al_load_bitmap("Textures/Grass.png"));
-	Type[3] = BlockType("Dirt", al_load_bitmap("Textures/Dirt.png"));
-	Type[4] = BlockType("Stone", al_load_bitmap("Textures/Stone.png"));
-	Type[5] = BlockType("Fancy", al_load_bitmap("Textures/Fancy.png"));
-	Type[6] = BlockType("Mossy", al_load_bitmap("Textures/Mossy.png"));
+	CurrentWorld->Type[0] = BlockType("Rainbow", al_load_bitmap("Textures/Rainbow.png"));
+	CurrentWorld->Type[1] = BlockType("Brick", al_load_bitmap("Textures/Brick.png"));
+	CurrentWorld->Type[2] = BlockType("Grass", al_load_bitmap("Textures/Grass.png"));
+	CurrentWorld->Type[3] = BlockType("Dirt", al_load_bitmap("Textures/Dirt.png"));
+	CurrentWorld->Type[4] = BlockType("Stone", al_load_bitmap("Textures/Stone.png"));
+	CurrentWorld->Type[5] = BlockType("Fancy", al_load_bitmap("Textures/Fancy.png"));
+	CurrentWorld->Type[6] = BlockType("Mossy", al_load_bitmap("Textures/Mossy.png"));
 
 	//Clear screen to black
 	al_clear_to_color(al_map_rgb(0, 0, 0));
@@ -137,23 +133,13 @@ int main() {
 
 	al_set_target_bitmap(al_get_backbuffer(display));
 	//Sets the draw target to the grid bitmap
+
 	al_set_target_bitmap(dubBuff.image);
-	int sum = 0;
 
-	//Draws a grid based on the tiles of the world
-	/*for (int i = 0; i < 128; i++){
-		for (int j = 0; j < 64; j++){
-			al_draw_line(i * CurrentWorld->gridSize, (j + 1) * CurrentWorld->gridSize, (i + 1) * CurrentWorld->gridSize, (j + 1) * CurrentWorld->gridSize, al_map_rgb(0, 255, 0), 1);
-			al_draw_line((i + 1) * CurrentWorld->gridSize, j * CurrentWorld->gridSize, (i + 1) * CurrentWorld->gridSize, (j + 1) * CurrentWorld->gridSize, al_map_rgb(0, 255, 0), 1);
-			al_draw_textf(font, al_map_rgb(0, 255, 0), i * CurrentWorld->gridSize, j * CurrentWorld->gridSize, 0, "%d", sum);
-			sum++;
-		}
-	}*/
-
-	for (int i = 0; i < 128; i++){
+	for (int i = 0; i < 129; i++){
 		al_draw_line(i * GRID_SIZE, 0, i * GRID_SIZE, 2048, al_map_rgb(50, 50, 50), 1);
 	}
-	for (int i = 0; i < 64; i++){
+	for (int i = 0; i < 65; i++){
 		al_draw_line(0, i * GRID_SIZE, 4096, i * GRID_SIZE, al_map_rgb(50, 50, 50), 1);
 	}
 	//Sets the target bitmap back to the default buffer
@@ -172,14 +158,12 @@ int main() {
 		scanf("%s", loadLevel);
 		fflush(stdin);
 		strcat(loadLevel, ".bvl");
-		fptr = fopen(loadLevel, "rb");
-
-		for (int i = 0; i < 8192; i++){
-			fseek(fptr, sizeof(Block)*i, SEEK_SET);
-			fread(&blocks[i], sizeof(Block), 1, fptr);
+		if (CurrentWorld->Load(loadLevel)){
+			printf("Loaded %s\n", loadLevel);
 		}
-		fclose(fptr);
-		fptr = NULL;
+		else{
+			printf("Could not load %s\n", loadLevel);
+		}
 	}
 
 	//Starts the timer which runs the following while loop at a certain rate (60FPS)	
@@ -305,8 +289,8 @@ int main() {
 				clickedTile = CurrentWorld->getClickedTile(Clicked);
 				//if the tile is not already occupied by a block, create a new block
 				if (!clickedTile.occupied){
-					blocks[clickedTile.id] = Block(clickedTile.location, SelectedBlock);
-					blocks[clickedTile.id].bSpawned = true;
+					CurrentWorld->Blocks[clickedTile.id] = Block(clickedTile.location, SelectedBlock);
+					CurrentWorld->Blocks[clickedTile.id].bSpawned = true;
 					clickedTile.occupied = true;
 				}
 				break;
@@ -351,6 +335,18 @@ int main() {
 				DragTime += delta;
 
 			}
+			if (bClicked){
+				Clicked = Vector2D(state.x + (dubBuff.x * -1), state.y + (dubBuff.y * -1));
+
+				//Get the tile that was clicked
+				clickedTile = CurrentWorld->getClickedTile(Clicked);
+				//if the tile is not already occupied by a block, create a new block
+				if (!clickedTile.occupied){
+					CurrentWorld->Blocks[clickedTile.id] = Block(clickedTile.location, SelectedBlock);
+					CurrentWorld->Blocks[clickedTile.id].bSpawned = true;
+					clickedTile.occupied = true;
+				}
+			}
 
 			//Inertia!!
 			/*if (DragVelocity > Vector2D(0, 0) && !bMouseDrag){
@@ -382,10 +378,10 @@ int main() {
 			al_set_target_bitmap(dubBuff.image);
 			//Foreach loop that goes through every block
 
-			for (auto& elem : blocks){
+			for (auto& elem : CurrentWorld->Blocks){
 				//If the block has been created, draw it!
 				if (elem.bSpawned){
-					al_draw_bitmap(Type[static_cast<int>(elem.type)].texture, elem.position.x, elem.position.y, ALLEGRO_VIDEO_BITMAP);
+					al_draw_bitmap(CurrentWorld->Type[static_cast<int>(elem.type)].texture, elem.position.x, elem.position.y, ALLEGRO_VIDEO_BITMAP);
 				}
 			}
 
@@ -437,13 +433,13 @@ int main() {
 		scanf("%s", levelName);
 		strcat(levelName, ".bvl");
 
-		fptr = fopen(levelName, "wb+");
+		if(CurrentWorld->Save(levelName)){
 
-		for (auto& b : blocks){
-			fwrite(&b, sizeof(Block), 1, fptr);
+			printf("Saved level as %s\n", levelName);
 		}
-
-		fclose(fptr);
+		else{
+			printf("Could not save level as %s\n", levelName);
+		}
 	}
 
 	//Destroy everything after the loop is exited
@@ -458,8 +454,4 @@ int main() {
 	delete CurrentWorld;
 
 	return 0;
-}
-
-void printk(){
-	printf("k\n");
 }

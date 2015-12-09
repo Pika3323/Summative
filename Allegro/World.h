@@ -16,6 +16,8 @@ public:
 	int gridSize;
 	GridTile Tile[128][64];
 	Buffer Background;
+	Block Blocks[8192];
+	BlockType Type[15];
 
 	World(){}
 	World(Vector2D s, int gs);
@@ -26,8 +28,8 @@ public:
 
 	void Tick();
 
-	bool Load(const char file[64], const Block b[]);
-	bool Save(const char file[64], const Block b[]);
+	bool Load(const char file[64]);
+	bool Save(const char file[64]);
 
 private:
 };

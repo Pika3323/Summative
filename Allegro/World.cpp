@@ -15,6 +15,9 @@ World::World(Vector2D s, int gs){
 			index++;
 		}
 	}
+	for (auto& elem : Blocks){
+		elem = Block();
+	}
 }
 
 //Returns which tile was clicked based on the location of the click
@@ -27,18 +30,38 @@ void World::Tick(){
 	//Put all world tick code here
 }
 
-//MOVE BLOCKS ARRAY INTO WORLD CLASS?
-bool World::Load(const char file[64], const Block b[]){
+//Loads a level from a path
+bool World::Load(const char file[64]){
+	FILE *fptr = NULL;
+	fptr = fopen(file, "rb");
+
+	if (fptr){
+		for (int i = 0; i < 8192; i++){
+			fseek(fptr, sizeof(Block)*i, SEEK_SET);
+			fread(&Blocks[i], sizeof(Block), 1, fptr);
+		}
+
+		fclose(fptr);
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+//Saves a level 
+bool World::Save(const char file[64]){
 	FILE *fptr = NULL;
 	fptr = fopen(file, "wb+");
+	if (fptr){
+		for (auto& b : Blocks){
+			fwrite(&b, sizeof(Block), 1, fptr);
+		}
+		fclose(fptr);
 
-	/*for (auto& elem : b){
-		fwrite(&elem, sizeof(Block), 1, fptr);
-	}*/
-
-	fclose(fptr);
-	return true;
-}
-bool World::Save(const char file[64], const Block b[]){
-	return true;
+		return true;
+	}
+	else{
+		return false;
+	}
 }
