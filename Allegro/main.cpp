@@ -5,6 +5,8 @@
 #define GRID_SIZE 32
 const int FPS = 60;
 
+void printk();
+
 int main() {
 	ALLEGRO_FONT *font = NULL;	//A font for debugging purposes
 	ALLEGRO_DISPLAY *display;			//The display window
@@ -13,7 +15,7 @@ int main() {
 	Buffer dubBuff = { NULL, 0.f, 0.f, 5.f, 5.f, false, false };
 	int wWidth = 640, wHeight = 480;	//Width and height of the window
 	bool done = false;					//Whether the main loop is "done" (aka terminated)
-	bool bOpenGL = true, bDirect3D = false;		//Whether to use OpenGL or Direct3D
+	bool bOpenGL = true;		//Whether to use OpenGL
 	World* CurrentWorld = new World(Vector2D(8192.f, 4092.f), GRID_SIZE);	//Creates the current world as well as a grid to store all the blocks
 	Vector2D Clicked;	//The location of a click
 	GridTile clickedTile;	//The clicked tile from the world grid
@@ -95,17 +97,9 @@ int main() {
 	if (bOpenGL){
 		al_set_new_display_flags(ALLEGRO_OPENGL);
 	}
-	else if (bDirect3D){
-		al_set_new_display_flags(ALLEGRO_DIRECT3D);
-	}
-
 
 	//Create the main display window
 	display = al_create_display(wWidth, wHeight);
-
-	printf("%d\n", al_get_display_option(display, ALLEGRO_MAX_BITMAP_SIZE));
-
-
 
 	//Register event sources
 	al_register_event_source(event_queue, al_get_display_event_source(display));
@@ -177,7 +171,6 @@ int main() {
 	//Gets a starting time in order to calculate a delta time
 	double old_time = al_get_time();
 
-	printf("%d\n", al_get_bitmap_flags(dubBuff.image));
 	//Main tick loop
 	while (!done) {
 		ALLEGRO_EVENT ev;
@@ -191,11 +184,10 @@ int main() {
 		if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
 			done = true;
 		}
-		//On KeyDown
+		//On KeyDown event
 		else if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
 			switch (ev.keyboard.keycode) {
 				//Close window if escape key is pressed
-
 				case ALLEGRO_KEY_ESCAPE:
 					done = true;
 					break;
@@ -250,7 +242,7 @@ int main() {
 					break;
 			}
 		}
-
+		//On KeyUp
 		else if (ev.type == ALLEGRO_EVENT_KEY_UP) {
 			switch (ev.keyboard.keycode) {
 			case ALLEGRO_KEY_D:
@@ -272,7 +264,6 @@ int main() {
 
 		//On mouse click
 		else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
-
 			switch (ev.mouse.button){
 			case MOUSE_LB: 
 				bClicked = true;
@@ -290,18 +281,15 @@ int main() {
 				}
 				break;
 			case MOUSE_RB: 
-
 				bMouseDrag = true;
 				DragStart = Vector2D(ev.mouse.x, ev.mouse.y);
-
 				break;
 			case MOUSE_MB:	
 				printf("mmb pressed\n");
 				break;
-
 			}
-
 		}
+		//On MouseUp
 		else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
 			bClicked = false;
 
@@ -310,7 +298,6 @@ int main() {
 				DragVelocity = DragStart / DragTime;
 			}
 		}
-
 		//Tick
 		if (ev.type == ALLEGRO_EVENT_TIMER){
 			bRedraw = true;
@@ -328,10 +315,11 @@ int main() {
 				CurrentWorld->offset -= DragStart - Vector2D(state.x, state.y);
 				DragStart = Vector2D(state.x, state.y);
 				DragTime += delta;
+
 			}
 
 			//Inertia!!
-			/*if (fabs(DragVelocity.x) > 0 && fabs(DragVelocity.y) > 0 && !bMouseDrag){
+			/*if (DragVelocity > Vector2D(0, 0) && !bMouseDrag){
 				DragVelocity -= Vector2D(0.05f, 0.05f);
 				dubBuff.y -= DragStart.y - state.y;
 				dubBuff.x -= DragStart.x - state.x;
@@ -340,12 +328,9 @@ int main() {
 
 			CurrentWorld->Tick();
 		}
-
-
 		//Redraw the screen 
 		//DO NOT PUT TICK CODE HERE!!!
 		if (bRedraw && al_event_queue_is_empty(event_queue)){
-			al_hold_bitmap_drawing(true);
 			//Draws the framerate of the program on the screen
 			double new_time = al_get_time();
 			delta = new_time - old_time;
@@ -393,7 +378,6 @@ int main() {
 				al_draw_textf(font, tColor, al_get_display_width(display) - 75, 16, 0, "%.2f FPS", fps);
 				al_draw_textf(font, tColor, al_get_display_width(display) - 75, 32, 0, "%.2fMS", delta * 1000);
 			}
-			al_hold_bitmap_drawing(false);
 			//Flips the buffer to the screen
 			al_flip_display();
 
@@ -435,3 +419,6 @@ int main() {
 	return 0;
 }
 
+void printk(){
+	printf("k\n");
+}
