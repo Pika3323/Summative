@@ -12,7 +12,9 @@ int main() {
 	ALLEGRO_DISPLAY *display;			//The display window
 	ALLEGRO_EVENT_QUEUE *event_queue;	//The "event_queue"
 	ALLEGRO_TIMER *timer;				//The loop timer
-	Buffer dubBuff = { NULL, 0.f, 0.f, 5.f, 5.f, false, false };
+	ALLEGRO_BITMAP *backgroundImg;
+	Buffer dubBuff = { NULL, 0.f, 0.f, 5.f, 5.f, false, false };	//buffer for grid
+	Buffer Background = { NULL, 0.f, 0.f, 2.5f, 2.5f, false, false };	//buffer for background
 	int wWidth = 640, wHeight = 480;	//Width and height of the window
 	bool done = false;					//Whether the main loop is "done" (aka terminated)
 	bool bOpenGL = true;		//Whether to use OpenGL
@@ -91,12 +93,16 @@ int main() {
 	event_queue = al_create_event_queue();
 	timer = al_create_timer(1.0f / FPS);	//Run the program at 60FPS
 	dubBuff.image = al_create_bitmap(4096, 2048);
+	backgroundImg = al_load_bitmap("Textures/Background_Original.png");
+	Background.image = al_create_bitmap(4097, 2048);
 
 
 	//Set ALLEGRO_DISPLAY flags
 	if (bOpenGL){
 		al_set_new_display_flags(ALLEGRO_OPENGL);
 	}
+
+	al_set_new_display_option(ALLEGRO_VSYNC, 1, ALLEGRO_REQUIRE);
 
 	//Create the main display window
 	display = al_create_display(wWidth, wHeight);
@@ -114,11 +120,22 @@ int main() {
 	Type[3] = BlockType("Dirt", al_load_bitmap("Textures/Dirt.png"));
 	Type[4] = BlockType("Stone", al_load_bitmap("Textures/Stone.png"));
 	Type[5] = BlockType("Fancy", al_load_bitmap("Textures/Fancy.png"));
+	Type[6] = BlockType("Mossy", al_load_bitmap("Textures/Mossy.png"));
 
 	//Clear screen to black
 	al_clear_to_color(al_map_rgb(0, 0, 0));
 	al_flip_display();
 
+	//Setting Multiple Images to Background Buffer
+	al_set_target_bitmap(Background.image);
+
+	for (int i = 0; i < 2; i++) {
+		for (int y = 0; y < 3; y++) {
+			al_draw_bitmap(backgroundImg, (y * 1024), (i * 1024), 0);
+		}
+	}
+
+	al_set_target_bitmap(al_get_backbuffer(display));
 	//Sets the draw target to the grid bitmap
 	al_set_target_bitmap(dubBuff.image);
 	int sum = 0;
@@ -194,22 +211,30 @@ int main() {
 				case ALLEGRO_KEY_D:
 				case ALLEGRO_KEY_RIGHT:
 					dubBuff.bdx = true;
+					Background.bdx = true;
 					dubBuff.dx = -5;
+					Background.dx = -2.5;
 					break;
 				case ALLEGRO_KEY_A:
 				case ALLEGRO_KEY_LEFT:
 					dubBuff.bdx = true;
+					Background.bdx = true;
 					dubBuff.dx = 5;
+					Background.dx = 2.5;
 					break;
 				case ALLEGRO_KEY_S:
 				case ALLEGRO_KEY_DOWN:
 					dubBuff.bdy = true;
+					Background.bdy = true;
 					dubBuff.dy = -5;
+					Background.dy = -2.5;
 					break;
 				case ALLEGRO_KEY_W:
 				case ALLEGRO_KEY_UP:
 					dubBuff.bdy = true;
+					Background.bdy = true;
 					dubBuff.dy = 5;
+					Background.dy = 2.5;
 					break;
 				case ALLEGRO_KEY_I:
 					bDrawFPS = !bDrawFPS;
@@ -238,6 +263,9 @@ int main() {
 				case ALLEGRO_KEY_6:
 					SelectedBlock = EBlockType::B_Fancy;
 					break;
+				case ALLEGRO_KEY_7:
+					SelectedBlock = EBlockType::B_Mossy;
+					break;
 				default:
 					break;
 			}
@@ -250,12 +278,14 @@ int main() {
 			case ALLEGRO_KEY_LEFT:
 			case ALLEGRO_KEY_RIGHT:
 				dubBuff.bdx = false;
+				Background.bdx = false;
 				break;
 			case ALLEGRO_KEY_S:
 			case ALLEGRO_KEY_W:
 			case ALLEGRO_KEY_UP:
 			case ALLEGRO_KEY_DOWN:
 				dubBuff.bdy = false;
+				Background.bdy = false;
 				break;
 			default:
 				break;
@@ -303,15 +333,19 @@ int main() {
 			bRedraw = true;
 			if (dubBuff.bdx) {
 				dubBuff.x += dubBuff.dx;
+				Background.x += Background.dx;
 				CurrentWorld->offset.x += dubBuff.dx;
 			}
 			if (dubBuff.bdy) {
 				dubBuff.y += dubBuff.dy;
+				Background.y += Background.dy;
 				CurrentWorld->offset.y += dubBuff.dy;
 			}
 			if (bMouseDrag){
 				dubBuff.y -= DragStart.y - state.y;
 				dubBuff.x -= DragStart.x - state.x;
+				Background.y -= (DragStart.y - state.y) / 2;
+				Background.x -= (DragStart.x - state.x) / 2;
 				CurrentWorld->offset -= DragStart - Vector2D(state.x, state.y);
 				DragStart = Vector2D(state.x, state.y);
 				DragTime += delta;
@@ -357,6 +391,8 @@ int main() {
 
 			al_set_target_bitmap(al_get_backbuffer(display));
 
+			al_draw_bitmap_region(Background.image, Background.x * -1, Background.y * -1, wWidth, wHeight, 0, 0, 0);
+
 			al_draw_bitmap_region(dubBuff.image, dubBuff.x * -1, dubBuff.y * -1, wWidth, wHeight, 0, 0, 0);
 
 			//al_draw_bitmap(dubBuff.image, dubBuff.x, dubBuff.y, 0);
@@ -379,6 +415,9 @@ int main() {
 				al_draw_textf(font, tColor, al_get_display_width(display) - 75, 32, 0, "%.2fMS", delta * 1000);
 			}
 			//Flips the buffer to the screen
+
+			al_wait_for_vsync();
+
 			al_flip_display();
 
 			//Clears the screen so that no strange overwriting occurs
@@ -409,6 +448,8 @@ int main() {
 
 	//Destroy everything after the loop is exited
 	al_destroy_bitmap(dubBuff.image);
+	al_destroy_bitmap(Background.image);
+	al_destroy_bitmap(backgroundImg);
 	al_destroy_display(display);
 	al_destroy_timer(timer);
 	al_destroy_event_queue(event_queue);
