@@ -20,7 +20,7 @@
 #include "Vector2D.h"
 #include "Block.h"
 #include "Buffer.h"
-#include "Input.h"
 #include "IMath.h"
 #include "Character.h"
+#include "GUI.h"
 

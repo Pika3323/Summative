@@ -5,6 +5,8 @@ struct GridTile{
 	Vector2D location;
 	bool occupied;
 	int id;
+	int x;
+	int y;
 
 	GridTile(){ occupied = false; }
 };
@@ -16,6 +18,8 @@ public:
 	int gridSize;
 	GridTile Tile[128][64];
 	Buffer Background;
+	Block Blocks[128][64];
+	BlockType Type[15];
 
 	World(){}
 	World(Vector2D s, int gs);
@@ -26,8 +30,8 @@ public:
 
 	void Tick();
 
-	bool Load(const char file[64], const Block b[]);
-	bool Save(const char file[64], const Block b[]);
+	bool Load(const char file[64]);
+	bool Save(const char file[64]);
 
 private:
 };

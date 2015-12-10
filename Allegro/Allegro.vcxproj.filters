@@ -16,7 +16,12 @@
     <ClCompile Include="IMath.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Character.cpp" />
+    <ClCompile Include="Character.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Block.h">
@@ -37,7 +42,12 @@
     <ClInclude Include="IMath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Character.h" />
+    <ClInclude Include="Character.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
