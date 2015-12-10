@@ -13,16 +13,18 @@ int main() {
 	ALLEGRO_BITMAP *backgroundImg;
 	Buffer dubBuff = { NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f), false, false };	//buffer for grid
 	Buffer Background = { NULL, Vector2D(0.f, 0.f), Vector2D(2.5f, 2.5f), false, false };	//buffer for background
-	int wWidth = 640, wHeight = 480;	//Width and height of the window
+	int wWidth = 1280, wHeight = 720;	//Width and height of the window
 	bool done = false;					//Whether the main loop is "done" (aka terminated)
 	bool bOpenGL = true;		//Whether to use OpenGL
-	World* CurrentWorld = new World(Vector2D(8192.f, 4092.f), GRID_SIZE);	//Creates the current world as well as a grid to store all the blocks
+	World* CurrentWorld = new World(Vector2D(4096.f, 2048.f), GRID_SIZE);	//Creates the current world as well as a grid to store all the blocks
+	GUI* GameGUI = new GUI();
 	Vector2D Clicked;	//The location of a click
 	GridTile clickedTile;	//The clicked tile from the world grid
 	bool bClicked = false;	//Whether a click was registered
 	bool bRedraw = false;	//Whether to redraw the screen
 	EBlockType SelectedBlock = EBlockType::B_Brick;		//the block type the user selects
 	bool bDrawFPS = true, bDrawMouseLoc = false, bDrawClickID = false;
+
 	bool bBoxSelect = false;
 	GridTile FirstTile;
 
@@ -91,9 +93,12 @@ int main() {
 	timer = al_create_timer(1.0f / FPS);	//Run the program at 60FPS
 	dubBuff.image = al_create_bitmap(4096, 2048);
 	backgroundImg = al_load_bitmap("Textures/Background_Original.png");
-	Background.image = al_create_bitmap(4097, 2048);
+	Background.image = al_create_bitmap(4096, 2048);
+	GameGUI->GUIBuffer.image = al_create_bitmap(wWidth, wHeight);
 
+	GameGUI->components[0] = new GUI::Button(Vector2D(0, 0), 100, 25, al_create_bitmap(100, 25));
 
+	
 	//Set ALLEGRO_DISPLAY flags
 	if (bOpenGL){
 		al_set_new_display_flags(ALLEGRO_OPENGL);
@@ -118,6 +123,15 @@ int main() {
 	CurrentWorld->Type[4] = BlockType("Stone", al_load_bitmap("Textures/Stone.png"));
 	CurrentWorld->Type[5] = BlockType("Fancy", al_load_bitmap("Textures/Fancy.png"));
 	CurrentWorld->Type[6] = BlockType("Mossy", al_load_bitmap("Textures/Mossy.png"));
+
+	al_set_target_bitmap(static_cast<GUI::Button*>(GameGUI->components[0])->texture);
+
+	al_clear_to_color(al_map_rgba(0, 0, 0, 0));
+
+	al_draw_filled_rounded_rectangle(0, 0, 100, 25, 6, 6, al_map_rgb(255, 0, 255));
+	al_draw_text(font, al_map_rgb(255, 255, 255), 50, 10, 0, "TEST");
+
+	al_set_target_bitmap(al_get_backbuffer(display));
 
 	//Clear screen to black
 	al_clear_to_color(al_map_rgb(0, 0, 0));
@@ -295,8 +309,8 @@ int main() {
 					clickedTile = CurrentWorld->getClickedTile(Clicked);
 					//if the tile is not already occupied by a block, create a new block
 					if (!clickedTile.occupied){
-						CurrentWorld->Blocks[clickedTile.x][clickedTile.y] = Block(clickedTile.location, SelectedBlock);
-						CurrentWorld->Blocks[clickedTile.x][clickedTile.y].bSpawned = true;
+						CurrentWorld->Blocks[clickedTile.x][clickedTile.y + 1] = Block(clickedTile.location, SelectedBlock);
+						CurrentWorld->Blocks[clickedTile.x][clickedTile.y + 1].bSpawned = true;
 						clickedTile.occupied = true;
 					}
 				}
@@ -337,10 +351,10 @@ int main() {
 					Background.offset.x = 0;
 					CurrentWorld->offset.x = 0;
 				}
-				else if (CurrentWorld->offset.x < (CurrentWorld->dimensions.x - wWidth) * - 1){
-					dubBuff.offset.x = CurrentWorld->dimensions.x - wWidth;
-					Background.offset.x = CurrentWorld->dimensions.x - wWidth;
-					CurrentWorld->offset.x = CurrentWorld->dimensions.x - wWidth;
+				else if (CurrentWorld->offset.x < CurrentWorld->dimensions.x  * -1 + wWidth){
+					dubBuff.offset.x = CurrentWorld->dimensions.x  * -1 + wWidth;
+					Background.offset.x = CurrentWorld->dimensions.x  * -0.5 + wWidth / 2;
+					CurrentWorld->offset.x = CurrentWorld->dimensions.x  * -1 + wWidth;
 				}
 			}
 			if (dubBuff.bdy) {
@@ -352,10 +366,10 @@ int main() {
 					Background.offset.y = 0;
 					CurrentWorld->offset.y = 0;
 				}
-				else if (CurrentWorld->offset.y < (CurrentWorld->dimensions.y - wHeight)  * -1){
-					dubBuff.offset.y = CurrentWorld->dimensions.y - wHeight;
-					Background.offset.y = CurrentWorld->dimensions.y - wHeight;
-					CurrentWorld->offset.y = CurrentWorld->dimensions.y - wHeight;
+				else if (CurrentWorld->offset.y < CurrentWorld->dimensions.y * -1 + wHeight){
+					dubBuff.offset.y = CurrentWorld->dimensions.y * -1 + wHeight;
+					Background.offset.y = CurrentWorld->dimensions.y * -0.5f + wHeight / 2;
+					CurrentWorld->offset.y = CurrentWorld->dimensions.y * -1 + wHeight;
 				}
 			}
 			if (bMouseDrag){
@@ -371,20 +385,20 @@ int main() {
 					Background.offset.x = 0;
 					CurrentWorld->offset.x = 0;
 				}
-				else if (CurrentWorld->offset.x < (CurrentWorld->dimensions.x - wWidth)  * -1){
-					dubBuff.offset.x = CurrentWorld->dimensions.x - wWidth;
-					Background.offset.x = CurrentWorld->dimensions.x - wWidth;
-					CurrentWorld->offset.x = CurrentWorld->dimensions.x - wWidth;
+				else if (CurrentWorld->offset.x < CurrentWorld->dimensions.x  * -1 + wWidth){
+					dubBuff.offset.x = CurrentWorld->dimensions.x  * -1 + wWidth;
+					Background.offset.x = CurrentWorld->dimensions.x  * -0.5 + wWidth / 2;
+					CurrentWorld->offset.x = CurrentWorld->dimensions.x  * -1 + wWidth;
 				}
 				if (CurrentWorld->offset.y > 0){
 					dubBuff.offset.y = 0;
 					Background.offset.y = 0;
 					CurrentWorld->offset.y = 0;
 				}
-				else if (CurrentWorld->offset.y < (CurrentWorld->dimensions.y - wHeight)  * -1){
-					dubBuff.offset.y = CurrentWorld->dimensions.y - wHeight;
-					Background.offset.y = CurrentWorld->dimensions.y - wHeight;
-					CurrentWorld->offset.y = CurrentWorld->dimensions.y - wHeight;
+				else if (CurrentWorld->offset.y < CurrentWorld->dimensions.y * -1 + wHeight){
+					dubBuff.offset.y = CurrentWorld->dimensions.y * -1 + wHeight;
+					Background.offset.y = CurrentWorld->dimensions.y * -0.5f + wHeight / 2;
+					CurrentWorld->offset.y = CurrentWorld->dimensions.y * -1 + wHeight;
 				}
 
 			}
@@ -457,9 +471,18 @@ int main() {
 
 			al_draw_bitmap_region(dubBuff.image, dubBuff.offset.x * -1, dubBuff.offset.y * -1, wWidth, wHeight, 0, 0, 0);
 			
+			al_set_target_bitmap(GameGUI->GUIBuffer.image);
+			GUI::Button* but = static_cast<GUI::Button*>(GameGUI->components[0]);
+			al_draw_bitmap(but->texture, but->position.x, but->position.y, 0);
+
+			al_set_target_bitmap(al_get_backbuffer(display));
+
+			al_draw_bitmap(GameGUI->GUIBuffer.image, 0, 0, ALLEGRO_VIDEO_BITMAP);
 
 			//Draw mouse position
 			if (bDrawMouseLoc){
+				al_draw_textf(font, al_map_rgb(0, 0, 0), al_get_display_width(display) - 74, 113, 0, "x : %d", state.x);
+				al_draw_textf(font, al_map_rgb(0, 0, 0), al_get_display_width(display) - 74, 129, 0, "y : %d", state.y);
 				al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 112, 0, "x : %d", state.x);
 				al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 128, 0, "y : %d", state.y);
 			}
