@@ -21,4 +21,6 @@
 #include "Block.h"
 #include "Buffer.h"
 #include "Input.h"
+#include "IMath.h"
+#include "Character.h"
 
