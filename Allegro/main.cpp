@@ -15,6 +15,7 @@ int main() {
 	ALLEGRO_BITMAP *backgroundImg;
 	Buffer dubBuff = { NULL, 0.f, 0.f, 5.f, 5.f, false, false };	//buffer for grid
 	Buffer Background = { NULL, 0.f, 0.f, 2.5f, 2.5f, false, false };	//buffer for background
+	Character TinTin = Character(Vector2D(0, 0), 32, 64);	//TinTin character
 	int wWidth = 640, wHeight = 480;	//Width and height of the window
 	bool done = false;					//Whether the main loop is "done" (aka terminated)
 	bool bOpenGL = true;		//Whether to use OpenGL
@@ -255,6 +256,7 @@ int main() {
 		}
 		//On KeyUp
 		else if (ev.type == ALLEGRO_EVENT_KEY_UP) {
+			TinTin.DoEv('i');
 			switch (ev.keyboard.keycode) {
 			case ALLEGRO_KEY_D:
 			case ALLEGRO_KEY_A:
@@ -311,6 +313,7 @@ int main() {
 		}
 		//Tick
 		if (ev.type == ALLEGRO_EVENT_TIMER){
+			TinTin.EvHandle();
 			bRedraw = true;
 			if (dubBuff.bdx) {
 				dubBuff.x += dubBuff.dx;
@@ -364,6 +367,9 @@ int main() {
 				}
 			}
 
+			//Draws TinTin character (idle, east)
+			TinTin.Animate();
+
 			al_set_target_bitmap(al_get_backbuffer(display));
 
 			al_draw_bitmap_region(Background.image, Background.x * -1, Background.y * -1, wWidth, wHeight, 0, 0, 0);
@@ -389,6 +395,7 @@ int main() {
 				al_draw_textf(font, tColor, al_get_display_width(display) - 75, 16, 0, "%.2f FPS", fps);
 				al_draw_textf(font, tColor, al_get_display_width(display) - 75, 32, 0, "%.2fMS", delta * 1000);
 			}
+
 			//Flips the buffer to the screen
 
 			al_wait_for_vsync();
