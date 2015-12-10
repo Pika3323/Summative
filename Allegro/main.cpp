@@ -11,7 +11,7 @@ int main() {
 	ALLEGRO_EVENT_QUEUE *event_queue;	//The "event_queue"
 	ALLEGRO_TIMER *timer;				//The loop timer
 	ALLEGRO_BITMAP *backgroundImg;
-	Character TinTin = Character(Vector2D(0, 0), 32, 64);	//TinTin character
+	Character TinTin = Character(Vector2D(0, 0), 64, 128);	//TinTin character
 	Buffer dubBuff = { NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f), false, false };	//buffer for grid
 	Buffer Background = { NULL, Vector2D(0.f, 0.f), Vector2D(2.5f, 2.5f), false, false };	//buffer for background
 	int wWidth = 1280, wHeight = 720;	//Width and height of the window
@@ -28,6 +28,12 @@ int main() {
 
 	bool bBoxSelect = false;
 	GridTile FirstTile;
+
+	//keyboard bool catches
+	bool up = false;
+	bool down = false;
+	bool right = false;
+	bool left = false;
 
 	//Mouse Drag
 	bool bMouseDrag = false;
@@ -209,6 +215,7 @@ int main() {
 					break;
 				case ALLEGRO_KEY_D:
 				case ALLEGRO_KEY_RIGHT:
+					right = true;
 					dubBuff.bdx = true;
 					Background.bdx = true;
 					dubBuff.delta.x = -5.f;
@@ -216,6 +223,7 @@ int main() {
 					break;
 				case ALLEGRO_KEY_A:
 				case ALLEGRO_KEY_LEFT:
+					left = true;
 					dubBuff.bdx = true;
 					Background.bdx = true;
 					dubBuff.delta.x = 5.f;
@@ -223,6 +231,7 @@ int main() {
 					break;
 				case ALLEGRO_KEY_S:
 				case ALLEGRO_KEY_DOWN:
+					down = true;
 					dubBuff.bdy = true;
 					Background.bdy = true;
 					dubBuff.delta.y = -5.f;
@@ -230,6 +239,7 @@ int main() {
 					break;
 				case ALLEGRO_KEY_W:
 				case ALLEGRO_KEY_UP:
+					up = true;
 					dubBuff.bdy = true;
 					Background.bdy = true;
 					dubBuff.delta.y = 5.f;
@@ -276,17 +286,45 @@ int main() {
 		else if (ev.type == ALLEGRO_EVENT_KEY_UP) {
 			TinTin.DoEv('i');
 			switch (ev.keyboard.keycode) {
-			case ALLEGRO_KEY_D:
 			case ALLEGRO_KEY_A:
 			case ALLEGRO_KEY_LEFT:
+				left = false;
+				if (right){
+					dubBuff.bdx = true;
+				}
+				else {
+					dubBuff.bdx = false;
+				}
+				break;
+			case ALLEGRO_KEY_D:
 			case ALLEGRO_KEY_RIGHT:
-				dubBuff.bdx = false;
+				right = false;
+				if (left) {
+					dubBuff.bdx = true;
+				}
+				else {
+					dubBuff.bdx = false;
+				}
 				break;
 			case ALLEGRO_KEY_S:
+			case ALLEGRO_KEY_DOWN:
+				down = false;
+				if (up) {
+					dubBuff.bdy = true;
+				}
+				else {
+					dubBuff.bdy = false;
+				}
+				break;
 			case ALLEGRO_KEY_W:
 			case ALLEGRO_KEY_UP:
-			case ALLEGRO_KEY_DOWN:
-				dubBuff.bdy = false;
+				up = false;
+				if (down) {
+					dubBuff.bdy = true;
+				}
+				else {
+					dubBuff.bdy = false;
+				}
 				break;
 			default:
 				break;
@@ -458,10 +496,7 @@ int main() {
 
 			//Draws TinTin character (idle, east)
 			TinTin.Animate();
-
 			al_set_target_bitmap(al_get_backbuffer(display));
-
-			
 
 			al_draw_bitmap_region(Background.image, Background.offset.x * -1, Background.offset.y * -1, wWidth, wHeight, 0, 0, 0);
 
@@ -481,10 +516,6 @@ int main() {
 				al_draw_textf(font, al_map_rgb(0, 0, 0), al_get_display_width(display) - 74, 129, 0, "y : %d", state.y);
 				al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 112, 0, "x : %d", state.x);
 				al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 128, 0, "y : %d", state.y);
-			}
-
-			if (bClicked && bDrawClickID) {
-				al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 96, 0, "%d", clickedTile.id);
 			}
 
 			//Draw FPS
