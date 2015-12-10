@@ -28,10 +28,11 @@ public:
 
 	GridTile getClickedTile(Vector2D inLoc);
 
-	void Tick();
+	void Tick(float delta);
 
 	bool Load(const char file[64]);
 	bool Save(const char file[64]);
+	void moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, int w, int h);
 
 private:
 };

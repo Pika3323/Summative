@@ -26,7 +26,7 @@ GridTile World::getClickedTile(Vector2D inLoc){
 }
 
 //Called on every frame For Logic Updates.
-void World::Tick(){
+void World::Tick(float delta){
 	//Put all world tick code here
 }
 
@@ -68,5 +68,37 @@ bool World::Save(const char file[64]){
 	}
 	else{
 		return false;
+	}
+}
+
+void World::moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, int w, int h){
+	//Move level on x-axis
+	grid.offset.x += delta.x;
+	bg.offset.x += delta.x / 2;
+	offset.x += delta.x;
+	if (offset.x > 0) {
+		grid.offset.x = 0;
+		bg.offset.x = 0;
+		offset.x = 0;
+	}
+	else if (offset.x < dimensions.x  * -1 + w){
+		grid.offset.x = dimensions.x  * -1 + w;
+		bg.offset.x = dimensions.x  * -0.5 + w / 2;
+		offset.x = dimensions.x  * -1 + w;
+	}
+	
+	//Move level on y-axis
+	grid.offset.y += delta.y;
+	bg.offset.y += delta.y;
+	offset.y += delta.y;
+	if (offset.y > 0){
+		grid.offset.y = 0;
+		bg.offset.y = 0;
+		offset.y = 0;
+	}
+	else if (offset.y < dimensions.y * -1 + h){
+		grid.offset.y = dimensions.y * -1 + h;
+		bg.offset.y = dimensions.y * -0.5f + h / 2;
+		offset.y = dimensions.y * -1 + h;
 	}
 }

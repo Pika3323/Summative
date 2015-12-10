@@ -11,7 +11,8 @@ public:
 	bool bdx;
 	bool bdy;
 
-
+	Buffer(){}
+	Buffer(ALLEGRO_BITMAP* i, Vector2D ofs, Vector2D d);
 
 protected:
 };

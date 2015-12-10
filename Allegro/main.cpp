@@ -12,8 +12,8 @@ int main() {
 	ALLEGRO_TIMER *timer;				//The loop timer
 	ALLEGRO_BITMAP *backgroundImg;
 	Character TinTin = Character(Vector2D(0, 0), 32, 64);	//TinTin character
-	Buffer dubBuff = { NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f), false, false };	//buffer for grid
-	Buffer Background = { NULL, Vector2D(0.f, 0.f), Vector2D(2.5f, 2.5f), false, false };	//buffer for background
+	Buffer dubBuff = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(0.f, 0.f));	//buffer for grid
+	Buffer Background = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(0.f, 0.f));	//buffer for background
 	int wWidth = 1280, wHeight = 720;	//Width and height of the window
 	bool done = false;					//Whether the main loop is "done" (aka terminated)
 	bool bOpenGL = true;		//Whether to use OpenGL
@@ -25,6 +25,7 @@ int main() {
 	bool bRedraw = false;	//Whether to redraw the screen
 	EBlockType SelectedBlock = EBlockType::B_Brick;		//the block type the user selects
 	bool bDrawFPS = true, bDrawMouseLoc = false, bDrawClickID = false;
+	Vector2D moveDelta = Vector2D(0.f, 0.f);
 
 	bool bBoxSelect = false;
 	GridTile FirstTile;
@@ -35,6 +36,8 @@ int main() {
 	float DragTime = 0.f;
 	double fps, delta;
 	Vector2D DragVelocity = Vector2D(-1.f, -1.f);
+
+	srand(time(0));
 
 	//Load Allegro and all required modules
 	if (!al_init()) {
@@ -123,6 +126,7 @@ int main() {
 	CurrentWorld->Type[5] = BlockType("Fancy", al_load_bitmap("Textures/Fancy.png"));
 	CurrentWorld->Type[6] = BlockType("Mossy", al_load_bitmap("Textures/Mossy.png"));
 
+	//Draw Button
 	al_set_target_bitmap(static_cast<GUI::Button*>(GameGUI->components[0])->texture);
 
 	al_clear_to_color(al_map_rgba(0, 0, 0, 0));
@@ -131,6 +135,7 @@ int main() {
 	al_draw_text(font, al_map_rgb(255, 255, 255), 50, 10, 0, "TEST");
 
 	al_set_target_bitmap(al_get_backbuffer(display));
+	//End Button Draw
 
 	//Clear screen to black
 	al_clear_to_color(al_map_rgb(0, 0, 0));
@@ -209,31 +214,19 @@ int main() {
 					break;
 				case ALLEGRO_KEY_D:
 				case ALLEGRO_KEY_RIGHT:
-					dubBuff.bdx = true;
-					Background.bdx = true;
-					dubBuff.delta.x = -5.f;
-					Background.delta.x = -2.5f;
+					moveDelta.x = -5.f;
 					break;
 				case ALLEGRO_KEY_A:
 				case ALLEGRO_KEY_LEFT:
-					dubBuff.bdx = true;
-					Background.bdx = true;
-					dubBuff.delta.x = 5.f;
-					Background.delta.x = 2.5f;
+					moveDelta.x = 5.f;
 					break;
 				case ALLEGRO_KEY_S:
 				case ALLEGRO_KEY_DOWN:
-					dubBuff.bdy = true;
-					Background.bdy = true;
-					dubBuff.delta.y = -5.f;
-					Background.delta.y = -2.5f;
+					moveDelta.y = -5.f;
 					break;
 				case ALLEGRO_KEY_W:
 				case ALLEGRO_KEY_UP:
-					dubBuff.bdy = true;
-					Background.bdy = true;
-					dubBuff.delta.y = 5.f;
-					Background.delta.y = 2.5f;
+					moveDelta.x = 5.f;
 					break;
 				case ALLEGRO_KEY_I:
 					bDrawFPS = !bDrawFPS;
@@ -295,6 +288,7 @@ int main() {
 
 		//On mouse click
 		else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
+			GameGUI->onClick(Vector2D(ev.mouse.x, ev.mouse.y), ev.mouse.button);
 			switch (ev.mouse.button){
 			case MOUSE_LB: 
 				bClicked = true;
@@ -340,37 +334,9 @@ int main() {
 		//Tick
 		if (ev.type == ALLEGRO_EVENT_TIMER){
 			TinTin.EvHandle();
+			CurrentWorld->Tick(delta);
 			bRedraw = true;
-			if (dubBuff.bdx) {
-				dubBuff.offset.x += dubBuff.delta.x;
-				Background.offset.x += Background.delta.x;
-				CurrentWorld->offset.x += dubBuff.delta.x;
-				if (CurrentWorld->offset.x > 0){
-					dubBuff.offset.x = 0;
-					Background.offset.x = 0;
-					CurrentWorld->offset.x = 0;
-				}
-				else if (CurrentWorld->offset.x < CurrentWorld->dimensions.x  * -1 + wWidth){
-					dubBuff.offset.x = CurrentWorld->dimensions.x  * -1 + wWidth;
-					Background.offset.x = CurrentWorld->dimensions.x  * -0.5 + wWidth / 2;
-					CurrentWorld->offset.x = CurrentWorld->dimensions.x  * -1 + wWidth;
-				}
-			}
-			if (dubBuff.bdy) {
-				dubBuff.offset.y += dubBuff.delta.y;
-				Background.offset.y += Background.delta.y;
-				CurrentWorld->offset.y += dubBuff.delta.y;
-				if (CurrentWorld->offset.y > 0){
-					dubBuff.offset.y = 0;
-					Background.offset.y = 0;
-					CurrentWorld->offset.y = 0;
-				}
-				else if (CurrentWorld->offset.y < CurrentWorld->dimensions.y * -1 + wHeight){
-					dubBuff.offset.y = CurrentWorld->dimensions.y * -1 + wHeight;
-					Background.offset.y = CurrentWorld->dimensions.y * -0.5f + wHeight / 2;
-					CurrentWorld->offset.y = CurrentWorld->dimensions.y * -1 + wHeight;
-				}
-			}
+			CurrentWorld->moveWorld(moveDelta, dubBuff, Background, wWidth, wHeight);
 			if (bMouseDrag){
 				dubBuff.offset.y -= DragStart.y - state.y;
 				dubBuff.offset.x -= DragStart.x - state.x;
@@ -414,8 +380,6 @@ int main() {
 				}
 			}
 
-
-			CurrentWorld->Tick();
 		}
 		//Redraw the screen 
 		//DO NOT PUT TICK CODE HERE!!!
