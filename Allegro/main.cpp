@@ -34,7 +34,7 @@ int main() {
 	bool bMouseDrag = false;
 	Vector2D DragStart;
 	float DragTime = 0.f;
-	double fps, delta;
+	double delta;
 	Vector2D DragVelocity = Vector2D(-1.f, -1.f);
 
 	srand(time(0));
@@ -324,6 +324,7 @@ int main() {
 		}
 		//On MouseUp
 		else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
+			
 			bClicked = false;
 
 			if (ev.mouse.button == MOUSE_RB){
@@ -364,16 +365,7 @@ int main() {
 			//Draws the framerate of the program on the screen
 			double new_time = al_get_time();
 			delta = new_time - old_time;
-			fps = 1 / (delta);
 			old_time = new_time;
-			ALLEGRO_COLOR tColor;
-
-			if (fps > 30) {
-				tColor = al_map_rgb(0, 255, 0);
-			}
-			else {
-				tColor = al_map_rgb(255, 0, 0);
-			}
 
 			al_set_target_bitmap(dubBuff.image);
 			//Foreach loop that goes through every block
@@ -430,10 +422,7 @@ int main() {
 
 			//Draw FPS
 			if (bDrawFPS){
-				al_draw_textf(font, al_map_rgb(0, 0, 0), al_get_display_width(display) - 74, 17, 0, "%.2f FPS", fps);
-				al_draw_textf(font, al_map_rgb(0, 0, 0), al_get_display_width(display) - 74, 33, 0, "%.2fMS", delta * 1000);
-				al_draw_textf(font, tColor, al_get_display_width(display) - 75, 16, 0, "%.2f FPS", fps);
-				al_draw_textf(font, tColor, al_get_display_width(display) - 75, 32, 0, "%.2fMS", delta * 1000);
+				DrawFPS(display, font, delta); 
 			}
 			al_draw_textf(font, al_map_rgb(0, 0, 0), 10, 10, 0, "x : %d", Background.offset.x);
 			al_draw_textf(font, al_map_rgb(0, 0, 0), 10, 26, 0, "y : %d", Background.offset.y);

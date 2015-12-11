@@ -23,3 +23,5 @@
 #include "Buffer.h"
 #include "IMath.h"
 #include "Character.h"
+
+void DrawFPS(ALLEGRO_DISPLAY* display, ALLEGRO_FONT* font, double detla);
