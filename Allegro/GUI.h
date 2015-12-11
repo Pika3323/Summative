@@ -2,11 +2,13 @@
 
 #include "Engine.h"
 
+struct Buffer;
+
 class GUI{
 public:
 
 	Buffer GUIBuffer;
-
+	
 	class Component{
 	public:
 		bool isC;

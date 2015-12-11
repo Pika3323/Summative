@@ -23,5 +23,3 @@
 #include "Buffer.h"
 #include "IMath.h"
 #include "Character.h"
-#include "GUI.h"
-

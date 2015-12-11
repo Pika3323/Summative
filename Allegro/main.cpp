@@ -18,7 +18,7 @@ int main() {
 	bool done = false;					//Whether the main loop is "done" (aka terminated)
 	bool bOpenGL = true;		//Whether to use OpenGL
 	World* CurrentWorld = new World(Vector2D(4096.f, 2048.f), GRID_SIZE);	//Creates the current world as well as a grid to store all the blocks
-	GUI* GameGUI = new GUI();
+	//GUI* GameGUI = new GUI();
 	Vector2D Clicked;	//The location of a click
 	GridTile clickedTile;	//The clicked tile from the world grid
 	bool bClicked = false;	//Whether a click was registered
@@ -97,9 +97,9 @@ int main() {
 	dubBuff.image = al_create_bitmap(4096, 2048);
 	backgroundImg = al_load_bitmap("Textures/Background_Original.png");
 	Background.image = al_create_bitmap(4096, 2048);
-	GameGUI->GUIBuffer.image = al_create_bitmap(wWidth, wHeight);
+	//GameGUI->GUIBuffer.image = al_create_bitmap(wWidth, wHeight);
 
-	GameGUI->components[0] = new GUI::Button(Vector2D(0, 0), 100, 25, al_create_bitmap(100, 25));
+	//GameGUI->components[0] = new GUI::Button(Vector2D(0, 0), 100, 25, al_create_bitmap(100, 25));
 
 	
 	//Set ALLEGRO_DISPLAY flags
@@ -127,14 +127,14 @@ int main() {
 	CurrentWorld->Type[6] = BlockType("Mossy", al_load_bitmap("Textures/Mossy.png"));
 
 	//Draw Button
-	al_set_target_bitmap(static_cast<GUI::Button*>(GameGUI->components[0])->texture);
+	//al_set_target_bitmap(static_cast<GUI::Button*>(GameGUI->components[0])->texture);
 
-	al_clear_to_color(al_map_rgba(0, 0, 0, 0));
+	//al_clear_to_color(al_map_rgba(0, 0, 0, 0));
 
-	al_draw_filled_rounded_rectangle(0, 0, 100, 25, 6, 6, al_map_rgb(255, 0, 255));
-	al_draw_text(font, al_map_rgb(255, 255, 255), 50, 10, 0, "TEST");
+	//al_draw_filled_rounded_rectangle(0, 0, 100, 25, 6, 6, al_map_rgb(255, 0, 255));
+	//al_draw_text(font, al_map_rgb(255, 255, 255), 50, 10, 0, "TEST");
 
-	al_set_target_bitmap(al_get_backbuffer(display));
+	//al_set_target_bitmap(al_get_backbuffer(display));
 	//End Button Draw
 
 	//Clear screen to black
@@ -226,7 +226,7 @@ int main() {
 					break;
 				case ALLEGRO_KEY_W:
 				case ALLEGRO_KEY_UP:
-					moveDelta.x = 5.f;
+					moveDelta.y = 5.f;
 					break;
 				case ALLEGRO_KEY_I:
 					bDrawFPS = !bDrawFPS;
@@ -273,13 +273,13 @@ int main() {
 			case ALLEGRO_KEY_A:
 			case ALLEGRO_KEY_LEFT:
 			case ALLEGRO_KEY_RIGHT:
-				dubBuff.bdx = false;
+				moveDelta.x = 0.f;
 				break;
 			case ALLEGRO_KEY_S:
 			case ALLEGRO_KEY_W:
 			case ALLEGRO_KEY_UP:
 			case ALLEGRO_KEY_DOWN:
-				dubBuff.bdy = false;
+				moveDelta.y = 0.f;
 				break;
 			default:
 				break;
@@ -288,7 +288,7 @@ int main() {
 
 		//On mouse click
 		else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
-			GameGUI->onClick(Vector2D(ev.mouse.x, ev.mouse.y), ev.mouse.button);
+			//GameGUI->onClick(Vector2D(ev.mouse.x, ev.mouse.y), ev.mouse.button);
 			switch (ev.mouse.button){
 			case MOUSE_LB: 
 				bClicked = true;
@@ -338,34 +338,11 @@ int main() {
 			bRedraw = true;
 			CurrentWorld->moveWorld(moveDelta, dubBuff, Background, wWidth, wHeight);
 			if (bMouseDrag){
-				dubBuff.offset.y -= DragStart.y - state.y;
-				dubBuff.offset.x -= DragStart.x - state.x;
-				Background.offset.y -= (DragStart.y - state.y) / 2;
-				Background.offset.x -= (DragStart.x - state.x) / 2;
-				CurrentWorld->offset -= DragStart - Vector2D(state.x, state.y);
+				Vector2D DragDelta = DragStart - Vector2D(state.x, state.y);
+				CurrentWorld->moveWorld(DragDelta * -1, dubBuff, Background, wWidth, wHeight);
 				DragStart = Vector2D(state.x, state.y);
 				DragTime += delta;
-				if (CurrentWorld->offset.x > 0){
-					dubBuff.offset.x = 0;
-					Background.offset.x = 0;
-					CurrentWorld->offset.x = 0;
-				}
-				else if (CurrentWorld->offset.x < CurrentWorld->dimensions.x  * -1 + wWidth){
-					dubBuff.offset.x = CurrentWorld->dimensions.x  * -1 + wWidth;
-					Background.offset.x = CurrentWorld->dimensions.x  * -0.5 + wWidth / 2;
-					CurrentWorld->offset.x = CurrentWorld->dimensions.x  * -1 + wWidth;
-				}
-				if (CurrentWorld->offset.y > 0){
-					dubBuff.offset.y = 0;
-					Background.offset.y = 0;
-					CurrentWorld->offset.y = 0;
-				}
-				else if (CurrentWorld->offset.y < CurrentWorld->dimensions.y * -1 + wHeight){
-					dubBuff.offset.y = CurrentWorld->dimensions.y * -1 + wHeight;
-					Background.offset.y = CurrentWorld->dimensions.y * -0.5f + wHeight / 2;
-					CurrentWorld->offset.y = CurrentWorld->dimensions.y * -1 + wHeight;
-				}
-
+				
 			}
 			if (bClicked && !bBoxSelect){
 				Clicked = Vector2D(state.x + (dubBuff.offset.x * -1), state.y + (dubBuff.offset.y * -1));
@@ -431,13 +408,13 @@ int main() {
 
 			al_draw_bitmap_region(dubBuff.image, dubBuff.offset.x * -1, dubBuff.offset.y * -1, wWidth, wHeight, 0, 0, 0);
 			
-			al_set_target_bitmap(GameGUI->GUIBuffer.image);
-			GUI::Button* but = static_cast<GUI::Button*>(GameGUI->components[0]);
-			al_draw_bitmap(but->texture, but->position.x, but->position.y, 0);
+			//al_set_target_bitmap(GameGUI->GUIBuffer.image);
+			//GUI::Button* but = static_cast<GUI::Button*>(GameGUI->components[0]);
+			//al_draw_bitmap(but->texture, but->position.x, but->position.y, 0);
 
 			al_set_target_bitmap(al_get_backbuffer(display));
 
-			al_draw_bitmap(GameGUI->GUIBuffer.image, 0, 0, ALLEGRO_VIDEO_BITMAP);
+			//al_draw_bitmap(GameGUI->GUIBuffer.image, 0, 0, ALLEGRO_VIDEO_BITMAP);
 
 			//Draw mouse position
 			if (bDrawMouseLoc){
@@ -458,6 +435,8 @@ int main() {
 				al_draw_textf(font, tColor, al_get_display_width(display) - 75, 16, 0, "%.2f FPS", fps);
 				al_draw_textf(font, tColor, al_get_display_width(display) - 75, 32, 0, "%.2fMS", delta * 1000);
 			}
+			al_draw_textf(font, al_map_rgb(0, 0, 0), 10, 10, 0, "x : %d", Background.offset.x);
+			al_draw_textf(font, al_map_rgb(0, 0, 0), 10, 26, 0, "y : %d", Background.offset.y);
 
 			//Flips the buffer to the screen
 
