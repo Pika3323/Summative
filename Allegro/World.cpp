@@ -39,7 +39,7 @@ bool World::Load(const char file[64]){
 		for (int i = 0; i < 128; i++){
 			for (int j = 0; j < 64; j++)
 			{
-				fseek(fptr, sizeof(Block)*i*j, SEEK_SET);
+				//fseek(fptr, sizeof(Block)*i*j, SEEK_SET);
 				fread(&Blocks[i][j], sizeof(Block), 1, fptr);
 			}
 		}
@@ -57,9 +57,9 @@ bool World::Save(const char file[64]){
 	FILE *fptr = NULL;
 	fptr = fopen(file, "wb+");
 	if (fptr){
-		for (auto& b : Blocks){
-			for (auto& elem : b){
-				fwrite(&elem, sizeof(Block), 1, fptr);
+		for (int i = 0; i < 128; i++){
+			for (int j = 0; j < 64; j++){
+				fwrite(&Blocks[i][j], sizeof(Block), 1, fptr);
 			}
 		}
 		fclose(fptr);
