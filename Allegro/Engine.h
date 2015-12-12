@@ -11,6 +11,7 @@
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_opengl.h>
 
 #include <stdio.h>
@@ -23,5 +24,6 @@
 #include "Buffer.h"
 #include "IMath.h"
 #include "Character.h"
+#include "Button.h"
 
 void DrawFPS(ALLEGRO_DISPLAY* display, ALLEGRO_FONT* font, double detla);

@@ -78,6 +78,7 @@ int main() {
 
 	//FOR DEBUG
 	al_init_font_addon();
+	al_init_ttf_addon();
 	//END LOADING OF ALL MODULES
 
 
@@ -167,6 +168,8 @@ int main() {
 
 	//Draws everything to the screen
 	al_flip_display();
+
+	Button* h = new Button(al_map_rgb(255, 255, 255), al_map_rgb(33, 150, 243), 100, 36, Vector2D(0, 0), 0, "MY BUTTON", display);
 
 	printf("Read saved level? (y/n): ");
 	char cRead;
@@ -428,6 +431,7 @@ int main() {
 			al_draw_textf(font, al_map_rgb(0, 0, 0), 10, 26, 0, "y : %d", Background.offset.y);
 
 			//Flips the buffer to the screen
+			h->draw();
 
 			al_wait_for_vsync();
 
