@@ -1,6 +1,7 @@
 #include "Engine.h"
 #include "World.h"
 #include "Buffer.h"
+#include "UI.h"
 
 #define GRID_SIZE 32
 const int FPS = 60;
@@ -112,6 +113,8 @@ int main() {
 
 	//Create the main display window
 	display = al_create_display(wWidth, wHeight);
+
+	//MainMenu(display, wWidth, wHeight);
 
 	//Register event sources
 	al_register_event_source(event_queue, al_get_display_event_source(display));
@@ -293,7 +296,7 @@ int main() {
 		else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
 			//GameGUI->onClick(Vector2D(ev.mouse.x, ev.mouse.y), ev.mouse.button);
 			switch (ev.mouse.button){
-			case MOUSE_LB: 
+			case MOUSE_LB:
 				bClicked = true;
 
 				if (!bBoxSelect){
@@ -314,20 +317,20 @@ int main() {
 
 					FirstTile = CurrentWorld->getClickedTile(Clicked);
 				}
-				
+
 				break;
-			case MOUSE_RB: 
+			case MOUSE_RB:
 				bMouseDrag = true;
 				DragStart = Vector2D(ev.mouse.x, ev.mouse.y);
 				break;
-			case MOUSE_MB:	
+			case MOUSE_MB:
 				printf("mmb pressed\n");
 				break;
 			}
 		}
 		//On MouseUp
 		else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
-			
+
 			bClicked = false;
 
 			if (ev.mouse.button == MOUSE_RB){
@@ -346,7 +349,7 @@ int main() {
 				CurrentWorld->moveWorld(DragDelta * -1, dubBuff, Background, wWidth, wHeight);
 				DragStart = Vector2D(state.x, state.y);
 				DragTime += delta;
-				
+
 			}
 			if (bClicked && !bBoxSelect){
 				Clicked = Vector2D(state.x + (dubBuff.offset.x * -1), state.y + (dubBuff.offset.y * -1));
@@ -359,6 +362,13 @@ int main() {
 					CurrentWorld->Blocks[clickedTile.x][clickedTile.y].bSpawned = true;
 					clickedTile.occupied = true;
 				}
+			}
+
+			if (InRange(state.x, h->position.x, h->position.x + h->width) && InRange(state.y, h->position.y, h->position.y + h->height)){
+				h->onHoverIn(display);
+			}
+			else {
+				h->onHoverOut(display);
 			}
 
 		}
@@ -380,7 +390,7 @@ int main() {
 					elem.offset = elem.position + CurrentWorld->offset;
 
 					if (elem.bSpawned && InRange(elem.offset.x, -32, wWidth + 32) && InRange(elem.offset.y, -32, wHeight + 32)){
-						al_draw_bitmap(CurrentWorld->Type[static_cast<int>(elem.type)].texture, elem.position.x, elem.position.y, ALLEGRO_VIDEO_BITMAP);
+						elem.Draw(CurrentWorld->Type[static_cast<int>(elem.type)].texture);
 					}
 				}	
 			}
@@ -431,7 +441,7 @@ int main() {
 			al_draw_textf(font, al_map_rgb(0, 0, 0), 10, 26, 0, "y : %d", Background.offset.y);
 
 			//Flips the buffer to the screen
-			h->draw();
+			//h->draw();
 
 			al_wait_for_vsync();
 
