@@ -16,7 +16,7 @@ void Character::DoEv(char CharacEv){
 		spritesheet = al_load_bitmap("Textures/idle_e.png");
 	}
 	else if (animation == 'f') {
-		spritesheet = al_load_bitmap("Textures / fall_e.png");
+		spritesheet = al_load_bitmap("Textures/fall_e.png");
 	}
 }
 void Character::EvHandle(){

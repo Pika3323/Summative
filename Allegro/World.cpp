@@ -37,7 +37,7 @@ bool World::Load(const char file[64]){
 
 	if (fptr){
 		for (int i = 0; i < 128; i++){
-			for (int j = 0; j < 0; j++)
+			for (int j = 0; j < 64; j++)
 			{
 				fseek(fptr, sizeof(Block)*i, SEEK_SET);
 				fread(&Blocks[j][i], sizeof(Block), 1, fptr);

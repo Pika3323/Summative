@@ -13,7 +13,6 @@ int main() {
 	ALLEGRO_BITMAP *backgroundImg;		//a temporary bitmap to hold the background photo
 	Character TinTin = Character(Vector2D(0, 0), 64, 128);	//TinTin character
 	Gravity CurrentGrav = Gravity(Vector2D(0.f, 5.f));		//current world gravity
-	CurrentGrav.Register(TinTin, true);	//registering main character in gravity queue (is affected)
 	Buffer blockBuff = { NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f), false, false };	//play buffer for blocks
 	Buffer dubBuff = { NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f), false, false };	//buffer for grid
 	Buffer Background = { NULL, Vector2D(0.f, 0.f), Vector2D(2.5f, 2.5f), false, false };	//buffer for background
@@ -29,6 +28,8 @@ int main() {
 	EBlockType SelectedBlock = EBlockType::B_Brick;		//the block type the user selects
 	bool bDrawFPS = true, bDrawMouseLoc = false, bDrawClickID = false;
 	CurrentWorld->bPlay = false;	//play functions are auto set off
+	bool TinTinGrav = true;
+	TinTin.gravSlot = CurrentGrav.Register(&TinTin, TinTinGrav);	//registering main character in gravity queue (is affected at beginning)
 
 	bool bBoxSelect = false;
 	GridTile FirstTile;
@@ -304,7 +305,7 @@ int main() {
 		}
 		//On KeyUp
 		else if (ev.type == ALLEGRO_EVENT_KEY_UP) {
-			TinTin.DoEv('i');
+			TinTin.DoEv('f');
 			switch (ev.keyboard.keycode) {
 			case ALLEGRO_KEY_A:
 			case ALLEGRO_KEY_LEFT:
@@ -398,7 +399,13 @@ int main() {
 		}
 		//Tick
 		if (ev.type == ALLEGRO_EVENT_TIMER){
-			CurrentGrav.Tick();
+			if (CurrentWorld->Blocks[(int)(TinTin.position.x / GRID_SIZE)][(int)(TinTin.position.y + TinTin.ActualHeight) / GRID_SIZE].bSpawned) {
+				CurrentGrav.GonOff[TinTin.gravSlot] = false;
+				TinTin.DoEv('i');
+			}
+			if (CurrentWorld->bPlay) {
+				CurrentGrav.Tick();
+			}
 			TinTin.EvHandle();
 			bRedraw = true;
 			if (dubBuff.bdx) {

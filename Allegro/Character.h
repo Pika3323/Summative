@@ -15,7 +15,7 @@ public:
 	int curfram;
 	int delay;
 	int framcount;
-
+	int gravSlot;
 
 	//constructors
 	Character(){}
