@@ -23,4 +23,4 @@
 #include "IMath.h"
 #include "Character.h"
 #include "GUI.h"
-
+#include "Effects.h"

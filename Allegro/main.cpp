@@ -10,8 +10,11 @@ int main() {
 	ALLEGRO_DISPLAY *display;			//The display window
 	ALLEGRO_EVENT_QUEUE *event_queue;	//The "event_queue"
 	ALLEGRO_TIMER *timer;				//The loop timer
-	ALLEGRO_BITMAP *backgroundImg;
+	ALLEGRO_BITMAP *backgroundImg;		//a temporary bitmap to hold the background photo
 	Character TinTin = Character(Vector2D(0, 0), 64, 128);	//TinTin character
+	Gravity CurrentGrav = Gravity(Vector2D(0.f, 5.f));		//current world gravity
+	CurrentGrav.Register(TinTin, true);	//registering main character in gravity queue (is affected)
+	Buffer blockBuff = { NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f), false, false };	//play buffer for blocks
 	Buffer dubBuff = { NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f), false, false };	//buffer for grid
 	Buffer Background = { NULL, Vector2D(0.f, 0.f), Vector2D(2.5f, 2.5f), false, false };	//buffer for background
 	int wWidth = 1280, wHeight = 720;	//Width and height of the window
@@ -25,6 +28,7 @@ int main() {
 	bool bRedraw = false;	//Whether to redraw the screen
 	EBlockType SelectedBlock = EBlockType::B_Brick;		//the block type the user selects
 	bool bDrawFPS = true, bDrawMouseLoc = false, bDrawClickID = false;
+	CurrentWorld->bPlay = false;	//play functions are auto set off
 
 	bool bBoxSelect = false;
 	GridTile FirstTile;
@@ -100,6 +104,7 @@ int main() {
 	dubBuff.image = al_create_bitmap(4096, 2048);
 	backgroundImg = al_load_bitmap("Textures/Background_Original.png");
 	Background.image = al_create_bitmap(4096, 2048);
+	blockBuff.image = al_create_bitmap(4096, 2048);
 	GameGUI->GUIBuffer.image = al_create_bitmap(wWidth, wHeight);
 
 	GameGUI->components[0] = new GUI::Button(Vector2D(0, 0), 100, 25, al_create_bitmap(100, 25));
@@ -218,31 +223,39 @@ int main() {
 					right = true;
 					dubBuff.bdx = true;
 					Background.bdx = true;
+					blockBuff.bdx = true;
 					dubBuff.delta.x = -5.f;
+					blockBuff.delta.x = -5.f;
 					Background.delta.x = -2.5f;
 					break;
 				case ALLEGRO_KEY_A:
 				case ALLEGRO_KEY_LEFT:
 					left = true;
 					dubBuff.bdx = true;
+					blockBuff.bdx = true;
 					Background.bdx = true;
 					dubBuff.delta.x = 5.f;
+					blockBuff.delta.x = -5.f;
 					Background.delta.x = 2.5f;
 					break;
 				case ALLEGRO_KEY_S:
 				case ALLEGRO_KEY_DOWN:
 					down = true;
 					dubBuff.bdy = true;
+					blockBuff.bdy = true;
 					Background.bdy = true;
 					dubBuff.delta.y = -5.f;
+					blockBuff.delta.y = -5.f;
 					Background.delta.y = -2.5f;
 					break;
 				case ALLEGRO_KEY_W:
 				case ALLEGRO_KEY_UP:
 					up = true;
 					dubBuff.bdy = true;
+					blockBuff.bdy = true;
 					Background.bdy = true;
 					dubBuff.delta.y = 5.f;
+					blockBuff.delta.y = 5.f;
 					Background.delta.y = 2.5f;
 					break;
 				case ALLEGRO_KEY_I:
@@ -278,6 +291,13 @@ int main() {
 				case ALLEGRO_KEY_7:
 					SelectedBlock = EBlockType::B_Mossy;
 					break;
+				case ALLEGRO_KEY_SPACE:
+					if (!CurrentWorld->bPlay){
+						CurrentWorld->bPlay = true;
+					}
+					else {
+						CurrentWorld->bPlay = false;
+					}
 				default:
 					break;
 			}
@@ -333,38 +353,39 @@ int main() {
 
 		//On mouse click
 		else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
-			switch (ev.mouse.button){
-			case MOUSE_LB: 
-				bClicked = true;
+				switch (ev.mouse.button){
+				case MOUSE_LB:
+					if (!CurrentWorld->bPlay) {
+						bClicked = true;
+						if (!bBoxSelect) {
+							//Get the mouse's location
+							Clicked = Vector2D(state.x + (dubBuff.offset.x * -1), state.y + (dubBuff.offset.y * -1));
 
-				if (!bBoxSelect){
-					//Get the mouse's location
-					Clicked = Vector2D(state.x + (dubBuff.offset.x * -1), state.y + (dubBuff.offset.y * -1));
+							//Get the tile that was clicked
+							clickedTile = CurrentWorld->getClickedTile(Clicked);
+							//if the tile is not already occupied by a block, create a new block
+							if (!clickedTile.occupied){
+								CurrentWorld->Blocks[clickedTile.x][clickedTile.y] = Block(clickedTile.location, SelectedBlock);
+								CurrentWorld->Blocks[clickedTile.x][clickedTile.y].bSpawned = true;
+								clickedTile.occupied = true;
+							}
+						}
+						else{
+							Clicked = Vector2D(state.x + (dubBuff.offset.x * -1), state.y + (dubBuff.offset.y * -1));
 
-					//Get the tile that was clicked
-					clickedTile = CurrentWorld->getClickedTile(Clicked);
-					//if the tile is not already occupied by a block, create a new block
-					if (!clickedTile.occupied){
-						CurrentWorld->Blocks[clickedTile.x][clickedTile.y + 1] = Block(clickedTile.location, SelectedBlock);
-						CurrentWorld->Blocks[clickedTile.x][clickedTile.y + 1].bSpawned = true;
-						clickedTile.occupied = true;
+							FirstTile = CurrentWorld->getClickedTile(Clicked);
+						}
 					}
+					break;
+				case MOUSE_RB:
+					bMouseDrag = true;
+					DragStart = Vector2D(ev.mouse.x, ev.mouse.y);
+					break;
+				case MOUSE_MB:
+					printf("mmb pressed\n");
+					break;
 				}
-				else{
-					Clicked = Vector2D(state.x + (dubBuff.offset.x * -1), state.y + (dubBuff.offset.y * -1));
-
-					FirstTile = CurrentWorld->getClickedTile(Clicked);
-				}
-				
-				break;
-			case MOUSE_RB: 
-				bMouseDrag = true;
-				DragStart = Vector2D(ev.mouse.x, ev.mouse.y);
-				break;
-			case MOUSE_MB:	
-				printf("mmb pressed\n");
-				break;
-			}
+			
 		}
 		//On MouseUp
 		else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
@@ -377,34 +398,41 @@ int main() {
 		}
 		//Tick
 		if (ev.type == ALLEGRO_EVENT_TIMER){
+			CurrentGrav.Tick();
 			TinTin.EvHandle();
 			bRedraw = true;
 			if (dubBuff.bdx) {
 				dubBuff.offset.x += dubBuff.delta.x;
+				blockBuff.offset.x += blockBuff.delta.x;
 				Background.offset.x += Background.delta.x;
 				CurrentWorld->offset.x += dubBuff.delta.x;
 				if (CurrentWorld->offset.x > 0){
 					dubBuff.offset.x = 0;
+					blockBuff.offset.x = 0;
 					Background.offset.x = 0;
 					CurrentWorld->offset.x = 0;
 				}
 				else if (CurrentWorld->offset.x < CurrentWorld->dimensions.x  * -1 + wWidth){
 					dubBuff.offset.x = CurrentWorld->dimensions.x  * -1 + wWidth;
+					blockBuff.offset.x = CurrentWorld->dimensions.x  * -1 + wWidth;
 					Background.offset.x = CurrentWorld->dimensions.x  * -0.5 + wWidth / 2;
 					CurrentWorld->offset.x = CurrentWorld->dimensions.x  * -1 + wWidth;
 				}
 			}
 			if (dubBuff.bdy) {
 				dubBuff.offset.y += dubBuff.delta.y;
+				blockBuff.offset.y += blockBuff.delta.y;
 				Background.offset.y += Background.delta.y;
 				CurrentWorld->offset.y += dubBuff.delta.y;
 				if (CurrentWorld->offset.y > 0){
 					dubBuff.offset.y = 0;
+					blockBuff.offset.y = 0;
 					Background.offset.y = 0;
 					CurrentWorld->offset.y = 0;
 				}
 				else if (CurrentWorld->offset.y < CurrentWorld->dimensions.y * -1 + wHeight){
 					dubBuff.offset.y = CurrentWorld->dimensions.y * -1 + wHeight;
+					blockBuff.offset.x = CurrentWorld->dimensions.x  * -1 + wWidth;
 					Background.offset.y = CurrentWorld->dimensions.y * -0.5f + wHeight / 2;
 					CurrentWorld->offset.y = CurrentWorld->dimensions.y * -1 + wHeight;
 				}
@@ -412,6 +440,8 @@ int main() {
 			if (bMouseDrag){
 				dubBuff.offset.y -= DragStart.y - state.y;
 				dubBuff.offset.x -= DragStart.x - state.x;
+				blockBuff.offset.y -= DragStart.y - state.y;
+				blockBuff.offset.x -= DragStart.x - state.x;
 				Background.offset.y -= (DragStart.y - state.y) / 2;
 				Background.offset.x -= (DragStart.x - state.x) / 2;
 				CurrentWorld->offset -= DragStart - Vector2D(state.x, state.y);
@@ -419,21 +449,25 @@ int main() {
 				DragTime += delta;
 				if (CurrentWorld->offset.x > 0){
 					dubBuff.offset.x = 0;
+					blockBuff.offset.x = 0;
 					Background.offset.x = 0;
 					CurrentWorld->offset.x = 0;
 				}
 				else if (CurrentWorld->offset.x < CurrentWorld->dimensions.x  * -1 + wWidth){
 					dubBuff.offset.x = CurrentWorld->dimensions.x  * -1 + wWidth;
+					blockBuff.offset.x = CurrentWorld->dimensions.x  * -1 + wWidth;
 					Background.offset.x = CurrentWorld->dimensions.x  * -0.5 + wWidth / 2;
 					CurrentWorld->offset.x = CurrentWorld->dimensions.x  * -1 + wWidth;
 				}
 				if (CurrentWorld->offset.y > 0){
 					dubBuff.offset.y = 0;
+					blockBuff.offset.y = 0;
 					Background.offset.y = 0;
 					CurrentWorld->offset.y = 0;
 				}
 				else if (CurrentWorld->offset.y < CurrentWorld->dimensions.y * -1 + wHeight){
 					dubBuff.offset.y = CurrentWorld->dimensions.y * -1 + wHeight;
+					blockBuff.offset.y = CurrentWorld->dimensions.y  * -1 + wHeight;
 					Background.offset.y = CurrentWorld->dimensions.y * -0.5f + wHeight / 2;
 					CurrentWorld->offset.y = CurrentWorld->dimensions.y * -1 + wHeight;
 				}
@@ -472,7 +506,14 @@ int main() {
 				tColor = al_map_rgb(255, 0, 0);
 			}
 
-			al_set_target_bitmap(dubBuff.image);
+			if (!CurrentWorld->bPlay){
+				al_set_target_bitmap(dubBuff.image);
+			}
+			else{
+				al_set_target_bitmap(blockBuff.image);
+				al_clear_to_color(al_map_rgba(0, 0, 0, 0));
+				TinTin.Animate();
+			}
 			//Foreach loop that goes through every block
 			
 			//al_hold_bitmap_drawing(true);
@@ -495,12 +536,16 @@ int main() {
 			}
 
 			//Draws TinTin character (idle, east)
-			TinTin.Animate();
 			al_set_target_bitmap(al_get_backbuffer(display));
 
 			al_draw_bitmap_region(Background.image, Background.offset.x * -1, Background.offset.y * -1, wWidth, wHeight, 0, 0, 0);
 
-			al_draw_bitmap_region(dubBuff.image, dubBuff.offset.x * -1, dubBuff.offset.y * -1, wWidth, wHeight, 0, 0, 0);
+			if (!CurrentWorld->bPlay) {
+				al_draw_bitmap_region(dubBuff.image, dubBuff.offset.x * -1, dubBuff.offset.y * -1, wWidth, wHeight, 0, 0, 0);
+			}
+			else {
+				al_draw_bitmap_region(blockBuff.image, blockBuff.offset.x *-1, blockBuff.offset.y * -1, wWidth, wHeight, 0, 0, 0);
+			}
 			
 			al_set_target_bitmap(GameGUI->GUIBuffer.image);
 			GUI::Button* but = static_cast<GUI::Button*>(GameGUI->components[0]);
@@ -560,6 +605,7 @@ int main() {
 
 	//Destroy everything after the loop is exited
 	al_destroy_bitmap(dubBuff.image);
+	al_destroy_bitmap(blockBuff.image);
 	al_destroy_bitmap(Background.image);
 	al_destroy_bitmap(backgroundImg);
 	al_destroy_display(display);

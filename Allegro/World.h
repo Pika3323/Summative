@@ -20,6 +20,7 @@ public:
 	Buffer Background;
 	Block Blocks[128][64];
 	BlockType Type[15];
+	bool bPlay;
 
 	World(){}
 	World(Vector2D s, int gs);
