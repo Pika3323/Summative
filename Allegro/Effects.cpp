@@ -13,7 +13,7 @@ int Gravity::Register(Character* registrant, bool onOff){
 }
 
 void Gravity::Tick(){
-	for (int i = 0; i < slot; i++) {		//adding gravity to all character registered
+	for (int i = 0; i < slot; i++) {		//adding gravity to all characters registered
 		if (GonOff[i]){
 			All[i]->position.y = All[i]->position.y + force.y;	//could theoretically implement an x gravity if ever wanted to
 		}

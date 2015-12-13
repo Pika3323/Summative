@@ -298,6 +298,8 @@ int main() {
 					}
 					else {
 						CurrentWorld->bPlay = false;
+						TinTin.position.y = 0;
+						CurrentGrav.GonOff[TinTin.gravSlot] = true;
 					}
 				default:
 					break;
@@ -401,6 +403,7 @@ int main() {
 		if (ev.type == ALLEGRO_EVENT_TIMER){
 			if (CurrentWorld->Blocks[(int)(TinTin.position.x / GRID_SIZE)][(int)(TinTin.position.y + TinTin.ActualHeight) / GRID_SIZE].bSpawned) {
 				CurrentGrav.GonOff[TinTin.gravSlot] = false;
+				al_destroy_bitmap(TinTin.spritesheet);
 				TinTin.DoEv('i');
 			}
 			if (CurrentWorld->bPlay) {
@@ -612,6 +615,7 @@ int main() {
 
 	//Destroy everything after the loop is exited
 	al_destroy_bitmap(dubBuff.image);
+	al_destroy_bitmap(TinTin.spritesheet);
 	al_destroy_bitmap(blockBuff.image);
 	al_destroy_bitmap(Background.image);
 	al_destroy_bitmap(backgroundImg);

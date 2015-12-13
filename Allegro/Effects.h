@@ -4,7 +4,7 @@
 
 class Gravity{
 public:
-	Vector2D force;	//actual force exerted (dx)
+	Vector2D force;	//actual force exerted (dy)
 	int slot;	//for holding slot in array of characters as they are registered
 	class Character* All[100];		//all character to be affected by gravity
 	bool GonOff[100];
