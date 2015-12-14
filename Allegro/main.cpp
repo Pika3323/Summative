@@ -24,7 +24,6 @@ int main(int argc, char* argv[]) {
 	bool done = false;					//Whether the main loop is "done" (aka terminated)
 	bool bOpenGL = true;		//Whether to use OpenGL
 	World* CurrentWorld = new World(Vector2D(4096.f, 2048.f), GRID_SIZE);	//Creates the current world as well as a grid to store all the blocks
-	//GUI* GameGUI = new GUI();
 	Vector2D Clicked;	//The location of a click
 	GridTile clickedTile;	//The clicked tile from the world grid
 	bool bClicked = false;	//Whether a click was registered
@@ -141,11 +140,7 @@ int main(int argc, char* argv[]) {
 	dubBuff.image = al_create_bitmap(4096, 2048);
 	backgroundImg = al_load_bitmap("Textures/Background_Original.png");
 	Background.image = al_create_bitmap(4096, 2048);
-	//GameGUI->GUIBuffer.image = al_create_bitmap(wWidth, wHeight);
 
-	//GameGUI->components[0] = new GUI::Button(Vector2D(0, 0), 100, 25, al_create_bitmap(100, 25));
-
-	
 	//Set ALLEGRO_DISPLAY flags
 	if (bOpenGL){
 		al_set_new_display_flags(ALLEGRO_OPENGL);
@@ -181,17 +176,6 @@ int main(int argc, char* argv[]) {
 	CurrentWorld->Type[5] = BlockType("Fancy", al_load_bitmap("Textures/Fancy.png"));
 	CurrentWorld->Type[6] = BlockType("Mossy", al_load_bitmap("Textures/Mossy.png"));
 
-	//Draw Button
-	//al_set_target_bitmap(static_cast<GUI::Button*>(GameGUI->components[0])->texture);
-
-	//al_clear_to_color(al_map_rgba(0, 0, 0, 0));
-
-	//al_draw_filled_rounded_rectangle(0, 0, 100, 25, 6, 6, al_map_rgb(255, 0, 255));
-	//al_draw_text(font, al_map_rgb(255, 255, 255), 50, 10, 0, "TEST");
-
-	//al_set_target_bitmap(al_get_backbuffer(display));
-	//End Button Draw
-
 	//Clear screen to black
 	al_clear_to_color(al_map_rgb(0, 0, 0));
 	al_flip_display();
@@ -222,8 +206,6 @@ int main(int argc, char* argv[]) {
 
 	//Draws everything to the screen
 	al_flip_display();
-
-	Button* h = new Button(al_map_rgb(255, 255, 255), al_map_rgb(33, 150, 243), 100, 36, Vector2D(0, 0), 0, "MY BUTTON", display);
 
 	printf("Read saved level? (y/n): ");
 	char cRead;
@@ -345,7 +327,6 @@ int main(int argc, char* argv[]) {
 
 		//On mouse click
 		else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
-			//GameGUI->onClick(Vector2D(ev.mouse.x, ev.mouse.y), ev.mouse.button);
 			switch (ev.mouse.button){
 			case MOUSE_LB:
 				bClicked = true;
@@ -415,13 +396,6 @@ int main(int argc, char* argv[]) {
 				}
 			}
 
-			if (InRange(state.x, h->position.x, h->position.x + h->width) && InRange(state.y, h->position.y, h->position.y + h->height)){
-				h->onHoverIn(display);
-			}
-			else {
-				h->onHoverOut(display);
-			}
-
 		}
 		//Redraw the screen 
 		//DO NOT PUT TICK CODE HERE!!!
@@ -463,14 +437,8 @@ int main(int argc, char* argv[]) {
 			al_draw_bitmap_region(Background.image, Background.offset.x * -1, Background.offset.y * -1, wWidth, wHeight, 0, 0, 0);
 
 			al_draw_bitmap_region(dubBuff.image, dubBuff.offset.x * -1, dubBuff.offset.y * -1, wWidth, wHeight, 0, 0, 0);
-			
-			//al_set_target_bitmap(GameGUI->GUIBuffer.image);
-			//GUI::Button* but = static_cast<GUI::Button*>(GameGUI->components[0]);
-			//al_draw_bitmap(but->texture, but->position.x, but->position.y, 0);
 
 			al_set_target_bitmap(al_get_backbuffer(display));
-
-			//al_draw_bitmap(GameGUI->GUIBuffer.image, 0, 0, ALLEGRO_VIDEO_BITMAP);
 
 			//Draw mouse position
 			if (bDrawMouseLoc){
