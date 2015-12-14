@@ -17,6 +17,7 @@ public:
 	int framcount;
 	int gravSlot;
 	bool moving;
+	bool flipped;
 
 	//constructors
 	Character(){}
@@ -25,7 +26,7 @@ public:
 	//event handlers (i idle, r run, s stop, j jump)
 	void DoEv(char CharacterEv);
 	void EvHandle();
-	void Animate();
+	void Animate(bool flipped);
 private:
 };
 

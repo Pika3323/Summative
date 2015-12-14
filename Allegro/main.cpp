@@ -269,12 +269,15 @@ int main(int argc, char* argv[]) {
 					break;
 				case ALLEGRO_KEY_D:
 				case ALLEGRO_KEY_RIGHT:
+					TinTin.flipped = false;
 					moveDelta.x = -5.f;
-					//TinTin.moving = true;
+					TinTin.moving = true;
 					break;
 				case ALLEGRO_KEY_A:
 				case ALLEGRO_KEY_LEFT:
 					moveDelta.x = 5.f;
+					TinTin.moving = true;
+					TinTin.flipped = true;
 					break;
 				case ALLEGRO_KEY_S:
 				case ALLEGRO_KEY_DOWN:
@@ -323,7 +326,7 @@ int main(int argc, char* argv[]) {
 					}
 					else {
 						CurrentWorld->bPlay = false;
-						TinTin.position.y = 0;
+						TinTin.position = Vector2D(0.f, 0.f);
 					}
 					CurrentGrav.GonOff[TinTin.gravSlot] = true;
 				case ALLEGRO_KEY_BACKSPACE:
@@ -340,13 +343,14 @@ int main(int argc, char* argv[]) {
 		}
 		//On KeyUp
 		else if (ev.type == ALLEGRO_EVENT_KEY_UP) {
-			TinTin.DoEv('f');
 			switch (ev.keyboard.keycode) {
 			case ALLEGRO_KEY_D:
 			case ALLEGRO_KEY_RIGHT:
+				TinTin.moving = false;
 			case ALLEGRO_KEY_A:
 			case ALLEGRO_KEY_LEFT:
 				moveDelta.x = 0.f;
+				TinTin.moving = false;
 				break;
 			case ALLEGRO_KEY_S:
 			case ALLEGRO_KEY_DOWN:
@@ -418,13 +422,27 @@ int main(int argc, char* argv[]) {
 				al_destroy_bitmap(TinTin.spritesheet);
 				TinTin.DoEv('i');
 			}
+			else if (!CurrentWorld->Blocks[(int)(TinTin.position.x / GRID_SIZE)][(int)(TinTin.position.y + TinTin.ActualHeight) / GRID_SIZE].bSpawned) {
+				CurrentGrav.GonOff[TinTin.gravSlot] = true;
+			}
 			if (CurrentGrav.GonOff[TinTin.gravSlot]) {
+				al_destroy_bitmap(TinTin.spritesheet);
 				TinTin.DoEv('f');
 			}
-			//if (TinTin.moving) {
-				//TinTin.DoEv('r');
-				//TinTin.position.x += TinTin.delta.x;
-			//}
+			if (TinTin.moving && TinTin.animation == 'f') {
+				if (!TinTin.flipped)
+					TinTin.position.x += TinTin.delta.x;
+				else
+					TinTin.position.x -= TinTin.delta.x;
+			}
+			else if (TinTin.moving) {
+				al_destroy_bitmap(TinTin.spritesheet);
+				TinTin.DoEv('r');
+				if (!TinTin.flipped)
+					TinTin.position.x += TinTin.delta.x;
+				else
+					TinTin.position.x -= TinTin.delta.x;
+			}
 			if (CurrentWorld->bPlay) {
 				CurrentGrav.Tick();
 			}
@@ -473,7 +491,7 @@ int main(int argc, char* argv[]) {
 			else{
 				al_set_target_bitmap(blockBuff.image);
 				al_clear_to_color(al_map_rgba(0, 0, 0, 0));
-				TinTin.Animate();
+				TinTin.Animate(TinTin.flipped);
 			}
 			//Foreach loop that goes through every block
 			
