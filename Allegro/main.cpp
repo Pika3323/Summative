@@ -18,6 +18,7 @@ int main(int argc, char* argv[]) {
 	ALLEGRO_BITMAP *backgroundImg;		//a temporary bitmap to hold the background photo
 	Character TinTin = Character(Vector2D(0, 0), 64, 128);	//TinTin character
 	Gravity CurrentGrav = Gravity(Vector2D(0.f, 5.f));		//current world gravity
+	Buffer notPlayingBuff = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f)); //block buffer for when not playing
 	Buffer blockBuff = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f));	//play buffer for blocks
 	Buffer dubBuff = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f));	//buffer for grid
 	Buffer Background = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(2.5f, 2.5f));	//buffer for background
@@ -35,6 +36,7 @@ int main(int argc, char* argv[]) {
 	CurrentWorld->bPlay = false;	//play functions are auto set off
 	bool TinTinGrav = true;
 	TinTin.gravSlot = CurrentGrav.Register(&TinTin, TinTinGrav);	//registering main character in gravity queue (is affected at beginning)
+	bool DeleteMode = false;
 
 	bool bBoxSelect = false;
 	GridTile FirstTile;
@@ -149,6 +151,7 @@ int main(int argc, char* argv[]) {
 	timer = al_create_timer(1.0f / FPS);	//Run the program at 60FPS
 	dubBuff.image = al_create_bitmap(4096, 2048);
 	backgroundImg = al_load_bitmap("Textures/Background_Original.png");
+	notPlayingBuff.image = al_create_bitmap(4096, 2048);
 	Background.image = al_create_bitmap(4096, 2048);
 	blockBuff.image = al_create_bitmap(4096, 2048);
 
@@ -265,11 +268,15 @@ int main(int argc, char* argv[]) {
 					break;
 				case ALLEGRO_KEY_D:
 				case ALLEGRO_KEY_RIGHT:
+					TinTin.flipped = false;
 					moveDelta.x = -5.f;
+					TinTin.moving = true;
 					break;
 				case ALLEGRO_KEY_A:
 				case ALLEGRO_KEY_LEFT:
 					moveDelta.x = 5.f;
+					TinTin.moving = true;
+					TinTin.flipped = true;
 					break;
 				case ALLEGRO_KEY_S:
 				case ALLEGRO_KEY_DOWN:
@@ -318,22 +325,31 @@ int main(int argc, char* argv[]) {
 					}
 					else {
 						CurrentWorld->bPlay = false;
-						TinTin.position.y = 0;
-						CurrentGrav.GonOff[TinTin.gravSlot] = true;
+						TinTin.position = Vector2D(0.f, 0.f);
 					}
+					CurrentGrav.GonOff[TinTin.gravSlot] = true;
+				case ALLEGRO_KEY_BACKSPACE:
+					if (!DeleteMode) {
+						DeleteMode = true;
+					}
+					else {
+						DeleteMode = false;
+					}
+
 				default:
 					break;
 			}
 		}
 		//On KeyUp
 		else if (ev.type == ALLEGRO_EVENT_KEY_UP) {
-			TinTin.DoEv('f');
 			switch (ev.keyboard.keycode) {
 			case ALLEGRO_KEY_D:
 			case ALLEGRO_KEY_RIGHT:
+				TinTin.moving = false;
 			case ALLEGRO_KEY_A:
 			case ALLEGRO_KEY_LEFT:
 				moveDelta.x = 0.f;
+				TinTin.moving = false;
 				break;
 			case ALLEGRO_KEY_S:
 			case ALLEGRO_KEY_DOWN:
@@ -355,15 +371,22 @@ int main(int argc, char* argv[]) {
 					if (!bBoxSelect) {
 						//Get the mouse's location
 						Clicked = Vector2D(state.x + (dubBuff.offset.x * -1), state.y + (dubBuff.offset.y * -1));
-
 						//Get the tile that was clicked
 						clickedTile = CurrentWorld->getClickedTile(Clicked);
-						//if the tile is not already occupied by a block, create a new block
-						if (!clickedTile.occupied){
-							CurrentWorld->Blocks[clickedTile.x][clickedTile.y] = Block(clickedTile.location, SelectedBlock);
-							CurrentWorld->Blocks[clickedTile.x][clickedTile.y].bSpawned = true;
-							clickedTile.occupied = true;
+
+						if (!DeleteMode) {
+							//if the tile is not already occupied by a block, create a new block
+							if (!clickedTile.occupied){
+								CurrentWorld->Blocks[clickedTile.x][clickedTile.y] = Block(clickedTile.location, SelectedBlock);
+								CurrentWorld->Blocks[clickedTile.x][clickedTile.y].bSpawned = true;
+								clickedTile.occupied = true;
+							}
 						}
+						else if (DeleteMode) {
+							CurrentWorld->Blocks[clickedTile.x][clickedTile.y].bSpawned = false;
+							clickedTile.occupied = false;
+						}
+
 					}
 					else{
 						Clicked = Vector2D(state.x + (dubBuff.offset.x * -1), state.y + (dubBuff.offset.y * -1));
@@ -398,16 +421,37 @@ int main(int argc, char* argv[]) {
 				al_destroy_bitmap(TinTin.spritesheet);
 				TinTin.DoEv('i');
 			}
+			else if (!CurrentWorld->Blocks[(int)(TinTin.position.x / GRID_SIZE)][(int)(TinTin.position.y + TinTin.ActualHeight) / GRID_SIZE].bSpawned) {
+				CurrentGrav.GonOff[TinTin.gravSlot] = true;
+			}
+			if (CurrentGrav.GonOff[TinTin.gravSlot]) {
+				al_destroy_bitmap(TinTin.spritesheet);
+				TinTin.DoEv('f');
+			}
+			if (TinTin.moving && TinTin.animation == 'f') {
+				if (!TinTin.flipped)
+					TinTin.position.x += TinTin.delta.x;
+				else
+					TinTin.position.x -= TinTin.delta.x;
+			}
+			else if (TinTin.moving) {
+				al_destroy_bitmap(TinTin.spritesheet);
+				TinTin.DoEv('r');
+				if (!TinTin.flipped)
+					TinTin.position.x += TinTin.delta.x;
+				else
+					TinTin.position.x -= TinTin.delta.x;
+			}
 			if (CurrentWorld->bPlay) {
 				CurrentGrav.Tick();
 			}
 			TinTin.EvHandle();
 			CurrentWorld->Tick(delta);
 			bRedraw = true;
-			CurrentWorld->moveWorld(moveDelta, dubBuff, Background, blockBuff, wWidth, wHeight);
+			CurrentWorld->moveWorld(moveDelta, dubBuff, Background, blockBuff, notPlayingBuff, wWidth, wHeight);
 			if (bMouseDrag){
 				Vector2D DragDelta = DragStart - Vector2D(state.x, state.y);
-				CurrentWorld->moveWorld(DragDelta * -1, dubBuff, Background, blockBuff, wWidth, wHeight);
+				CurrentWorld->moveWorld(DragDelta * -1, dubBuff, Background, blockBuff, notPlayingBuff, wWidth, wHeight);
 				DragStart = Vector2D(state.x, state.y);
 				DragTime += delta;
 			}
@@ -416,11 +460,17 @@ int main(int argc, char* argv[]) {
 
 				//Get the tile that was clicked
 				clickedTile = CurrentWorld->getClickedTile(Clicked);
-				//if the tile is not already occupied by a block, create a new block
-				if (!clickedTile.occupied){
-					CurrentWorld->Blocks[clickedTile.x][clickedTile.y] = Block(clickedTile.location, SelectedBlock);
-					CurrentWorld->Blocks[clickedTile.x][clickedTile.y].bSpawned = true;
-					clickedTile.occupied = true;
+				if (!DeleteMode) {
+					//if the tile is not already occupied by a block, create a new block
+					if (!clickedTile.occupied){
+						CurrentWorld->Blocks[clickedTile.x][clickedTile.y] = Block(clickedTile.location, SelectedBlock);
+						CurrentWorld->Blocks[clickedTile.x][clickedTile.y].bSpawned = true;
+						clickedTile.occupied = true;
+					}
+				}
+				else if (DeleteMode) {
+					CurrentWorld->Blocks[clickedTile.x][clickedTile.y].bSpawned = false;
+					clickedTile.occupied = false;
 				}
 			}
 
@@ -434,12 +484,13 @@ int main(int argc, char* argv[]) {
 			old_time = new_time;
 
 			if (!CurrentWorld->bPlay){
-				al_set_target_bitmap(dubBuff.image);
+				al_set_target_bitmap(notPlayingBuff.image);
+				al_clear_to_color(al_map_rgba(0, 0, 0, 0));
 			}
 			else{
 				al_set_target_bitmap(blockBuff.image);
 				al_clear_to_color(al_map_rgba(0, 0, 0, 0));
-				TinTin.Animate();
+				TinTin.Animate(TinTin.flipped);
 			}
 			//Foreach loop that goes through every block
 			
@@ -470,6 +521,7 @@ int main(int argc, char* argv[]) {
 
 			if (!CurrentWorld->bPlay) {
 				al_draw_bitmap_region(dubBuff.image, dubBuff.offset.x * -1, dubBuff.offset.y * -1, wWidth, wHeight, 0, 0, 0);
+				al_draw_bitmap_region(notPlayingBuff.image, notPlayingBuff.offset.x * -1, notPlayingBuff.offset.y * -1, wWidth, wHeight, 0, 0, 0);
 			}
 			else {
 				al_draw_bitmap_region(blockBuff.image, blockBuff.offset.x *-1, blockBuff.offset.y * -1, wWidth, wHeight, 0, 0, 0);
