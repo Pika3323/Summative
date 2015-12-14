@@ -18,6 +18,9 @@ void Character::DoEv(char CharacEv){
 	else if (animation == 'f') {
 		spritesheet = al_load_bitmap("Textures/fall_e.png");
 	}
+	else if (animation == 'r') {
+		spritesheet = al_load_bitmap("Textures/running_e.png");
+	}
 }
 void Character::EvHandle(){
 	//idle handles
@@ -39,6 +42,15 @@ void Character::EvHandle(){
 			framcount = 0;
 		}
 	}
+	if (animation == 'r') {
+		maxfram = 11;
+		if (++framcount >= delay) {
+			if (++curfram >= maxfram) {
+				curfram = 0;
+			}
+			framcount = 0;
+		}
+	}
 	//add more handles as they are made
 }
 
@@ -47,6 +59,9 @@ void Character::Animate(){
 		al_draw_bitmap_region(spritesheet, (curfram * ActualWidth), 0, ActualWidth, ActualHeight, position.x, position.y, 0);
 	}
 	if (animation == 'f') {
+		al_draw_bitmap_region(spritesheet, (curfram * ActualWidth), 0, ActualWidth, ActualHeight, position.x, position.y, 0);
+	}
+	if (animation == 'r') {
 		al_draw_bitmap_region(spritesheet, (curfram * ActualWidth), 0, ActualWidth, ActualHeight, position.x, position.y, 0);
 	}
 	//add more here

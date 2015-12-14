@@ -16,12 +16,13 @@ public:
 	int delay;
 	int framcount;
 	int gravSlot;
+	bool moving;
 
 	//constructors
 	Character(){}
 	Character(Vector2D xy, int width, int height);
 
-	//event handlers (i idle, r run, s stop, j jump)
+	//event handlers (i idle, r run, f fall)
 	void DoEv(char CharacterEv);
 	void EvHandle();
 	void Animate();

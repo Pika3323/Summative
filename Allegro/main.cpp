@@ -221,6 +221,7 @@ int main() {
 					break;
 				case ALLEGRO_KEY_D:
 				case ALLEGRO_KEY_RIGHT:
+					TinTin.moving = true;
 					right = true;
 					dubBuff.bdx = true;
 					Background.bdx = true;
@@ -307,7 +308,8 @@ int main() {
 		}
 		//On KeyUp
 		else if (ev.type == ALLEGRO_EVENT_KEY_UP) {
-			TinTin.DoEv('f');
+			al_destroy_bitmap(TinTin.spritesheet);
+			TinTin.DoEv('i');
 			switch (ev.keyboard.keycode) {
 			case ALLEGRO_KEY_A:
 			case ALLEGRO_KEY_LEFT:
@@ -328,6 +330,7 @@ int main() {
 				else {
 					dubBuff.bdx = false;
 				}
+				TinTin.moving = false;
 				break;
 			case ALLEGRO_KEY_S:
 			case ALLEGRO_KEY_DOWN:
@@ -401,10 +404,18 @@ int main() {
 		}
 		//Tick
 		if (ev.type == ALLEGRO_EVENT_TIMER){
-			if (CurrentWorld->Blocks[(int)(TinTin.position.x / GRID_SIZE)][(int)(TinTin.position.y + TinTin.ActualHeight) / GRID_SIZE].bSpawned) {
+			if (TinTin.moving) {
+				al_destroy_bitmap(TinTin.spritesheet);
+				TinTin.DoEv('r');
+				TinTin.position.x += 5;
+			}
+			else if (CurrentWorld->Blocks[(int)(TinTin.position.x / GRID_SIZE)][(int)(TinTin.position.y + TinTin.ActualHeight) / GRID_SIZE].bSpawned) {
 				CurrentGrav.GonOff[TinTin.gravSlot] = false;
 				al_destroy_bitmap(TinTin.spritesheet);
 				TinTin.DoEv('i');
+			}
+			else if (CurrentGrav.GonOff[TinTin.gravSlot]){
+				TinTin.DoEv('f');
 			}
 			if (CurrentWorld->bPlay) {
 				CurrentGrav.Tick();
