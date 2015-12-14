@@ -31,5 +31,9 @@
 
 void DrawFPS(ALLEGRO_DISPLAY* display, ALLEGRO_FONT* font, double detla);
 
+class Engine{
+
+};
+
 
 

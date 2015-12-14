@@ -35,7 +35,6 @@ public:
 	bool Load(const char file[64]);
 	bool Save(const char file[64]);
 	void moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, Buffer &block, int w, int h);
-
 private:
 };
 

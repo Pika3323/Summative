@@ -3,7 +3,6 @@
 #include "Buffer.h"
 #include "UI.h"
 
-
 #define GRID_SIZE 32
 const int FPS = 60;
 
@@ -36,7 +35,6 @@ int main(int argc, char* argv[]) {
 	CurrentWorld->bPlay = false;	//play functions are auto set off
 	bool TinTinGrav = true;
 	TinTin.gravSlot = CurrentGrav.Register(&TinTin, TinTinGrav);	//registering main character in gravity queue (is affected at beginning)
-
 
 	bool bBoxSelect = false;
 	GridTile FirstTile;
@@ -495,10 +493,7 @@ int main(int argc, char* argv[]) {
 			al_draw_textf(font, al_map_rgb(0, 0, 0), 10, 26, 0, "y : %d", Background.offset.y);
 
 			//Flips the buffer to the screen
-			//h->draw();
-
 			al_wait_for_vsync();
-
 			al_flip_display();
 
 			//Clears the screen so that no strange overwriting occurs

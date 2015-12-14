@@ -77,11 +77,6 @@ void World::moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, Buffer &block, i
 	bg.offset += delta / 2;
 	block.offset += delta;
 	offset += delta;
-
-	//grid.offset.x += delta.x;
-	//bg.offset.x += delta.x / 2;
-
-	offset.x += delta.x;
 	if (offset.x > 0) {
 		grid.offset.x = 0;
 		bg.offset.x = 0;
@@ -94,11 +89,6 @@ void World::moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, Buffer &block, i
 		block.offset.x = dimensions.x * -1 + w;
 		offset.x = dimensions.x  * -1 + w;
 	}
-	
-	//Move level on y-axis
-	//grid.offset.y += delta.y;
-	//bg.offset.y += delta.y / 2;
-	//offset.y += delta.y;
 	if (offset.y > 0){
 		grid.offset.y = 0;
 		bg.offset.y = 0;
