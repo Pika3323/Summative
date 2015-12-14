@@ -3,7 +3,6 @@
 #include "Engine.h"
 
 struct Buffer {
-public:
 	//main components of struct
 	ALLEGRO_BITMAP *image;
 	Vector2D offset;
@@ -11,7 +10,7 @@ public:
 	bool bdx;
 	bool bdy;
 
+	Buffer(){}
+	Buffer(ALLEGRO_BITMAP* i, Vector2D ofs, Vector2D d);
 
-
-protected:
 };

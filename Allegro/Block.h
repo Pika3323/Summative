@@ -32,6 +32,8 @@ public:
 
 	Block(){ bSpawned = false; }
 	Block(Vector2D pos, EBlockType t);
+
+	void Draw(ALLEGRO_BITMAP* typeTex);
 private:
 	
 };

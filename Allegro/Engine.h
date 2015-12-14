@@ -11,10 +11,12 @@
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_opengl.h>
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <ctype.h>
 #include <math.h>
 #include "Vector2D.h"
@@ -22,5 +24,8 @@
 #include "Buffer.h"
 #include "IMath.h"
 #include "Character.h"
-#include "GUI.h"
+#include "Button.h"
+#include "Buffer.h"
+#include "curl/curl.h"
 
+void DrawFPS(ALLEGRO_DISPLAY* display, ALLEGRO_FONT* font, double detla);
