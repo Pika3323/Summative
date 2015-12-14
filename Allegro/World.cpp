@@ -71,42 +71,39 @@ bool World::Save(const char file[64]){
 	}
 }
 
-void World::moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, Buffer &block, int w, int h){
-	//Move level on x-axis
+void World::moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, Buffer &block, Buffer &notplay, int w, int h){
+	//Move level
 	grid.offset += delta;
 	bg.offset += delta / 2;
 	block.offset += delta;
+	notplay.offset += delta;
 	offset += delta;
 
-	//grid.offset.x += delta.x;
-	//bg.offset.x += delta.x / 2;
-
-	offset.x += delta.x;
 	if (offset.x > 0) {
 		grid.offset.x = 0;
 		bg.offset.x = 0;
 		block.offset.x = 0;
+		notplay.offset.x = 0;
 		offset.x = 0;
 	}
 	else if (offset.x < dimensions.x  * -1 + w){
 		grid.offset.x = dimensions.x  * -1 + w;
+		notplay.offset.x = dimensions.x  * -1 + w;
 		bg.offset.x = dimensions.x  * -0.5 + w / 2;
 		block.offset.x = dimensions.x * -1 + w;
 		offset.x = dimensions.x  * -1 + w;
 	}
 	
-	//Move level on y-axis
-	//grid.offset.y += delta.y;
-	//bg.offset.y += delta.y / 2;
-	//offset.y += delta.y;
 	if (offset.y > 0){
 		grid.offset.y = 0;
+		notplay.offset.y = 0;
 		bg.offset.y = 0;
 		block.offset.y = 0;
 		offset.y = 0;
 	}
 	else if (offset.y < dimensions.y * -1 + h){
 		grid.offset.y = dimensions.y * -1 + h;
+		notplay.offset.y = dimensions.y * -1 + h;
 		bg.offset.y = (dimensions.y * -0.5f) + (h / 2);
 		block.offset.y = dimensions.y * -1 + h;
 		offset.y = dimensions.y * -1 + h;

@@ -3,6 +3,7 @@
 Character::Character(Vector2D xy, int width, int height){
 	position = xy;
 	delay = 5;
+	delta = Vector2D(5.f, 5.f);
 	curfram = 0;
 	framcount = 0;
 	ActualWidth = width;
@@ -18,6 +19,7 @@ void Character::DoEv(char CharacEv){
 	else if (animation == 'f') {
 		spritesheet = al_load_bitmap("Textures/fall_e.png");
 	}
+	//else if ()
 }
 void Character::EvHandle(){
 	//idle handles

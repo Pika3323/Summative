@@ -16,6 +16,7 @@ public:
 	int delay;
 	int framcount;
 	int gravSlot;
+	bool moving;
 
 	//constructors
 	Character(){}
