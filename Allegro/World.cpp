@@ -85,11 +85,13 @@ void World::moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, Buffer &block, i
 	if (offset.x > 0) {
 		grid.offset.x = 0;
 		bg.offset.x = 0;
+		block.offset.x = 0;
 		offset.x = 0;
 	}
 	else if (offset.x < dimensions.x  * -1 + w){
 		grid.offset.x = dimensions.x  * -1 + w;
 		bg.offset.x = dimensions.x  * -0.5 + w / 2;
+		block.offset.x = dimensions.x * -1 + w;
 		offset.x = dimensions.x  * -1 + w;
 	}
 	
@@ -100,11 +102,13 @@ void World::moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, Buffer &block, i
 	if (offset.y > 0){
 		grid.offset.y = 0;
 		bg.offset.y = 0;
+		block.offset.y = 0;
 		offset.y = 0;
 	}
 	else if (offset.y < dimensions.y * -1 + h){
 		grid.offset.y = dimensions.y * -1 + h;
 		bg.offset.y = (dimensions.y * -0.5f) + (h / 2);
+		block.offset.y = dimensions.y * -1 + h;
 		offset.y = dimensions.y * -1 + h;
 	}
 	
