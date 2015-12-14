@@ -18,7 +18,6 @@
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="IMath.h" />
-    <ClInclude Include="Input.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="Vector2D.h" />
     <ClInclude Include="World.h" />
@@ -31,7 +30,6 @@
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Effects.cpp" />
     <ClCompile Include="IMath.cpp" />
-    <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="Vector2D.cpp" />

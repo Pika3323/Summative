@@ -103,6 +103,3 @@ void World::moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, Buffer &block, i
 	}
 	
 }
-void World::printAnother(){
-	printf("Another\n");
-}
