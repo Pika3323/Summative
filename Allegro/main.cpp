@@ -3,6 +3,7 @@
 #include "Buffer.h"
 #include "UI.h"
 
+void printSomething();
 
 #define GRID_SIZE 32
 const int FPS = 60;
@@ -37,9 +38,10 @@ int main(int argc, char* argv[]) {
 	bool TinTinGrav = true;
 	TinTin.gravSlot = CurrentGrav.Register(&TinTin, TinTinGrav);	//registering main character in gravity queue (is affected at beginning)
 
-
 	bool bBoxSelect = false;
 	GridTile FirstTile;
+
+	Input* InputHandler = new Input();
 
 	//keyboard bool catches
 	bool up = false;
@@ -182,6 +184,9 @@ int main(int argc, char* argv[]) {
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
 	al_register_event_source(event_queue, al_get_mouse_event_source());
 
+	InputHandler->bindInputKey(ALLEGRO_KEY_B, &printSomething);
+	InputHandler->bindInputKey<World>(ALLEGRO_KEY_Y, CurrentWorld, &World::printAnother);
+
 	CurrentWorld->Type[0] = BlockType("Rainbow", al_load_bitmap("Textures/Rainbow.png"));
 	CurrentWorld->Type[1] = BlockType("Brick", al_load_bitmap("Textures/Brick.png"));
 	CurrentWorld->Type[2] = BlockType("Grass", al_load_bitmap("Textures/Grass.png"));
@@ -260,6 +265,7 @@ int main(int argc, char* argv[]) {
 		}
 		//On KeyDown event
 		else if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
+			InputHandler->callInput(ev.keyboard.keycode);
 			switch (ev.keyboard.keycode) {
 				//Close window if escape key is pressed
 				case ALLEGRO_KEY_ESCAPE:
@@ -495,10 +501,7 @@ int main(int argc, char* argv[]) {
 			al_draw_textf(font, al_map_rgb(0, 0, 0), 10, 26, 0, "y : %d", Background.offset.y);
 
 			//Flips the buffer to the screen
-			//h->draw();
-
 			al_wait_for_vsync();
-
 			al_flip_display();
 
 			//Clears the screen so that no strange overwriting occurs
@@ -539,6 +542,11 @@ int main(int argc, char* argv[]) {
 	al_shutdown_primitives_addon();
 
 	delete CurrentWorld;
+	delete InputHandler;
 
 	return 0;
+}
+
+void printSomething(){
+	printf("Something\n");
 }

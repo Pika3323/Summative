@@ -27,6 +27,7 @@
 #include "Button.h"
 #include "Buffer.h"
 #include "Effects.h"
+#include "Input.h"
 #include "curl/curl.h"
 
 void DrawFPS(ALLEGRO_DISPLAY* display, ALLEGRO_FONT* font, double detla);
