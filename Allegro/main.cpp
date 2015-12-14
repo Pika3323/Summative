@@ -16,10 +16,12 @@ int main(int argc, char* argv[]) {
 	ALLEGRO_DISPLAY_MODE disp_data;
 	ALLEGRO_EVENT_QUEUE *event_queue;	//The "event_queue"
 	ALLEGRO_TIMER *timer;				//The loop timer
-	ALLEGRO_BITMAP *backgroundImg;
-	Character TinTin = Character(Vector2D(0, 0), 32, 64);	//TinTin character
-	Buffer dubBuff = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(0.f, 0.f));	//buffer for grid
-	Buffer Background = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(0.f, 0.f));	//buffer for background
+	ALLEGRO_BITMAP *backgroundImg;		//a temporary bitmap to hold the background photo
+	Character TinTin = Character(Vector2D(0, 0), 64, 128);	//TinTin character
+	Gravity CurrentGrav = Gravity(Vector2D(0.f, 5.f));		//current world gravity
+	Buffer blockBuff = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f));	//play buffer for blocks
+	Buffer dubBuff = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f));	//buffer for grid
+	Buffer Background = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(2.5f, 2.5f));	//buffer for background
 	int wWidth = 1280, wHeight = 720;	//Width and height of the window
 	bool done = false;					//Whether the main loop is "done" (aka terminated)
 	bool bOpenGL = true;		//Whether to use OpenGL
@@ -31,9 +33,19 @@ int main(int argc, char* argv[]) {
 	EBlockType SelectedBlock = EBlockType::B_Brick;		//the block type the user selects
 	bool bDrawFPS = true, bDrawMouseLoc = false, bDrawClickID = false;
 	Vector2D moveDelta = Vector2D(0.f, 0.f);
+	CurrentWorld->bPlay = false;	//play functions are auto set off
+	bool TinTinGrav = true;
+	TinTin.gravSlot = CurrentGrav.Register(&TinTin, TinTinGrav);	//registering main character in gravity queue (is affected at beginning)
+
 
 	bool bBoxSelect = false;
 	GridTile FirstTile;
+
+	//keyboard bool catches
+	bool up = false;
+	bool down = false;
+	bool right = false;
+	bool left = false;
 
 	//Mouse Drag
 	bool bMouseDrag = false;
@@ -140,6 +152,8 @@ int main(int argc, char* argv[]) {
 	dubBuff.image = al_create_bitmap(4096, 2048);
 	backgroundImg = al_load_bitmap("Textures/Background_Original.png");
 	Background.image = al_create_bitmap(4096, 2048);
+	blockBuff.image = al_create_bitmap(4096, 2048);
+
 
 	//Set ALLEGRO_DISPLAY flags
 	if (bOpenGL){
@@ -300,24 +314,33 @@ int main(int argc, char* argv[]) {
 				case ALLEGRO_KEY_7:
 					SelectedBlock = EBlockType::B_Mossy;
 					break;
+				case ALLEGRO_KEY_SPACE:
+					if (!CurrentWorld->bPlay){
+						CurrentWorld->bPlay = true;
+					}
+					else {
+						CurrentWorld->bPlay = false;
+						TinTin.position.y = 0;
+						CurrentGrav.GonOff[TinTin.gravSlot] = true;
+					}
 				default:
 					break;
 			}
 		}
 		//On KeyUp
 		else if (ev.type == ALLEGRO_EVENT_KEY_UP) {
-			TinTin.DoEv('i');
+			TinTin.DoEv('f');
 			switch (ev.keyboard.keycode) {
 			case ALLEGRO_KEY_D:
+			case ALLEGRO_KEY_RIGHT:
 			case ALLEGRO_KEY_A:
 			case ALLEGRO_KEY_LEFT:
-			case ALLEGRO_KEY_RIGHT:
 				moveDelta.x = 0.f;
 				break;
 			case ALLEGRO_KEY_S:
+			case ALLEGRO_KEY_DOWN:
 			case ALLEGRO_KEY_W:
 			case ALLEGRO_KEY_UP:
-			case ALLEGRO_KEY_DOWN:
 				moveDelta.y = 0.f;
 				break;
 			default:
@@ -329,27 +352,27 @@ int main(int argc, char* argv[]) {
 		else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
 			switch (ev.mouse.button){
 			case MOUSE_LB:
-				bClicked = true;
+				if (!CurrentWorld->bPlay) {
+					bClicked = true;
+					if (!bBoxSelect) {
+						//Get the mouse's location
+						Clicked = Vector2D(state.x + (dubBuff.offset.x * -1), state.y + (dubBuff.offset.y * -1));
 
-				if (!bBoxSelect){
-					//Get the mouse's location
-					Clicked = Vector2D(state.x + (dubBuff.offset.x * -1), state.y + (dubBuff.offset.y * -1));
+						//Get the tile that was clicked
+						clickedTile = CurrentWorld->getClickedTile(Clicked);
+						//if the tile is not already occupied by a block, create a new block
+						if (!clickedTile.occupied){
+							CurrentWorld->Blocks[clickedTile.x][clickedTile.y] = Block(clickedTile.location, SelectedBlock);
+							CurrentWorld->Blocks[clickedTile.x][clickedTile.y].bSpawned = true;
+							clickedTile.occupied = true;
+						}
+					}
+					else{
+						Clicked = Vector2D(state.x + (dubBuff.offset.x * -1), state.y + (dubBuff.offset.y * -1));
 
-					//Get the tile that was clicked
-					clickedTile = CurrentWorld->getClickedTile(Clicked);
-					//if the tile is not already occupied by a block, create a new block
-					if (!clickedTile.occupied){
-						CurrentWorld->Blocks[clickedTile.x][clickedTile.y + 1] = Block(clickedTile.location, SelectedBlock);
-						CurrentWorld->Blocks[clickedTile.x][clickedTile.y + 1].bSpawned = true;
-						clickedTile.occupied = true;
+						FirstTile = CurrentWorld->getClickedTile(Clicked);
 					}
 				}
-				else{
-					Clicked = Vector2D(state.x + (dubBuff.offset.x * -1), state.y + (dubBuff.offset.y * -1));
-
-					FirstTile = CurrentWorld->getClickedTile(Clicked);
-				}
-
 				break;
 			case MOUSE_RB:
 				bMouseDrag = true;
@@ -372,16 +395,23 @@ int main(int argc, char* argv[]) {
 		}
 		//Tick
 		if (ev.type == ALLEGRO_EVENT_TIMER){
+			if (CurrentWorld->Blocks[(int)(TinTin.position.x / GRID_SIZE)][(int)(TinTin.position.y + TinTin.ActualHeight) / GRID_SIZE].bSpawned) {
+				CurrentGrav.GonOff[TinTin.gravSlot] = false;
+				al_destroy_bitmap(TinTin.spritesheet);
+				TinTin.DoEv('i');
+			}
+			if (CurrentWorld->bPlay) {
+				CurrentGrav.Tick();
+			}
 			TinTin.EvHandle();
 			CurrentWorld->Tick(delta);
 			bRedraw = true;
-			CurrentWorld->moveWorld(moveDelta, dubBuff, Background, wWidth, wHeight);
+			CurrentWorld->moveWorld(moveDelta, dubBuff, Background, blockBuff, wWidth, wHeight);
 			if (bMouseDrag){
 				Vector2D DragDelta = DragStart - Vector2D(state.x, state.y);
-				CurrentWorld->moveWorld(DragDelta * -1, dubBuff, Background, wWidth, wHeight);
+				CurrentWorld->moveWorld(DragDelta * -1, dubBuff, Background, blockBuff, wWidth, wHeight);
 				DragStart = Vector2D(state.x, state.y);
 				DragTime += delta;
-
 			}
 			if (bClicked && !bBoxSelect){
 				Clicked = Vector2D(state.x + (dubBuff.offset.x * -1), state.y + (dubBuff.offset.y * -1));
@@ -405,7 +435,14 @@ int main(int argc, char* argv[]) {
 			delta = new_time - old_time;
 			old_time = new_time;
 
-			al_set_target_bitmap(dubBuff.image);
+			if (!CurrentWorld->bPlay){
+				al_set_target_bitmap(dubBuff.image);
+			}
+			else{
+				al_set_target_bitmap(blockBuff.image);
+				al_clear_to_color(al_map_rgba(0, 0, 0, 0));
+				TinTin.Animate();
+			}
 			//Foreach loop that goes through every block
 			
 			//al_hold_bitmap_drawing(true);
@@ -428,15 +465,17 @@ int main(int argc, char* argv[]) {
 			}
 
 			//Draws TinTin character (idle, east)
-			TinTin.Animate();
-
 			al_set_target_bitmap(al_get_backbuffer(display));
-
-			
 
 			al_draw_bitmap_region(Background.image, Background.offset.x * -1, Background.offset.y * -1, wWidth, wHeight, 0, 0, 0);
 
-			al_draw_bitmap_region(dubBuff.image, dubBuff.offset.x * -1, dubBuff.offset.y * -1, wWidth, wHeight, 0, 0, 0);
+
+			if (!CurrentWorld->bPlay) {
+				al_draw_bitmap_region(dubBuff.image, dubBuff.offset.x * -1, dubBuff.offset.y * -1, wWidth, wHeight, 0, 0, 0);
+			}
+			else {
+				al_draw_bitmap_region(blockBuff.image, blockBuff.offset.x *-1, blockBuff.offset.y * -1, wWidth, wHeight, 0, 0, 0);
+			}
 
 			al_set_target_bitmap(al_get_backbuffer(display));
 
@@ -446,10 +485,6 @@ int main(int argc, char* argv[]) {
 				al_draw_textf(font, al_map_rgb(0, 0, 0), al_get_display_width(display) - 74, 129, 0, "y : %d", state.y);
 				al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 112, 0, "x : %d", state.x);
 				al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 128, 0, "y : %d", state.y);
-			}
-
-			if (bClicked && bDrawClickID) {
-				al_draw_textf(font, al_map_rgb(255, 255, 255), al_get_display_width(display) - 75, 96, 0, "%d", clickedTile.id);
 			}
 
 			//Draw FPS
@@ -494,6 +529,8 @@ int main(int argc, char* argv[]) {
 
 	//Destroy everything after the loop is exited
 	al_destroy_bitmap(dubBuff.image);
+	al_destroy_bitmap(TinTin.spritesheet);
+	al_destroy_bitmap(blockBuff.image);
 	al_destroy_bitmap(Background.image);
 	al_destroy_bitmap(backgroundImg);
 	al_destroy_display(display);

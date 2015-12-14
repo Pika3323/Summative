@@ -21,6 +21,7 @@ public:
 	Buffer Background;
 	Block Blocks[128][64];
 	BlockType Type[15];
+	bool bPlay;
 
 	World(){}
 	World(Vector2D s, int gs);
@@ -33,7 +34,7 @@ public:
 
 	bool Load(const char file[64]);
 	bool Save(const char file[64]);
-	void moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, int w, int h);
+	void moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, Buffer &block, int w, int h);
 
 private:
 };

@@ -71,10 +71,16 @@ bool World::Save(const char file[64]){
 	}
 }
 
-void World::moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, int w, int h){
+void World::moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, Buffer &block, int w, int h){
 	//Move level on x-axis
-	grid.offset.x += delta.x;
-	bg.offset.x += delta.x / 2;
+	grid.offset += delta;
+	bg.offset += delta / 2;
+	block.offset += delta;
+	offset += delta;
+
+	//grid.offset.x += delta.x;
+	//bg.offset.x += delta.x / 2;
+
 	offset.x += delta.x;
 	if (offset.x > 0) {
 		grid.offset.x = 0;
@@ -88,9 +94,9 @@ void World::moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, int w, int h){
 	}
 	
 	//Move level on y-axis
-	grid.offset.y += delta.y;
-	bg.offset.y += delta.y / 2;
-	offset.y += delta.y;
+	//grid.offset.y += delta.y;
+	//bg.offset.y += delta.y / 2;
+	//offset.y += delta.y;
 	if (offset.y > 0){
 		grid.offset.y = 0;
 		bg.offset.y = 0;
