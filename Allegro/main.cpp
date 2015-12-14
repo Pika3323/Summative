@@ -3,12 +3,17 @@
 #include "Buffer.h"
 #include "UI.h"
 
+
 #define GRID_SIZE 32
 const int FPS = 60;
 
-int main() {
+int main(int argc, char* argv[]) {
+	CURL *curl;
+	CURLcode res;
+	bool bFullscreen = false, nRand = false;
 	ALLEGRO_FONT *font = NULL;	//A font for debugging purposes
 	ALLEGRO_DISPLAY *display;			//The display window
+	ALLEGRO_DISPLAY_MODE disp_data;
 	ALLEGRO_EVENT_QUEUE *event_queue;	//The "event_queue"
 	ALLEGRO_TIMER *timer;				//The loop timer
 	ALLEGRO_BITMAP *backgroundImg;
@@ -38,8 +43,45 @@ int main() {
 	double delta;
 	Vector2D DragVelocity = Vector2D(-1.f, -1.f);
 
-	srand(time(0));
+	for (int i = 1; i < argc; i++){
+		if (strcmp(argv[i], "-nrand") == 0){
+			nRand = true;
+		}
+		else if (strcmp(argv[i], "-f") == 0){
+			bFullscreen = true;
+		}
+	}
 
+	if (!nRand){
+		srand(time(0));
+	}
+
+	//cUrl stuff
+	/*curl_global_init(CURL_GLOBAL_ALL);
+
+	curl = curl_easy_init();
+	if (!curl){
+		fprintf(stderr, "Could not create cUrl handle\n");
+		return -1;
+	}
+	else{
+		printf("Loaded cUrl %s\n", curl_version);
+		curl_easy_setopt(curl, CURLOPT_URL, "http://blocks.llamabagel.ca/test.php");
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "testValue=YourFace");
+
+		res = curl_easy_perform(curl);
+
+		if (res != CURLE_OK){
+			fprintf(stderr, "curl_easy_perform() failed: %s\n",
+				curl_easy_strerror(res));
+
+		}
+		curl_easy_cleanup(curl);
+
+	}
+	curl_global_cleanup();
+	*/
+	
 	//Load Allegro and all required modules
 	if (!al_init()) {
 		fprintf(stderr, "Allegro could not initialize\n");
@@ -112,7 +154,16 @@ int main() {
 	al_set_new_display_option(ALLEGRO_VSYNC, 1, ALLEGRO_REQUIRE);
 
 	//Create the main display window
-	display = al_create_display(wWidth, wHeight);
+	if (bFullscreen){
+		al_get_display_mode(al_get_num_display_modes() - 1, &disp_data);
+
+		al_set_new_display_flags(ALLEGRO_FULLSCREEN);
+		display = al_create_display(disp_data.width, disp_data.height);
+	}
+	else{
+		display = al_create_display(wWidth, wHeight);
+	}
+	
 
 	//MainMenu(display, wWidth, wHeight);
 
