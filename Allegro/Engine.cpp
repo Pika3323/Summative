@@ -15,6 +15,11 @@ ALLEGRO_DISPLAY_MODE Engine::GetDisplayData(){
 ALLEGRO_FONT* Engine::GetDebugFont(){
 	return debug_font;
 }
+
+ALLEGRO_EVENT_QUEUE* Engine::GetEventQueue(){
+	return event_queue;
+}
+
 void Engine::DrawFPS(ALLEGRO_DISPLAY* display, ALLEGRO_FONT* font, double delta){
 	ALLEGRO_COLOR tColor;
 	if (1 / delta >= 30){
@@ -23,12 +28,12 @@ void Engine::DrawFPS(ALLEGRO_DISPLAY* display, ALLEGRO_FONT* font, double delta)
 	else{
 		tColor = al_map_rgb(255, 0 , 0);
 	}
-
 	al_draw_textf(font, al_map_rgb(0, 0, 0), al_get_display_width(display) - 74, 17, 0, "%.2f FPS", 1 / delta);
 	al_draw_textf(font, al_map_rgb(0, 0, 0), al_get_display_width(display) - 74, 33, 0, "%.2fMS", delta * 1000);
 	al_draw_textf(font, tColor, al_get_display_width(display) - 75, 16, 0, "%.2f FPS", 1 / delta);
 	al_draw_textf(font, tColor, al_get_display_width(display) - 75, 32, 0, "%.2fMS", delta * 1000);
 }
+
 void Engine::Init(){
 	//Allegro
 	if (!al_init()) {
@@ -90,14 +95,31 @@ void Engine::Init(){
 
 	al_set_new_display_flags(ALLEGRO_OPENGL);
 
+	display = al_create_display(1280, 720);
+
 	al_register_event_source(event_queue, al_get_display_event_source(display));
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
 	al_register_event_source(event_queue, al_get_mouse_event_source());
+
+	al_start_timer(timer);
+
 }
+
 void Engine::Cleanup(){
 	al_destroy_display(display);
 	al_destroy_timer(timer);
 	al_destroy_event_queue(event_queue);
 	al_shutdown_primitives_addon();
+}
+
+bool Engine::ShouldTick(){
+	return !bExit;
+}
+bool Engine::ShouldRedraw(){
+	return bRedraw;
+}
+
+void Engine::Quit(){
+	bExit = true;
 }

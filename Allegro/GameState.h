@@ -5,14 +5,14 @@
 class GameState
 {
 public:
-	void Init();
+	virtual void Init();
 
-	void Pause();
-	void Resume();
+	virtual void Pause();
+	virtual void Resume();
 
-	void HandleEvents();
-	void Tick();
-	void Draw();
+	virtual void HandleEvents();
+	virtual void Tick();
+	virtual void Draw();
 
 	GameState();
 	virtual ~GameState();

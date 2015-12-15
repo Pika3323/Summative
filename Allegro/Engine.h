@@ -27,28 +27,49 @@
 #include "Button.h"
 #include "Buffer.h"
 #include "Effects.h"
+#include "World.h"
+#include "GameState.h"
 #include "curl/curl.h"
 
 
 class Engine{
 public:
 	const int FPS = 60;
+
 	ALLEGRO_DISPLAY* GetDisplay();
 	ALLEGRO_DISPLAY_MODE GetDisplayData();
 	ALLEGRO_TIMER* GetTimer();
 	ALLEGRO_FONT* GetDebugFont();
+	ALLEGRO_EVENT_QUEUE* GetEventQueue();
+
 	void DrawFPS(ALLEGRO_DISPLAY* display, ALLEGRO_FONT* font, double detla);
 	
 	void Init();
 	void Cleanup();
 
-	bool bExit;
+	void ChangeGameState(class GameState* state);
+	void RegisterState(GameState* state);
+
+	void HandleInput(ALLEGRO_EVENT *ev);
+	void Tick();
+	void Draw();
+
+	void Quit();
+
+	bool ShouldTick();
+	bool ShouldRedraw();
+
+	
 private:
 	ALLEGRO_DISPLAY *display;
 	ALLEGRO_DISPLAY_MODE disp_data;
 	ALLEGRO_EVENT_QUEUE *event_queue;
 	ALLEGRO_TIMER *timer;
 	ALLEGRO_FONT* debug_font;
+	bool bExit;
+	bool bRedraw;
+	GameState* States[3];
+	int StateIndex;
 };
 
 extern Engine* GEngine = new Engine();

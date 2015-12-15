@@ -24,11 +24,9 @@ void GameState::Draw(){
 
 }
 
-GameState::GameState()
-{
+GameState::GameState(){
 }
 
 
-GameState::~GameState()
-{
+GameState::~GameState(){
 }
