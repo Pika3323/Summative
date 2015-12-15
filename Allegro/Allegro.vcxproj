@@ -17,6 +17,7 @@
     <ClInclude Include="Effects.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Character.h" />
+    <ClInclude Include="GameState.h" />
     <ClInclude Include="IMath.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="Vector2D.h" />
@@ -29,6 +30,7 @@
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Effects.cpp" />
+    <ClCompile Include="GameState.cpp" />
     <ClCompile Include="IMath.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="UI.cpp" />
@@ -78,6 +80,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>D:\AllegroMSVC\lib;D:\libcurl\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>allegro_monolith.lib;opengl32.lib;glu32.lib;libcurl_a.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

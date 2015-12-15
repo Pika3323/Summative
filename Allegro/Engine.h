@@ -29,11 +29,27 @@
 #include "Effects.h"
 #include "curl/curl.h"
 
-void DrawFPS(ALLEGRO_DISPLAY* display, ALLEGRO_FONT* font, double detla);
 
 class Engine{
+public:
+	const int FPS = 60;
+	ALLEGRO_DISPLAY* GetDisplay();
+	ALLEGRO_DISPLAY_MODE GetDisplayData();
+	ALLEGRO_TIMER* GetTimer();
+	ALLEGRO_FONT* GetDebugFont();
+	void DrawFPS(ALLEGRO_DISPLAY* display, ALLEGRO_FONT* font, double detla);
+	
+	void Init();
+	void Cleanup();
 
+	bool bExit;
+private:
+	ALLEGRO_DISPLAY *display;
+	ALLEGRO_DISPLAY_MODE disp_data;
+	ALLEGRO_EVENT_QUEUE *event_queue;
+	ALLEGRO_TIMER *timer;
+	ALLEGRO_FONT* debug_font;
 };
 
-
+extern Engine* GEngine = new Engine();
 

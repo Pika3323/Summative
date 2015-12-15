@@ -7,6 +7,8 @@
 const int FPS = 60;
 
 int main(int argc, char* argv[]) {
+	//Engine* GEngine = new Engine();
+	//GEngine = new Engine();
 	CURL *curl;
 	CURLcode res;
 	bool bFullscreen = false, nRand = false;
@@ -539,7 +541,7 @@ int main(int argc, char* argv[]) {
 
 			//Draw FPS
 			if (bDrawFPS){
-				DrawFPS(display, font, delta); 
+				GEngine->DrawFPS(display, font, delta); 
 			}
 			al_draw_textf(font, al_map_rgb(0, 0, 0), 10, 10, 0, "x : %d", Background.offset.x);
 			al_draw_textf(font, al_map_rgb(0, 0, 0), 10, 26, 0, "y : %d", Background.offset.y);

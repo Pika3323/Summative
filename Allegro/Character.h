@@ -29,4 +29,3 @@ public:
 	void Animate(bool flipped);
 private:
 };
-
