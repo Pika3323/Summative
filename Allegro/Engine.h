@@ -30,6 +30,7 @@
 #include "World.h"
 #include "GameState.h"
 #include "curl/curl.h"
+#include "PlayState.h"
 
 
 class Engine{

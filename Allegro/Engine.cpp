@@ -104,6 +104,7 @@ void Engine::Init(){
 
 	al_start_timer(timer);
 
+	States[0] = new PlayState();
 }
 
 void Engine::Cleanup(){
@@ -122,4 +123,25 @@ bool Engine::ShouldRedraw(){
 
 void Engine::Quit(){
 	bExit = true;
+}
+
+void Engine::HandleInput(ALLEGRO_EVENT* ev){
+	switch (ev->keyboard.keycode) {
+		//Close window if escape key is pressed
+	case ALLEGRO_KEY_ESCAPE:
+		GEngine->Quit();
+		break;
+	}
+
+	States[0]->HandleEvents(ev);
+}
+
+void Engine::Tick(){
+	States[0]->Tick();
+	bRedraw = true;
+}
+
+void Engine::Draw(){
+	States[0]->Draw();
+	bRedraw = false;
 }

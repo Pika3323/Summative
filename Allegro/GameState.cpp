@@ -12,7 +12,7 @@ void GameState::Resume(){
 
 }
 
-void GameState::HandleEvents(){
+void GameState::HandleEvents(ALLEGRO_EVENT *ev){
 
 }
 

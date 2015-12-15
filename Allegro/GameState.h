@@ -10,7 +10,7 @@ public:
 	virtual void Pause();
 	virtual void Resume();
 
-	virtual void HandleEvents();
+	virtual void HandleEvents(ALLEGRO_EVENT *ev);
 	virtual void Tick();
 	virtual void Draw();
 

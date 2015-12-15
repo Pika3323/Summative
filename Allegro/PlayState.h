@@ -1,11 +1,13 @@
 #pragma once
 
+#include "World.h"
+#include "Buffer.h"
 #include "Engine.h"
 
 class PlayState : public GameState {
 public:
 
-	World* CurrentWorld;
+	class World* CurrentWorld;
 	Character TinTin;	//TinTin character
 	Gravity CurrentGrav;		//current world gravity
 	Buffer notPlayingBuff; //block buffer for when not playing
@@ -13,12 +15,13 @@ public:
 	Buffer dubBuff;	//buffer for grid
 	Buffer Background;	//buffer for background
 	Vector2D Clicked;	//The location of a click
-	GridTile clickedTile;	//The clicked tile from the world grid
+	struct GridTile clickedTile;	//The clicked tile from the world grid
 	bool bClicked = false;	//Whether a click was registered
 	bool bRedraw = false;	//Whether to redraw the screen
 	EBlockType SelectedBlock = EBlockType::B_Brick;		//the block type the user selects
 	bool DeleteMode = false;
 	bool TinTinGrav = true;
+	Vector2D moveDelta = Vector2D(0.f, 0.f);
 
 	bool bBoxSelect = false;
 	GridTile FirstTile;
@@ -41,7 +44,7 @@ public:
 	void Pause();
 	void Resume();
 
-	void HandleEvents();
+	void HandleEvents(ALLEGRO_EVENT *ev);
 	void Tick();
 	void Draw();
 

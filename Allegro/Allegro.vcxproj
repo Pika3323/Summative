@@ -19,6 +19,8 @@
     <ClInclude Include="Character.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="IMath.h" />
+    <ClInclude Include="MainMenuState.h" />
+    <ClInclude Include="PlayState.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="Vector2D.h" />
     <ClInclude Include="World.h" />
@@ -33,7 +35,9 @@
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="IMath.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainMenuState.cpp" />
     <ClCompile Include="NewMain.cpp" />
+    <ClCompile Include="PlayState.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="Vector2D.cpp" />
     <ClCompile Include="World.cpp" />
