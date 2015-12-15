@@ -1,4 +1,6 @@
 #pragma once
+#include "Block.h"
+#include "Buffer.h"
 #include "Engine.h"
 
 struct GridTile{

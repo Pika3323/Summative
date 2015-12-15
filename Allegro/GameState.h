@@ -2,8 +2,7 @@
 
 #include "Engine.h"
 
-class GameState
-{
+class GameState {
 public:
 	virtual void Init();
 
@@ -13,6 +12,8 @@ public:
 	virtual void HandleEvents(ALLEGRO_EVENT *ev);
 	virtual void Tick();
 	virtual void Draw();
+
+	bool Initialized = false;
 
 	GameState();
 	virtual ~GameState();

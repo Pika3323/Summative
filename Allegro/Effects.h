@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine.h"
+#include "Character.h"
 
 class Gravity{
 public:

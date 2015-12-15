@@ -1,4 +1,5 @@
 #include "Engine.h"
+#include "PlayState.h"
 
 ALLEGRO_DISPLAY* Engine::GetDisplay(){
 	return display;
@@ -86,7 +87,7 @@ void Engine::Init(){
 		bExit = true;
 	}
 	else{
-		printf("Font addon loaded");
+		printf("Font addon loaded\n");
 	}
 
 	debug_font = al_create_builtin_font();
@@ -105,6 +106,7 @@ void Engine::Init(){
 	al_start_timer(timer);
 
 	States[0] = new PlayState();
+	States[0]->Init();
 }
 
 void Engine::Cleanup(){
@@ -144,4 +146,7 @@ void Engine::Tick(){
 void Engine::Draw(){
 	States[0]->Draw();
 	bRedraw = false;
+	al_flip_display();
+	al_clear_to_color(al_map_rgb(0, 0, 0));
 }
+

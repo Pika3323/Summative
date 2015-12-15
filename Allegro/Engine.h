@@ -7,30 +7,7 @@
 #define MOUSE_RB 2
 #define MOUSE_MB 3
 
-#include <allegro5/allegro.h>
-#include <allegro5/allegro_primitives.h>
-#include <allegro5/allegro_image.h>
-#include <allegro5/allegro_font.h>
-#include <allegro5/allegro_ttf.h>
-#include <allegro5/allegro_opengl.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <ctype.h>
-#include <math.h>
-#include "Vector2D.h"
-#include "Block.h"
-#include "Buffer.h"
-#include "IMath.h"
-#include "Character.h"
-#include "Button.h"
-#include "Buffer.h"
-#include "Effects.h"
-#include "World.h"
-#include "GameState.h"
-#include "curl/curl.h"
-#include "PlayState.h"
+#include "Core.h"
 
 
 class Engine{
@@ -60,6 +37,8 @@ public:
 	bool ShouldTick();
 	bool ShouldRedraw();
 
+	GameState* States[3];
+
 	
 private:
 	ALLEGRO_DISPLAY *display;
@@ -69,9 +48,10 @@ private:
 	ALLEGRO_FONT* debug_font;
 	bool bExit;
 	bool bRedraw;
-	GameState* States[3];
 	int StateIndex;
 };
 
-extern Engine* GEngine = new Engine();
-
+#ifndef _ENGINE
+#define _ENGINE
+Engine* GEngine = new Engine();
+#endif
