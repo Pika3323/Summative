@@ -2,6 +2,7 @@
 
 int main(int argc, char* argv[]){
 
+	//Initialize the game engine
 	GEngine->Init();
 
 	while (GEngine->ShouldTick()){
@@ -18,11 +19,13 @@ int main(int argc, char* argv[]){
 			GEngine->HandleInput(&ev);
 		}
 		
+		//Draw to the screen
 		if (GEngine->ShouldRedraw() && al_event_queue_is_empty(GEngine->GetEventQueue())){
 			GEngine->Draw();
 		}
 	}
 
+	//Cleanup
 	GEngine->Cleanup();
 
 	return 0;
