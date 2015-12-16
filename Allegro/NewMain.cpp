@@ -5,25 +5,26 @@ int main(int argc, char* argv[]){
 	//Initialize the game engine
 	GEngine->Init();
 
+	//Get a time before loop starts to calculate the delta time of a frame/loop
 	double old_time = al_get_time();
 
+	//Only run the loop while the engine should keep ticking, otherwise quit
 	while (GEngine->ShouldTick()) {
-
-		if (!GEngine->States[0]->Initialized) {
-			GEngine->States[0]->Init();
-			GEngine->States[0]->Initialized = true;
-		}
-
+		//Events for the frame
 		ALLEGRO_EVENT ev;
+		//Wait for an event (an input, or timer event)
 		al_wait_for_event(GEngine->GetEventQueue(), &ev);
 
+		//If the close button was clicked, quit the program
 		if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
 			GEngine->Quit();
 			break;
 		}
+		//Run the functions for a single tick
 		else if (ev.type == ALLEGRO_EVENT_TIMER){
 			GEngine->Tick();
 		}
+		//Handle all other inputs
 		else {
 			GEngine->HandleInput(&ev);
 		}
@@ -31,12 +32,10 @@ int main(int argc, char* argv[]){
 		//Draw to the screen
 		if (GEngine->ShouldRedraw() && al_event_queue_is_empty(GEngine->GetEventQueue())){
 			double new_time = al_get_time();
-			double delta = new_time - old_time;
+			GEngine->delta = new_time - old_time;
 			old_time = new_time;
 
 			GEngine->Draw();
-			al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
-			GEngine->DrawFPS(delta);
 		}
 	}
 

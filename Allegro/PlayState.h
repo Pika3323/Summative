@@ -25,6 +25,8 @@ public:
 	bool TinTinGrav = true;
 	Vector2D moveDelta = Vector2D(0.f, 0.f);
 
+	ALLEGRO_BITMAP* output;
+
 	bool bBoxSelect = false;
 	GridTile FirstTile;
 

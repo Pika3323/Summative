@@ -1,5 +1,6 @@
 #include "Engine.h"
 #include "PlayState.h"
+#include "MainMenuState.h"
 
 ALLEGRO_DISPLAY* Engine::GetDisplay(){
 	return display;
@@ -19,6 +20,10 @@ ALLEGRO_FONT* Engine::GetDebugFont(){
 
 ALLEGRO_EVENT_QUEUE* Engine::GetEventQueue(){
 	return event_queue;
+}
+
+ALLEGRO_MOUSE_STATE Engine::GetMouseState(){
+	return mouse_state;
 }
 
 void Engine::DrawFPS(double delta){
@@ -103,10 +108,11 @@ void Engine::Init(){
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
 	al_register_event_source(event_queue, al_get_mouse_event_source());
 
+	master_buffer = al_create_bitmap(DisplayWidth, DisplayHeight);
+
 	al_start_timer(timer);
 
-	States[0] = new PlayState();
-	//States[0]->Init();
+	ChangeGameState<PlayState>();
 }
 
 void Engine::Cleanup(){
@@ -135,18 +141,27 @@ void Engine::HandleInput(ALLEGRO_EVENT* ev){
 		break;
 	}
 
-	States[0]->HandleEvents(ev);
+	Active->HandleEvents(ev);
 }
 
 void Engine::Tick(){
-	States[0]->Tick();
+	al_get_mouse_state(&mouse_state);
+	Active->Tick();
 	bRedraw = true;
 }
 
 void Engine::Draw(){
-	States[0]->Draw();
+	Active->Draw();
 	bRedraw = false;
+	DrawFPS(delta);
 	al_flip_display();
 	al_clear_to_color(al_map_rgb(0, 0, 0));
 }
 
+int Engine::GetDisplayWidth(){
+	return DisplayWidth;
+}
+
+int Engine::GetDisplayHeight(){
+	return DisplayHeight;
+}

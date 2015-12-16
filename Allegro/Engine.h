@@ -19,14 +19,24 @@ public:
 	ALLEGRO_TIMER* GetTimer();
 	ALLEGRO_FONT* GetDebugFont();
 	ALLEGRO_EVENT_QUEUE* GetEventQueue();
+	ALLEGRO_MOUSE_STATE GetMouseState();
+	int GetDisplayWidth();
+	int GetDisplayHeight();
 
 	void DrawFPS(double detla);
 	
 	void Init();
 	void Cleanup();
 
-	void ChangeGameState(class GameState* state);
-	void RegisterState(GameState* state);
+	template <class T> void ChangeGameState(){
+		if (Active){
+			Active->Destroy();
+			delete Active;
+		}
+		Active = new T();
+		Active->Init();
+	}
+	//void RegisterState(class GameState* state);
 
 	void HandleInput(ALLEGRO_EVENT *ev);
 	void Tick();
@@ -37,8 +47,9 @@ public:
 	bool ShouldTick();
 	bool ShouldRedraw();
 
-	GameState* States[3];
+	class GameState* States[2];
 	int ActiveState = 0;
+	double delta;
 
 	
 private:
@@ -47,9 +58,13 @@ private:
 	ALLEGRO_EVENT_QUEUE *event_queue;
 	ALLEGRO_TIMER *timer;
 	ALLEGRO_FONT* debug_font;
+	ALLEGRO_MOUSE_STATE mouse_state;
+	ALLEGRO_BITMAP* master_buffer;
 	bool bExit;
 	bool bRedraw;
 	int StateIndex;
+	class GameState* Active;
+	int DisplayHeight = 720, DisplayWidth = 1280;
 };
 
 #ifndef _ENGINE

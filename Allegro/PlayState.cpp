@@ -1,7 +1,7 @@
 #include "PlayState.h"
+#include "MainMenuState.h"
 
 PlayState::PlayState(){
-	
 	CurrentWorld = new World(Vector2D(4096.f, 2048.f), 32);
 	TinTin = Character(Vector2D(0, 0), 64, 128);	//TinTin character
 	CurrentGrav = new Gravity(Vector2D(0.f, 5.f));		//current world gravity
@@ -13,9 +13,6 @@ PlayState::PlayState(){
 }
 
 void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
-	ALLEGRO_MOUSE_STATE state;
-	al_get_mouse_state(&state);
-
 	if (ev->type == ALLEGRO_EVENT_KEY_DOWN) {
 		switch (ev->keyboard.keycode) {
 			//Close window if escape key is pressed
@@ -101,6 +98,9 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 		case ALLEGRO_KEY_UP:
 			moveDelta.y = 0.f;
 			break;
+		case ALLEGRO_KEY_M:
+			GEngine->ChangeGameState<MainMenuState>();
+			break;
 		default:
 			break;
 		}
@@ -114,7 +114,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				bClicked = true;
 				if (!bBoxSelect) {
 					//Get the mouse's location
-					Clicked = Vector2D(state.x + (dubBuff.offset.x * -1), state.y + (dubBuff.offset.y * -1));
+					Clicked = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
 					//Get the tile that was clicked
 					clickedTile = CurrentWorld->getClickedTile(Clicked);
 
@@ -133,7 +133,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 
 				}
 				else{
-					Clicked = Vector2D(state.x + (dubBuff.offset.x * -1), state.y + (dubBuff.offset.y * -1));
+					Clicked = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
 
 					FirstTile = CurrentWorld->getClickedTile(Clicked);
 				}
@@ -161,8 +161,6 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 }
 
 void PlayState::Tick(){
-	ALLEGRO_MOUSE_STATE state;
-	al_get_mouse_state(&state);
 
 	/*TinTin.EvHandle();
 	TinTin.DoEv('f');
@@ -200,14 +198,14 @@ void PlayState::Tick(){
 	CurrentWorld->moveWorld(moveDelta, dubBuff, Background, blockBuff, notPlayingBuff, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()));
 
 	if (bMouseDrag){
-		Vector2D DragDelta = DragStart - Vector2D(state.x, state.y);
+		Vector2D DragDelta = DragStart - Vector2D(GEngine->GetMouseState().x, GEngine->GetMouseState().y);
 		CurrentWorld->moveWorld(DragDelta * -1, dubBuff, Background, blockBuff, notPlayingBuff, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()));
-		DragStart = Vector2D(state.x, state.y);
+		DragStart = Vector2D(GEngine->GetMouseState().x, GEngine->GetMouseState().y);
 		DragTime += delta;
 	}
 
 	if (bClicked && !bBoxSelect){
-		Clicked = Vector2D(state.x + (dubBuff.offset.x * -1), state.y + (dubBuff.offset.y * -1));
+		Clicked = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
 
 		//Get the tile that was clicked
 		clickedTile = CurrentWorld->getClickedTile(Clicked);
@@ -314,7 +312,6 @@ void PlayState::Init(){
 	for (int i = 0; i < 65; i++){
 		al_draw_line(0, i * CurrentWorld->gridSize, 4096, i * CurrentWorld->gridSize, al_map_rgba(50, 50, 50, 150), 1);
 	}
-
 	//Sets the target bitmap back to the default buffer
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 

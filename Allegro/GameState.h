@@ -15,6 +15,7 @@ public:
 
 	virtual void Destroy();
 
+	ALLEGRO_BITMAP* output;
 	bool Initialized = false;
 
 	GameState();
