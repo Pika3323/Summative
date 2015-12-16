@@ -24,6 +24,10 @@ void GameState::Draw(){
 
 }
 
+void GameState::Destroy(){
+
+}
+
 GameState::GameState(){
 }
 

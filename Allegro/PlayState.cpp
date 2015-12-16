@@ -163,7 +163,8 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 void PlayState::Tick(){
 	ALLEGRO_MOUSE_STATE state;
 	al_get_mouse_state(&state);
-	TinTin.EvHandle();
+
+	/*TinTin.EvHandle();
 	TinTin.DoEv('f');
 	if (CurrentWorld->Blocks[(int)(TinTin.position.x / CurrentWorld->gridSize)][(int)(TinTin.position.y + TinTin.ActualHeight) / CurrentWorld->gridSize].bSpawned) {
 		CurrentGrav->GonOff[TinTin.gravSlot] = false;
@@ -193,16 +194,18 @@ void PlayState::Tick(){
 	}
 	if (CurrentWorld->bPlay) {
 		CurrentGrav->Tick();
-	}
+	}*/
 	
 	CurrentWorld->Tick(delta);
 	CurrentWorld->moveWorld(moveDelta, dubBuff, Background, blockBuff, notPlayingBuff, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()));
+
 	if (bMouseDrag){
 		Vector2D DragDelta = DragStart - Vector2D(state.x, state.y);
 		CurrentWorld->moveWorld(DragDelta * -1, dubBuff, Background, blockBuff, notPlayingBuff, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()));
 		DragStart = Vector2D(state.x, state.y);
 		DragTime += delta;
 	}
+
 	if (bClicked && !bBoxSelect){
 		Clicked = Vector2D(state.x + (dubBuff.offset.x * -1), state.y + (dubBuff.offset.y * -1));
 
@@ -340,4 +343,13 @@ void PlayState::Pause(){
 
 void PlayState::Resume(){
 
+}
+
+void PlayState::Destroy(){
+
+}
+
+PlayState::~PlayState(){
+	delete CurrentGrav;
+	delete CurrentWorld;
 }

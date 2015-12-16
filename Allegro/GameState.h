@@ -13,6 +13,8 @@ public:
 	virtual void Tick();
 	virtual void Draw();
 
+	virtual void Destroy();
+
 	bool Initialized = false;
 
 	GameState();

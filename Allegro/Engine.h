@@ -20,7 +20,7 @@ public:
 	ALLEGRO_FONT* GetDebugFont();
 	ALLEGRO_EVENT_QUEUE* GetEventQueue();
 
-	void DrawFPS(ALLEGRO_DISPLAY* display, ALLEGRO_FONT* font, double detla);
+	void DrawFPS(double detla);
 	
 	void Init();
 	void Cleanup();
@@ -38,6 +38,7 @@ public:
 	bool ShouldRedraw();
 
 	GameState* States[3];
+	int ActiveState = 0;
 
 	
 private:

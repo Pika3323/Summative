@@ -10,7 +10,7 @@
 class PlayState : public GameState {
 public:
 
-	class World* CurrentWorld;
+	World* CurrentWorld;
 	Character TinTin;	//TinTin character
 	Gravity* CurrentGrav;		//current world gravity
 	Buffer notPlayingBuff; //block buffer for when not playing
@@ -50,5 +50,8 @@ public:
 	void Tick();
 	void Draw();
 
+	void Destroy();
+
 	PlayState();
+	~PlayState();
 };
