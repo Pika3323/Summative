@@ -7,6 +7,11 @@ class MainMenuState : public GameState {
 public:
 
 	class Button BPlayGame;
+	class Button BEditorGame;
+	class Button BOptions;
+	class Button BExit;
+
+	class Button* AllButtons[10];
 
 	void Init();
 
@@ -22,3 +27,7 @@ public:
 	MainMenuState();
 	~MainMenuState();
 };
+
+void PlayGame();
+void LoadEditor();
+void OpenSettings();

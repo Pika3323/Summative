@@ -112,7 +112,7 @@ void Engine::Init(){
 
 	al_start_timer(timer);
 
-	ChangeGameState<PlayState>();
+	ChangeGameState<MainMenuState>();
 }
 
 void Engine::Cleanup(){
@@ -130,7 +130,7 @@ bool Engine::ShouldRedraw(){
 }
 
 void Engine::Quit(){
-	bExit = true;
+	Engine::bExit = true;
 }
 
 void Engine::HandleInput(ALLEGRO_EVENT* ev){

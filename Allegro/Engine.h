@@ -42,7 +42,7 @@ public:
 	void Tick();
 	void Draw();
 
-	void Quit();
+	static void Quit();
 
 	bool ShouldTick();
 	bool ShouldRedraw();
@@ -50,7 +50,9 @@ public:
 	class GameState* States[2];
 	int ActiveState = 0;
 	double delta;
+	static bool bExit;
 
+	Engine(){}
 	
 private:
 	ALLEGRO_DISPLAY *display;
@@ -60,12 +62,14 @@ private:
 	ALLEGRO_FONT* debug_font;
 	ALLEGRO_MOUSE_STATE mouse_state;
 	ALLEGRO_BITMAP* master_buffer;
-	bool bExit;
+	
 	bool bRedraw;
 	int StateIndex;
 	class GameState* Active;
 	int DisplayHeight = 720, DisplayWidth = 1280;
 };
+
+bool Engine::bExit = false;
 
 #ifndef _ENGINE
 #define _ENGINE
