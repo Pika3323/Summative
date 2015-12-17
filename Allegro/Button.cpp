@@ -1,6 +1,6 @@
 #include "Button.h"
 
-Button::Button(ALLEGRO_COLOR bg, ALLEGRO_COLOR tx, int w, int h, Vector2D pos, int i, const char t[]){
+Button::Button(ALLEGRO_COLOR bg, ALLEGRO_COLOR tx, int w, int h, Vector2D pos, int i, const char t[], void (*down)()){
 	tex = al_create_bitmap(w, h);
 	width = w;
 	height = h;
@@ -14,6 +14,7 @@ Button::Button(ALLEGRO_COLOR bg, ALLEGRO_COLOR tx, int w, int h, Vector2D pos, i
 	al_draw_filled_rounded_rectangle(0, 0, w, h, 2, 2, bg);
 	al_draw_textf(roboto, tx, w / 2, h / 2, ALLEGRO_ALIGN_CENTER, "%s", t);
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
+	onDown = down;
 }
 
 void Button::onHoverIn(){

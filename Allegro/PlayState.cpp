@@ -66,7 +66,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 			}
 			else {
 				CurrentWorld->bPlay = false;
-				TinTin.position = Vector2D(0.f, 0.f);
+				//TinTin.position = Vector2D(0.f, 0.f);
 			}
 			CurrentGrav->GonOff[TinTin.gravSlot] = true;
 		case ALLEGRO_KEY_BACKSPACE:
@@ -235,7 +235,7 @@ void PlayState::Draw(){
 	else{
 		al_set_target_bitmap(blockBuff.image);
 		al_clear_to_color(al_map_rgba(0, 0, 0, 0));
-		TinTin.Animate(TinTin.flipped);
+		//TinTin.Animate(TinTin.flipped);
 	}
 	//Foreach loop that goes through every block
 
@@ -289,7 +289,7 @@ void PlayState::Init(){
 	Background.image = al_create_bitmap(4096, 2048);
 	blockBuff.image = al_create_bitmap(4096, 2048);
 
-	TinTin.gravSlot = CurrentGrav->Register(&TinTin, TinTinGrav);	//registering main character in gravity queue (is affected at beginning)
+	//TinTin.gravSlot = CurrentGrav->Register(&TinTin, TinTinGrav);	//registering main character in gravity queue (is affected at beginning)
 
 
 	//Setting Multiple Images to Background Buffer
@@ -343,7 +343,26 @@ void PlayState::Resume(){
 }
 
 void PlayState::Destroy(){
+	fflush(stdin);
 
+	printf("Save level? (y/n): ");
+	char cSave;
+	scanf("%c", &cSave);
+	fflush(stdin);
+	if (tolower(cSave) == 'y'){
+		char levelName[64];
+		printf("Enter a file name: ");
+		scanf("%s", levelName);
+		strcat(levelName, ".bvl");
+
+		if (CurrentWorld->Save(levelName)){
+
+			printf("Saved level as %s\n", levelName);
+		}
+		else{
+			printf("Could not save level as %s\n", levelName);
+		}
+	}
 }
 
 PlayState::~PlayState(){

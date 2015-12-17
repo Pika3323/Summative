@@ -3,8 +3,8 @@
 void MainMenu(ALLEGRO_DISPLAY* d, int w, int h){
 	bool done = false, bRedraw = true;
 	Buffer Background[2] = { Buffer(al_create_bitmap(w, h), Vector2D(0.f, 0.f), Vector2D(-5.f, 0.f)), Buffer(al_create_bitmap(w, h), Vector2D(w, 0.f), Vector2D(-5.f, 0.f)) };
-	Button* BEditor = new Button(al_map_rgb(255, 255, 255), al_map_rgb(33, 150, 243), 100, 36, Vector2D(w/2, 0), 0, "EDITOR");
-	Button* BLevels = new Button(al_map_rgb(255, 255, 255), al_map_rgb(33, 150, 243), 100, 36, Vector2D(w / 2, 48), 0, "LEVELS");
+	Button* BEditor = new Button(al_map_rgb(255, 255, 255), al_map_rgb(33, 150, 243), 100, 36, Vector2D(w/2, 0), 0, "EDITOR", NULL);
+	Button* BLevels = new Button(al_map_rgb(255, 255, 255), al_map_rgb(33, 150, 243), 100, 36, Vector2D(w / 2, 48), 0, "LEVELS", NULL);
 	Button* menuButtons[2] = { BEditor, BLevels };
 	ALLEGRO_EVENT_QUEUE *event_queue;	//The "event_queue"
 	ALLEGRO_TIMER *timer;				//The loop timer
