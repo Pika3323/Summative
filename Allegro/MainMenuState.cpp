@@ -28,7 +28,6 @@ void MainMenuState::HandleEvents(ALLEGRO_EVENT *ev){
 				}
 				else {
 					AllButtons[i]->onMouseUp();
-					//break;
 				}
 			}
 		}
@@ -48,6 +47,7 @@ void MainMenuState::Tick(){
 }
 
 void MainMenuState::Draw(){
+	//Draws the buttons to the screen
 	al_clear_to_color(al_map_rgb(250, 250, 250));
 	for (int i = 0; i < 4; i++){
 		AllButtons[i]->Draw();
@@ -55,6 +55,7 @@ void MainMenuState::Draw(){
 }
 
 void MainMenuState::Destroy(){
+	//Reset the system cursor to the default cursor
 	al_set_system_mouse_cursor(GEngine->GetDisplay(), ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
 }
 

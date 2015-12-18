@@ -99,8 +99,13 @@ void Engine::Init(){
 	event_queue = al_create_event_queue();
 	timer = al_create_timer(1.0f / FPS);	//Run the game at 60FPS
 
+	//Using the OpenGL flag for a bit of hardware acceleration
 	al_set_new_display_flags(ALLEGRO_OPENGL);
 
+	//Set the window's title
+	al_set_new_window_title("The Block Gamee");
+
+	//Create the main display
 	display = al_create_display(1280, 720);
 
 	al_register_event_source(event_queue, al_get_display_event_source(display));

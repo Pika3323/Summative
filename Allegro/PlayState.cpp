@@ -121,7 +121,8 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 					if (!DeleteMode) {
 						//if the tile is not already occupied by a block, create a new block
 						if (!clickedTile.occupied){
-							CurrentWorld->Blocks[clickedTile.x][clickedTile.y] = Block(clickedTile.location, SelectedBlock);
+							CurrentWorld->Blocks[clickedTile.x][clickedTile.y].position = clickedTile.location;
+							CurrentWorld->Blocks[clickedTile.x][clickedTile.y].type = SelectedBlock;
 							CurrentWorld->Blocks[clickedTile.x][clickedTile.y].bSpawned = true;
 							clickedTile.occupied = true;
 						}
@@ -161,7 +162,6 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 }
 
 void PlayState::Tick(){
-
 	/*TinTin.EvHandle();
 	TinTin.DoEv('f');
 	if (CurrentWorld->Blocks[(int)(TinTin.position.x / CurrentWorld->gridSize)][(int)(TinTin.position.y + TinTin.ActualHeight) / CurrentWorld->gridSize].bSpawned) {
@@ -212,7 +212,8 @@ void PlayState::Tick(){
 		if (!DeleteMode) {
 			//if the tile is not already occupied by a block, create a new block
 			if (!clickedTile.occupied){
-				CurrentWorld->Blocks[clickedTile.x][clickedTile.y] = Block(clickedTile.location, SelectedBlock);
+				CurrentWorld->Blocks[clickedTile.x][clickedTile.y].position = clickedTile.location;
+				CurrentWorld->Blocks[clickedTile.x][clickedTile.y].type = SelectedBlock;
 				CurrentWorld->Blocks[clickedTile.x][clickedTile.y].bSpawned = true;
 				clickedTile.occupied = true;
 			}
@@ -225,9 +226,6 @@ void PlayState::Tick(){
 }
 
 void PlayState::Draw(){
-	ALLEGRO_MOUSE_STATE state;
-	al_get_mouse_state(&state);
-
 	if (!CurrentWorld->bPlay){
 		al_set_target_bitmap(notPlayingBuff.image);
 		al_clear_to_color(al_map_rgba(0, 0, 0, 0));
@@ -239,7 +237,7 @@ void PlayState::Draw(){
 	}
 	//Foreach loop that goes through every block
 
-	al_hold_bitmap_drawing(true);
+	//al_hold_bitmap_drawing(true);
 	for (auto& sub : CurrentWorld->Blocks){
 		for (auto& elem : sub){
 			//If the block has been created, draw it!
@@ -251,10 +249,10 @@ void PlayState::Draw(){
 		}
 	}
 
-	al_hold_bitmap_drawing(false);
+	//al_hold_bitmap_drawing(false);
 
 	if (bBoxSelect) {
-		GridTile newTile = CurrentWorld->getClickedTile(Vector2D(state.x + (dubBuff.offset.x * -1), state.y + (dubBuff.offset.y * -1)));
+		GridTile newTile = CurrentWorld->getClickedTile(Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1)));
 		al_draw_filled_rectangle(FirstTile.location.x, FirstTile.location.y, newTile.location.x, newTile.location.y, al_map_rgba(137, 231, 255, 100));
 	}
 
