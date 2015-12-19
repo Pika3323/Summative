@@ -139,13 +139,6 @@ void Engine::Quit(){
 }
 
 void Engine::HandleInput(ALLEGRO_EVENT* ev){
-	switch (ev->keyboard.keycode) {
-		//Close window if escape key is pressed
-	case ALLEGRO_KEY_ESCAPE:
-		GEngine->Quit();
-		break;
-	}
-
 	Active->HandleEvents(ev);
 }
 

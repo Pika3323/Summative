@@ -66,9 +66,10 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 			}
 			else {
 				CurrentWorld->bPlay = false;
-				//TinTin.position = Vector2D(0.f, 0.f);
+				TinTin.position = Vector2D(0.f, 0.f);
 			}
 			CurrentGrav->GonOff[TinTin.gravSlot] = true;
+			break;
 		case ALLEGRO_KEY_BACKSPACE:
 			if (!DeleteMode) {
 				DeleteMode = true;
@@ -76,7 +77,10 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 			else {
 				DeleteMode = false;
 			}
-
+			break;
+		case ALLEGRO_KEY_ESCAPE:
+			GEngine->Quit();
+			break;
 		default:
 			break;
 		}
@@ -162,7 +166,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 }
 
 void PlayState::Tick(){
-	/*TinTin.EvHandle();
+	TinTin.EvHandle();
 	TinTin.DoEv('f');
 	if (CurrentWorld->Blocks[(int)(TinTin.position.x / CurrentWorld->gridSize)][(int)(TinTin.position.y + TinTin.ActualHeight) / CurrentWorld->gridSize].bSpawned) {
 		CurrentGrav->GonOff[TinTin.gravSlot] = false;
@@ -172,7 +176,7 @@ void PlayState::Tick(){
 	else if (!CurrentWorld->Blocks[(int)(TinTin.position.x / CurrentWorld->gridSize)][(int)(TinTin.position.y + TinTin.ActualHeight) / CurrentWorld->gridSize].bSpawned) {
 		CurrentGrav->GonOff[TinTin.gravSlot] = true;
 	}
-	if (CurrentGrav->GonOff[TinTin.gravSlot] && TinTin.spritesheet) {
+	if (CurrentGrav->GonOff[TinTin.gravSlot]) {
 		al_destroy_bitmap(TinTin.spritesheet);
 		TinTin.DoEv('f');
 	}
@@ -192,7 +196,7 @@ void PlayState::Tick(){
 	}
 	if (CurrentWorld->bPlay) {
 		CurrentGrav->Tick();
-	}*/
+	}
 	
 	CurrentWorld->Tick(delta);
 	CurrentWorld->moveWorld(moveDelta, dubBuff, Background, blockBuff, notPlayingBuff, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()));
@@ -233,7 +237,7 @@ void PlayState::Draw(){
 	else{
 		al_set_target_bitmap(blockBuff.image);
 		al_clear_to_color(al_map_rgba(0, 0, 0, 0));
-		//TinTin.Animate(TinTin.flipped);
+		TinTin.Animate(TinTin.flipped);
 	}
 	//Foreach loop that goes through every block
 
@@ -245,6 +249,7 @@ void PlayState::Draw(){
 
 			if (elem.bSpawned && InRange(elem.offset.x, -32, al_get_display_width(GEngine->GetDisplay()) + 32) && InRange(elem.offset.y, -32, al_get_display_height(GEngine->GetDisplay()) + 32)){
 				elem.Draw(CurrentWorld->Type[static_cast<int>(elem.type)].texture);
+
 			}
 		}
 	}
@@ -256,7 +261,6 @@ void PlayState::Draw(){
 		al_draw_filled_rectangle(FirstTile.location.x, FirstTile.location.y, newTile.location.x, newTile.location.y, al_map_rgba(137, 231, 255, 100));
 	}
 
-	//Draws TinTin character (idle, east)
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 
 	al_draw_bitmap_region(Background.image, Background.offset.x * -1, Background.offset.y * -1, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()), 0, 0, 0);
@@ -287,7 +291,7 @@ void PlayState::Init(){
 	Background.image = al_create_bitmap(4096, 2048);
 	blockBuff.image = al_create_bitmap(4096, 2048);
 
-	//TinTin.gravSlot = CurrentGrav->Register(&TinTin, TinTinGrav);	//registering main character in gravity queue (is affected at beginning)
+	TinTin.gravSlot = CurrentGrav->Register(&TinTin, TinTinGrav);	//registering main character in gravity queue (is affected at beginning)
 
 
 	//Setting Multiple Images to Background Buffer
