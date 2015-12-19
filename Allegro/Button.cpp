@@ -51,5 +51,5 @@ void Button::onMouseUp(){
 }
 
 void Button::Draw(){
-	al_draw_bitmap(tex, position.x, position.y, 0);
+	al_draw_bitmap(tex, position.x, position.y, ALLEGRO_VIDEO_BITMAP);
 }
