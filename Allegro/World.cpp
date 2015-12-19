@@ -7,18 +7,21 @@ World::World(Vector2D s, int gs){
 	gridSize = gs;
 	offset = Vector2D(0.f, 0.f);
 
-	for (int i = 0; i < 128; i++){
-		for (int j = 0; j < 64; j++){
-			Tile[i][j].location = Vector2D(i * gridSize, j * gridSize);
-			Tile[i][j].x = i;
-			Tile[i][j].y = j;
-		}
-	}
 	for (auto& sub : Blocks){
 		for (auto& elem : sub){
 			elem = Block();
 		}
 	}
+
+	for (int i = 0; i < 128; i++){
+		for (int j = 0; j < 64; j++){
+			Tile[i][j].location = Vector2D(i * gridSize, j * gridSize);
+			Blocks[i][j].position = Vector2D(i * gridSize, j * gridSize);
+			Tile[i][j].x = i;
+			Tile[i][j].y = j;
+		}
+	}
+
 }
 
 //Returns which tile was clicked based on the location of the click

@@ -4,7 +4,7 @@
 PlayState::PlayState(){
 	CurrentWorld = new World(Vector2D(4096.f, 2048.f), 32);
 	TinTin = Character(Vector2D(0, 0), 64, 128);	//TinTin character
-	CurrentGrav = new Gravity(Vector2D(0.f, 5.f));		//current world gravity
+	CurrentEffects = new Effects(Vector2D(0.f, 5.f));		//current world gravity
 	notPlayingBuff = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f)); //block buffer for when not playing
 	blockBuff = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f));	//play buffer for blocks
 	dubBuff = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f));	//buffer for grid
@@ -68,7 +68,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				CurrentWorld->bPlay = false;
 				TinTin.position = Vector2D(0.f, 0.f);
 			}
-			CurrentGrav->GonOff[TinTin.gravSlot] = true;
+			CurrentEffects->GonOff[TinTin.gravSlot] = true;
 			break;
 		case ALLEGRO_KEY_BACKSPACE:
 			if (!DeleteMode) {
@@ -169,14 +169,14 @@ void PlayState::Tick(){
 	TinTin.EvHandle();
 	TinTin.DoEv('f');
 	if (CurrentWorld->Blocks[(int)(TinTin.position.x / CurrentWorld->gridSize)][(int)(TinTin.position.y + TinTin.ActualHeight) / CurrentWorld->gridSize].bSpawned) {
-		CurrentGrav->GonOff[TinTin.gravSlot] = false;
+		CurrentEffects->GonOff[TinTin.gravSlot] = false;
 		al_destroy_bitmap(TinTin.spritesheet);
 		TinTin.DoEv('i');
 	}
 	else if (!CurrentWorld->Blocks[(int)(TinTin.position.x / CurrentWorld->gridSize)][(int)(TinTin.position.y + TinTin.ActualHeight) / CurrentWorld->gridSize].bSpawned) {
-		CurrentGrav->GonOff[TinTin.gravSlot] = true;
+		CurrentEffects->GonOff[TinTin.gravSlot] = true;
 	}
-	if (CurrentGrav->GonOff[TinTin.gravSlot]) {
+	if (CurrentEffects->GonOff[TinTin.gravSlot]) {
 		al_destroy_bitmap(TinTin.spritesheet);
 		TinTin.DoEv('f');
 	}
@@ -195,7 +195,8 @@ void PlayState::Tick(){
 			TinTin.position.x -= TinTin.delta.x;
 	}
 	if (CurrentWorld->bPlay) {
-		CurrentGrav->Tick();
+		CurrentEffects->GravTick();
+		CurrentEffects->ColTick(CurrentWorld, TinTin);
 	}
 	
 	CurrentWorld->Tick(delta);
@@ -291,8 +292,7 @@ void PlayState::Init(){
 	Background.image = al_create_bitmap(4096, 2048);
 	blockBuff.image = al_create_bitmap(4096, 2048);
 
-	TinTin.gravSlot = CurrentGrav->Register(&TinTin, TinTinGrav);	//registering main character in gravity queue (is affected at beginning)
-
+	TinTin.gravSlot = CurrentEffects->Register(&TinTin, TinTinGrav);	//registering main character in gravity queue (is affected at beginning)
 
 	//Setting Multiple Images to Background Buffer
 	al_set_target_bitmap(Background.image);
@@ -368,6 +368,6 @@ void PlayState::Destroy(){
 }
 
 PlayState::~PlayState(){
-	delete CurrentGrav;
+	delete CurrentEffects;
 	delete CurrentWorld;
 }

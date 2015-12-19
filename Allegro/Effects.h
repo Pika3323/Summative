@@ -1,20 +1,23 @@
 #pragma once
 
 #include "Engine.h"
+#include "World.h"
 #include "Character.h"
 
-class Gravity{
+class Effects{
 public:
-	Vector2D force;	//actual force exerted (dy)
+	Vector2D Gravforce;	//actual force exerted (dy)
 	int slot;	//for holding slot in array of characters as they are registered
 	class Character* All[100];		//all character to be affected by gravity
 	bool GonOff[100];
+	Vector2D CollisionPos[100];
 
 
-	Gravity();
-	Gravity(Vector2D f);	//setting the gravity first
+	Effects();
+	Effects(Vector2D f);	//setting the gravity first
 
 	int Register(Character* registrant, bool onOff);	//registering characters and whether and not they are affected
-	void Tick();	//actually applying force
+	void GravTick();	//applying force
+	void ColTick(World* Curr, Character charac);		//collision conditions
 private:
 };
