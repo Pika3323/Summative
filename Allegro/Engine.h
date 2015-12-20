@@ -9,6 +9,8 @@
 
 #include "Core.h"
 
+#ifndef _ENGINE
+#define _ENGINE
 
 class Engine{
 public:
@@ -71,7 +73,6 @@ private:
 
 bool Engine::bExit = false;
 
-#ifndef _ENGINE
-#define _ENGINE
+
 Engine* GEngine = new Engine();
 #endif

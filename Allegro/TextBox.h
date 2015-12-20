@@ -2,7 +2,7 @@
 
 #include "Engine.h"
 
-class Button : public UIComponent{
+class TextBox : public UIComponent{
 public:
 	char text[256];
 	ALLEGRO_COLOR bgColor;
@@ -11,10 +11,8 @@ public:
 	int height;
 	Vector2D position;
 	int id;
-	void (*onDown)();
 
-	Button(){}
-	Button(ALLEGRO_COLOR bg, ALLEGRO_COLOR tx, int w, int h, Vector2D pos, int i, const char t[], void (*down)());
+	TextBox(){}
 
 	void onHoverIn();
 	void onHoverOut();
@@ -24,5 +22,4 @@ public:
 private:
 	ALLEGRO_BITMAP* tex;
 	ALLEGRO_FONT* roboto;
-
 };

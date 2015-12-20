@@ -241,7 +241,7 @@ void PlayState::Draw(){
 	}
 	//Foreach loop that goes through every block
 
-	//al_hold_bitmap_drawing(true);
+	al_hold_bitmap_drawing(true);
 	for (auto& sub : CurrentWorld->Blocks){
 		for (auto& elem : sub){
 			//If the block has been created, draw it!
@@ -254,7 +254,7 @@ void PlayState::Draw(){
 		}
 	}
 
-	//al_hold_bitmap_drawing(false);
+	al_hold_bitmap_drawing(false);
 
 	if (bBoxSelect) {
 		GridTile newTile = CurrentWorld->getClickedTile(Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1)));
