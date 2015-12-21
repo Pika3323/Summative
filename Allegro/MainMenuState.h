@@ -2,6 +2,7 @@
 
 #include "Engine.h"
 #include "Button.h"
+#include "TextBox.h"
 
 class MainMenuState : public GameState {
 public:
@@ -11,7 +12,9 @@ public:
 	class Button BOptions;
 	class Button BExit;
 
-	class Button* AllButtons[10];
+	class TextBox t;
+
+	UIComponent* AllUIComponents[10];
 
 	void Init();
 
@@ -27,7 +30,8 @@ public:
 	MainMenuState();
 	~MainMenuState();
 };
-
-void PlayGame();
-void LoadEditor();
-void OpenSettings();
+namespace MainMenu{
+	void PlayGame();
+	void LoadEditor();
+	void OpenSettings();
+}

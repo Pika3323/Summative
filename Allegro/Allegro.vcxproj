@@ -42,6 +42,7 @@
     <ClCompile Include="MainMenuState.cpp" />
     <ClCompile Include="NewMain.cpp" />
     <ClCompile Include="PlayState.cpp" />
+    <ClCompile Include="TextBox.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="UIComponent.cpp" />
     <ClCompile Include="Vector2D.cpp" />

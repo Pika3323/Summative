@@ -9,13 +9,14 @@ public:
 	Vector2D position;
 	int id;
 
-	UIComponent();
+	UIComponent(){}
 
-	void onHoverIn();
-	void onHoverOut();
-	void onMouseDown();
-	void onMouseUp();
-	void Draw();
-private:
+	virtual void onHoverIn() = 0;
+	virtual void onHoverOut() = 0;
+	virtual void onMouseDown() = 0;
+	virtual void onMouseUp() = 0;
+	virtual void handleKeyInput(ALLEGRO_EVENT *ev) = 0;
+	virtual void Draw() = 0;
+protected:
 	ALLEGRO_BITMAP* tex;
 };

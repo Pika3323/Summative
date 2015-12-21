@@ -139,7 +139,13 @@ void Engine::Quit(){
 }
 
 void Engine::HandleInput(ALLEGRO_EVENT* ev){
-	Active->HandleEvents(ev);
+	if (!LockedComponent){
+		Active->HandleEvents(ev);
+	}
+	else{
+		LockedComponent->handleKeyInput(ev);
+	}
+	
 }
 
 void Engine::Tick(){
@@ -162,4 +168,12 @@ int Engine::GetDisplayWidth(){
 
 int Engine::GetDisplayHeight(){
 	return DisplayHeight;
+}
+
+void Engine::LockInputToUIComponent(UIComponent *c){
+	LockedComponent = c;
+}
+
+void Engine::ReleaseInput(){
+	LockedComponent = NULL;
 }

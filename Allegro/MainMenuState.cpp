@@ -2,15 +2,18 @@
 #include "PlayState.h"
 
 MainMenuState::MainMenuState(){
-	BPlayGame = Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 150, 243), 100, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 50, GEngine->GetDisplayHeight() / 2 - 90), 0, "PLAY GAME", &PlayGame);
-	BEditorGame = Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 100, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 50, GEngine->GetDisplayHeight() / 2 - 54), 0, "LEVEL EDITOR", &LoadEditor);
-	BOptions = Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 100, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 50, GEngine->GetDisplayHeight() / 2 - 18), 0, "OPTIONS", &OpenSettings);
+	BPlayGame = Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 150, 243), 100, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 50, GEngine->GetDisplayHeight() / 2 - 90), 0, "PLAY GAME", &MainMenu::PlayGame);
+	BEditorGame = Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 100, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 50, GEngine->GetDisplayHeight() / 2 - 54), 0, "LEVEL EDITOR", &MainMenu::LoadEditor);
+	BOptions = Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 100, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 50, GEngine->GetDisplayHeight() / 2 - 18), 0, "OPTIONS", &MainMenu::OpenSettings);
 	BExit = Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 100, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 50, GEngine->GetDisplayHeight() / 2 + 18), 0, "EXIT", &GEngine->Quit);
 
-	AllButtons[0] = &BPlayGame;
-	AllButtons[1] = &BEditorGame;
-	AllButtons[2] = &BOptions;
-	AllButtons[3] = &BExit;
+	t = TextBox(BLUE500, al_map_rgb(33, 33, 33), 100, 72, Vector2D(GEngine->GetDisplayWidth() / 2 - 50, 0), 1, "Test");
+
+	AllUIComponents[0] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 150, 243), 100, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 50, GEngine->GetDisplayHeight() / 2 - 90), 0, "PLAY GAME", &MainMenu::PlayGame);
+	AllUIComponents[1] = &BEditorGame;
+	AllUIComponents[2] = &BOptions;
+	AllUIComponents[3] = &BExit;
+	AllUIComponents[4] = &t;
 }
 
 void MainMenuState::Init(){
@@ -21,13 +24,13 @@ void MainMenuState::HandleEvents(ALLEGRO_EVENT *ev){
 	if (ev->type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
 		switch (ev->mouse.button){
 		case MOUSE_LB:
-			for (int i = 0; i < 4; i++){
-				if (InRange(GEngine->GetMouseState().x, AllButtons[i]->position.x, AllButtons[i]->position.x + AllButtons[i]->width) && InRange(GEngine->GetMouseState().y, AllButtons[i]->position.y, AllButtons[i]->position.y + AllButtons[i]->height)){
-					AllButtons[i]->onMouseDown();
+			for (int i = 0; i < 5; i++){
+				if (InRange(GEngine->GetMouseState().x, AllUIComponents[i]->position.x, AllUIComponents[i]->position.x + AllUIComponents[i]->width) && InRange(GEngine->GetMouseState().y, AllUIComponents[i]->position.y, AllUIComponents[i]->position.y + AllUIComponents[i]->height)){
+					AllUIComponents[i]->onMouseDown();
 					break;
 				}
 				else {
-					AllButtons[i]->onMouseUp();
+					AllUIComponents[i]->onMouseUp();
 				}
 			}
 		}
@@ -35,13 +38,13 @@ void MainMenuState::HandleEvents(ALLEGRO_EVENT *ev){
 }
 
 void MainMenuState::Tick(){
-	for (int i = 0; i < 4; i++){
-		if (InRange(GEngine->GetMouseState().x, AllButtons[i]->position.x, AllButtons[i]->position.x + AllButtons[i]->width) && InRange(GEngine->GetMouseState().y, AllButtons[i]->position.y, AllButtons[i]->position.y + AllButtons[i]->height)){
-			AllButtons[i]->onHoverIn();
+	for (int i = 0; i < 5; i++){
+		if (InRange(GEngine->GetMouseState().x, AllUIComponents[i]->position.x, AllUIComponents[i]->position.x + AllUIComponents[i]->width) && InRange(GEngine->GetMouseState().y, AllUIComponents[i]->position.y, AllUIComponents[i]->position.y + AllUIComponents[i]->height)){
+			AllUIComponents[i]->onHoverIn();
 			break;
 		}
 		else {
-			AllButtons[i]->onHoverOut();
+			AllUIComponents[i]->onHoverOut();
 		}
 	}
 }
@@ -50,8 +53,9 @@ void MainMenuState::Draw(){
 	//Draws the buttons to the screen
 	al_clear_to_color(al_map_rgb(250, 250, 250));
 	for (int i = 0; i < 4; i++){
-		AllButtons[i]->Draw();
+		AllUIComponents[i]->Draw();
 	}
+	t.Draw();
 }
 
 void MainMenuState::Destroy(){
@@ -71,14 +75,14 @@ MainMenuState::~MainMenuState(){
 
 }
 
-void PlayGame(){
+void MainMenu::PlayGame(){
 	GEngine->ChangeGameState<PlayState>();
 }
 
-void LoadEditor(){
+void MainMenu::LoadEditor(){
 	printf("Load the editor\n");
 }
 
-void OpenSettings(){
+void MainMenu::OpenSettings(){
 	printf("Open the settings\n");
 }

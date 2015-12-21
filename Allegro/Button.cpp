@@ -50,6 +50,9 @@ void Button::onMouseUp(){
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 }
 
+void Button::handleKeyInput(ALLEGRO_EVENT *ev){
+
+}
 void Button::Draw(){
 	al_draw_bitmap(tex, position.x, position.y, ALLEGRO_VIDEO_BITMAP);
 }

@@ -7,6 +7,18 @@
 #define MOUSE_RB 2
 #define MOUSE_MB 3
 
+//Material Colors (Blue in this case)
+#define BLUE50	al_map_rgb(227, 242, 253)
+#define BLUE100	al_map_rgb(187, 222, 251)
+#define BLUE200	al_map_rgb(144, 202, 249)
+#define BLUE300	al_map_rgb(100, 181, 246)
+#define BLUE400	al_map_rgb(66, 165, 245)
+#define BLUE500 al_map_rgb(33, 150, 243)
+#define BLUE600	al_map_rgb(30, 136, 229)
+#define BLUE700 al_map_rgb(25, 118, 210)
+#define BLUE800 al_map_rgb(21, 101, 192)
+#define BLUE900 al_map_rgb(13, 71, 161)
+
 #include "Core.h"
 
 #ifndef _ENGINE
@@ -24,6 +36,9 @@ public:
 	ALLEGRO_MOUSE_STATE GetMouseState();
 	int GetDisplayWidth();
 	int GetDisplayHeight();
+
+	void LockInputToUIComponent(class UIComponent *c);
+	void ReleaseInput();
 
 	void DrawFPS(double detla);
 	
@@ -64,6 +79,8 @@ private:
 	ALLEGRO_FONT* debug_font;
 	ALLEGRO_MOUSE_STATE mouse_state;
 	ALLEGRO_BITMAP* master_buffer;
+
+	UIComponent* LockedComponent;
 	
 	bool bRedraw;
 	int StateIndex;
