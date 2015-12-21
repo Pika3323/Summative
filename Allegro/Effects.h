@@ -18,6 +18,6 @@ public:
 
 	int Register(Character* registrant, bool onOff);	//registering characters and whether and not they are affected
 	void GravTick();	//applying force
-	void ColTick(World* Curr, Character charac);		//collision conditions
+	void ColTick(World* Curr, Character &charac);		//collision conditions
 private:
 };

@@ -4,7 +4,7 @@
 PlayState::PlayState(){
 	CurrentWorld = new World(Vector2D(4096.f, 2048.f), 32);
 	TinTin = Character(Vector2D(0, 0), 64, 128);	//TinTin character
-	CurrentEffects = new Effects(Vector2D(0.f, 5.f));		//current world gravity
+	CurrentEffects = new Effects(Vector2D(0.f, 1.f));		//current world gravity
 	notPlayingBuff = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f)); //block buffer for when not playing
 	blockBuff = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f));	//play buffer for blocks
 	dubBuff = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f));	//buffer for grid
@@ -19,12 +19,14 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 		case ALLEGRO_KEY_D:
 		case ALLEGRO_KEY_RIGHT:
 			TinTin.flipped = false;
+			TinTin.velocity.x = 5;
 			moveDelta.x = -5.f;
 			TinTin.moving = true;
 			break;
 		case ALLEGRO_KEY_A:
 		case ALLEGRO_KEY_LEFT:
 			moveDelta.x = 5.f;
+			TinTin.velocity.x = -5;
 			TinTin.moving = true;
 			TinTin.flipped = true;
 			break;
@@ -69,6 +71,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				TinTin.position = Vector2D(0.f, 0.f);
 			}
 			CurrentEffects->GonOff[TinTin.gravSlot] = true;
+			TinTin.velocity = Vector2D(0.f, 0.f);
 			break;
 		case ALLEGRO_KEY_BACKSPACE:
 			if (!DeleteMode) {
@@ -81,6 +84,9 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 		case ALLEGRO_KEY_ESCAPE:
 			GEngine->Quit();
 			break;
+		case ALLEGRO_KEY_E:
+			TinTin.velocity.y = -20;
+			break;
 		default:
 			break;
 		}
@@ -90,9 +96,12 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 		switch (ev->keyboard.keycode) {
 		case ALLEGRO_KEY_D:
 		case ALLEGRO_KEY_RIGHT:
+			moveDelta.x = 0.f;
+			TinTin.velocity.x = 0;
 			TinTin.moving = false;
 		case ALLEGRO_KEY_A:
 		case ALLEGRO_KEY_LEFT:
+			TinTin.velocity.x = 0;
 			moveDelta.x = 0.f;
 			TinTin.moving = false;
 			break;
@@ -168,7 +177,11 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 void PlayState::Tick(){
 	TinTin.EvHandle();
 	TinTin.DoEv('f');
-	if (CurrentWorld->Blocks[(int)(TinTin.position.x / CurrentWorld->gridSize)][(int)(TinTin.position.y + TinTin.ActualHeight) / CurrentWorld->gridSize].bSpawned) {
+	if (CurrentWorld->Blocks[(int)((TinTin.position.x + 32) / CurrentWorld->gridSize)][(int)(TinTin.position.y + TinTin.ActualHeight) / CurrentWorld->gridSize].bSpawned) {
+		TinTin.position.y = CurrentWorld->Blocks[(int)((TinTin.position.x) / CurrentWorld->gridSize)][(int)(TinTin.position.y) / CurrentWorld->gridSize].position.y;
+		if (TinTin.velocity.y > 0) {
+			TinTin.velocity.y = 0;
+		}
 		CurrentEffects->GonOff[TinTin.gravSlot] = false;
 		al_destroy_bitmap(TinTin.spritesheet);
 		TinTin.DoEv('i');
@@ -180,25 +193,18 @@ void PlayState::Tick(){
 		al_destroy_bitmap(TinTin.spritesheet);
 		TinTin.DoEv('f');
 	}
-	if (TinTin.moving && TinTin.animation == 'f') {
-		if (!TinTin.flipped)
-			TinTin.position.x += TinTin.delta.x;
-		else
-			TinTin.position.x -= TinTin.delta.x;
+	else if (TinTin.moving && TinTin.animation == 'f') {
 	}
 	else if (TinTin.moving) {
 		al_destroy_bitmap(TinTin.spritesheet);
 		TinTin.DoEv('r');
-		if (!TinTin.flipped)
-			TinTin.position.x += TinTin.delta.x;
-		else
-			TinTin.position.x -= TinTin.delta.x;
 	}
 	if (CurrentWorld->bPlay) {
 		CurrentEffects->GravTick();
 		CurrentEffects->ColTick(CurrentWorld, TinTin);
 	}
-	
+	TinTin.position += TinTin.velocity;
+
 	CurrentWorld->Tick(delta);
 	CurrentWorld->moveWorld(moveDelta, dubBuff, Background, blockBuff, notPlayingBuff, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()));
 
@@ -293,6 +299,8 @@ void PlayState::Init(){
 	blockBuff.image = al_create_bitmap(4096, 2048);
 
 	TinTin.gravSlot = CurrentEffects->Register(&TinTin, TinTinGrav);	//registering main character in gravity queue (is affected at beginning)
+	TinTin.position = Vector2D(0.f, 0.f);		//making sure TinTin doesn't start in weird place
+	TinTin.velocity = Vector2D(0.f, 0.f);		//velocty starts at zero
 
 	//Setting Multiple Images to Background Buffer
 	al_set_target_bitmap(Background.image);

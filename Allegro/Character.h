@@ -6,6 +6,7 @@ class Character{
 public:
 	//essentials of class
 	Vector2D position;
+	Vector2D velocity;
 	Vector2D delta;
 	ALLEGRO_BITMAP *spritesheet;
 	int ActualWidth;
