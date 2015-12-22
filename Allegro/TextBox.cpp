@@ -38,5 +38,11 @@ void TextBox::Draw(){
 }
 
 void TextBox::handleKeyInput(ALLEGRO_EVENT *ev){
-
+	char temp[2] = { ev->keyboard.unichar, '\0' };
+	strcat(text, temp);
+	al_set_target_bitmap(tex);
+	al_clear_to_color(al_map_rgba(0, 0, 0, 0));
+	al_draw_line(0, height - 1, width, height - 1, pColor, 1);
+	al_draw_textf(roboto, textColor, 4, height / 2 + 8, ALLEGRO_ALIGN_LEFT, "%s", text);
+	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 }
