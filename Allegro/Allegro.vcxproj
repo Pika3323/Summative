@@ -14,11 +14,18 @@
     <ClInclude Include="Block.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="Button.h" />
+    <ClInclude Include="Core.h" />
+    <ClInclude Include="EditorState.h" />
     <ClInclude Include="Effects.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Character.h" />
+    <ClInclude Include="GameState.h" />
     <ClInclude Include="IMath.h" />
+    <ClInclude Include="MainMenuState.h" />
+    <ClInclude Include="PlayState.h" />
+    <ClInclude Include="TextBox.h" />
     <ClInclude Include="UI.h" />
+    <ClInclude Include="UIComponent.h" />
     <ClInclude Include="Vector2D.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
@@ -29,9 +36,15 @@
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Effects.cpp" />
+    <ClCompile Include="GameState.cpp" />
     <ClCompile Include="IMath.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainMenuState.cpp" />
+    <ClCompile Include="NewMain.cpp" />
+    <ClCompile Include="PlayState.cpp" />
+    <ClCompile Include="TextBox.cpp" />
     <ClCompile Include="UI.cpp" />
+    <ClCompile Include="UIComponent.cpp" />
     <ClCompile Include="Vector2D.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
@@ -77,7 +90,8 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>D:\AllegroMSVC\lib;D:\libcurl\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>allegro_monolith.lib;opengl32.lib;glu32.lib;libcurl_a.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>allegro_monolith-debug.lib;opengl32.lib;glu32.lib;libcurl_a.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
