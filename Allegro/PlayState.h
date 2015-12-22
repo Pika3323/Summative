@@ -12,7 +12,7 @@ public:
 
 	World* CurrentWorld;
 	Character TinTin;	//TinTin character
-	Gravity* CurrentGrav;		//current world gravity
+	Effects* CurrentEffects;		//current world gravity
 	Buffer notPlayingBuff; //block buffer for when not playing
 	Buffer blockBuff;	//play buffer for blocks
 	Buffer dubBuff;	//buffer for grid

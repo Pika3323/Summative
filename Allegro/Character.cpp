@@ -10,24 +10,29 @@ Character::Character(Vector2D xy, int width, int height){
 	ActualHeight = height;
 	moving = false;
 	flipped = false;
+	running = al_load_bitmap("Textures/running_e.png");
+	falling = al_load_bitmap("Textures/fall_e.png");
+	idle = al_load_bitmap("Textures/idle_e.png");
+	spritesheet = falling;
 }
 
 void Character::DoEv(char CharacEv){
+	if (animation != CharacEv) {
+		curfram = 0;
+		framcount = 0;
+	}
 	animation = CharacEv;
-	//add 'if' later when more spritesheets are added to check dx to see which facing direction to load
 	if (animation == 'i') {
-		spritesheet = al_load_bitmap("Textures/idle_e.png");
+		spritesheet = idle;
 	}
 	else if (animation == 'f') {
-		spritesheet = al_load_bitmap("Textures/fall_e.png");
+		spritesheet = falling;
 	}
-
 	else if (animation == 'r') {
-		spritesheet = al_load_bitmap("Textures/running_e.png");
+		spritesheet = running;
 	}
 }
 void Character::EvHandle(){
-	//idle handles
 	if (animation == 'i') {
 		maxfram = 6;
 	}
@@ -66,4 +71,10 @@ void Character::Animate(bool flipped){
 		al_draw_bitmap_region(spritesheet, (curfram * ActualWidth), 0, ActualWidth, ActualHeight, position.x, position.y, ALLEGRO_FLIP_HORIZONTAL);
 	}
 	//add more here
+}
+
+void Character::shutdown(){
+	al_destroy_bitmap(running);
+	al_destroy_bitmap(idle);
+	al_destroy_bitmap(falling);
 }
