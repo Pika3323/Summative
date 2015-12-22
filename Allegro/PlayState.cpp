@@ -175,36 +175,31 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 }
 
 void PlayState::Tick(){
-	TinTin.EvHandle();
-	TinTin.DoEv('f');
-	if (CurrentWorld->Blocks[(int)((TinTin.position.x + 32) / CurrentWorld->gridSize)][(int)(TinTin.position.y + TinTin.ActualHeight) / CurrentWorld->gridSize].bSpawned) {
+	if (CurrentWorld->bPlay) {
+		CurrentEffects->GravTick();
+		CurrentEffects->ColTick(CurrentWorld, TinTin);
+	}
+	if (CurrentWorld->Blocks[(int)((TinTin.position.x + 20) / CurrentWorld->gridSize)][(int)(TinTin.position.y + TinTin.ActualHeight) / CurrentWorld->gridSize].bSpawned) {
 		TinTin.position.y = CurrentWorld->Blocks[(int)((TinTin.position.x) / CurrentWorld->gridSize)][(int)(TinTin.position.y) / CurrentWorld->gridSize].position.y;
 		if (TinTin.velocity.y > 0) {
 			TinTin.velocity.y = 0;
 		}
 		CurrentEffects->GonOff[TinTin.gravSlot] = false;
-		al_destroy_bitmap(TinTin.spritesheet);
-		TinTin.DoEv('i');
 	}
-	else if (!CurrentWorld->Blocks[(int)(TinTin.position.x / CurrentWorld->gridSize)][(int)(TinTin.position.y + TinTin.ActualHeight) / CurrentWorld->gridSize].bSpawned) {
+	else if (!CurrentWorld->Blocks[(int)((TinTin.position.x + 32) / CurrentWorld->gridSize)][(int)(TinTin.position.y + TinTin.ActualHeight) / CurrentWorld->gridSize].bSpawned) {
 		CurrentEffects->GonOff[TinTin.gravSlot] = true;
 	}
 	if (CurrentEffects->GonOff[TinTin.gravSlot]) {
-		al_destroy_bitmap(TinTin.spritesheet);
 		TinTin.DoEv('f');
 	}
-	else if (TinTin.moving && TinTin.animation == 'f') {
-	}
-	else if (TinTin.moving) {
-		al_destroy_bitmap(TinTin.spritesheet);
+	else if (TinTin.moving && !CurrentEffects->GonOff[TinTin.gravSlot]) {
 		TinTin.DoEv('r');
 	}
-	if (CurrentWorld->bPlay) {
-		CurrentEffects->GravTick();
-		CurrentEffects->ColTick(CurrentWorld, TinTin);
+	else if (!TinTin.moving) {
+		TinTin.DoEv('i');
 	}
-	TinTin.position += TinTin.velocity;
-
+	TinTin.position += TinTin.velocity;		//moving character with all added velocities to y
+	TinTin.EvHandle();
 	CurrentWorld->Tick(delta);
 	CurrentWorld->moveWorld(moveDelta, dubBuff, Background, blockBuff, notPlayingBuff, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()));
 
@@ -373,6 +368,10 @@ void PlayState::Destroy(){
 			printf("Could not save level as %s\n", levelName);
 		}
 	}
+
+	TinTin.shutdown();
+	al_destroy_bitmap(blockBuff.image);
+	al_destroy_bitmap(dubBuff.image);
 }
 
 PlayState::~PlayState(){

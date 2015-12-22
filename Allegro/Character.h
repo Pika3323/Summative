@@ -9,6 +9,9 @@ public:
 	Vector2D velocity;
 	Vector2D delta;
 	ALLEGRO_BITMAP *spritesheet;
+	ALLEGRO_BITMAP *running;
+	ALLEGRO_BITMAP *idle;
+	ALLEGRO_BITMAP *falling;
 	int ActualWidth;
 	int ActualHeight;
 	char animation;
@@ -28,5 +31,6 @@ public:
 	void DoEv(char CharacterEv);
 	void EvHandle();
 	void Animate(bool flipped);
+	void shutdown();
 private:
 };
