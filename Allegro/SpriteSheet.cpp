@@ -7,6 +7,19 @@ SpriteSheet::SpriteSheet(ALLEGRO_BITMAP* s, int width, int height, int frames){
 	FrameCount = frames;
 }
 
+void SpriteSheet::PushFrame(){
+	FrameIndex++;
+	//Reset to frame 0 if the active frame has gone beyond the number of frames in the sheet
+	if (FrameIndex > FrameCount){
+		FrameIndex = 0;
+	}
+
+	//Reset to maximum frame if the active frame has gone past the first frame in the sheet
+	if (FrameIndex < 0){
+		FrameIndex = FrameCount;
+	}
+}
+
 void SpriteSheet::PushFrame(EADirection Direction){
 	FrameIndex += static_cast<int>(Direction);
 

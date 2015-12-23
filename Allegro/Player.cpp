@@ -8,11 +8,26 @@ Player::Player(){
 
 void Player::Run(Vector2D vel){
 	Clamp(velocity.x += 0.1f, 0.f, vel.x);
-	Clamp(velocity.y += 0.1f, 0.f, vel.y);
+	//Clamp(velocity.y += 0.1f, 0.f, vel.y);
+
+	this->SetCharacterDirection(static_cast<ECharacterDirection>(velocity.x > 0.f));
 
 	position += velocity;
 }
 
+//Called every frame
 void Player::Tick(float delta){
-
+	//All of the animation code
+	if (bRunning && bOnGround){
+		texture = run.GetFrameBitmap();
+		run.PushFrame();
+	}
+	else if (bOnGround){
+		texture = still.GetFrameBitmap();
+		still.PushFrame();
+	}
+	else if (!bOnGround){
+		texture = fall.GetFrameBitmap();
+		fall.PushFrame();
+	}
 }

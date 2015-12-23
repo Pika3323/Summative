@@ -34,6 +34,7 @@ public:
 	ALLEGRO_FONT* GetDebugFont();
 	ALLEGRO_EVENT_QUEUE* GetEventQueue();
 	ALLEGRO_MOUSE_STATE GetMouseState();
+	ALLEGRO_KEYBOARD_STATE GetKeyboardState();
 	int GetDisplayWidth();
 	int GetDisplayHeight();
 
@@ -56,7 +57,7 @@ public:
 	//void RegisterState(class GameState* state);
 
 	void HandleInput(ALLEGRO_EVENT *ev);
-	void Tick();
+	void Tick(float delta);
 	void Draw();
 
 	static void Quit();
@@ -78,6 +79,7 @@ private:
 	ALLEGRO_TIMER *timer;
 	ALLEGRO_FONT* debug_font;
 	ALLEGRO_MOUSE_STATE mouse_state;
+	ALLEGRO_KEYBOARD_STATE keyboard_state;
 	ALLEGRO_BITMAP* master_buffer;
 
 	UIComponent* LockedComponent;

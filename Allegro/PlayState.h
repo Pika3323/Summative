@@ -1,17 +1,18 @@
 #pragma once
 
+#include "Engine.h"
 #include "World.h"
 #include "Buffer.h"
-#include "Character.h"
+#include "Player.h"
 #include "Effects.h"
 #include "Block.h"
-#include "Engine.h"
+
 
 class PlayState : public GameState {
 public:
 
 	World* CurrentWorld;
-	Character TinTin;	//TinTin character
+	Player* TinTin;	//The main player character
 	Effects* CurrentEffects;		//current world gravity
 	Buffer notPlayingBuff; //block buffer for when not playing
 	Buffer blockBuff;	//play buffer for blocks

@@ -21,7 +21,7 @@ int main(int argc, char* argv[]){
 		}
 		//Run the functions for a single tick
 		else if (ev.type == ALLEGRO_EVENT_TIMER){
-			GEngine->Tick();
+			GEngine->Tick(GEngine->delta);
 		}
 		//Handle all other inputs
 		else {

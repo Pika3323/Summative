@@ -10,8 +10,7 @@ enum class ECharacterDirection{
 class Character{
 public:
 	//essentials of class
-	Vector2D position;
-	Vector2D velocity;
+	
 
 	//constructors
 	Character(){}
@@ -28,12 +27,18 @@ public:
 	void Animate(bool flipped);
 	void shutdown();
 
+	void SetCharacterWorldPosition(Vector2D NewV);
+	Vector2D GetCharacterWorldPosition();
+
 	void SetCharacterDirection(ECharacterDirection NewDirection);
 	void Draw();
 
 	~Character();
 
 protected:
+	Vector2D position;
+	Vector2D velocity;
+
 	ALLEGRO_BITMAP* texture;
 
 	ALLEGRO_BITMAP *spritesheet;
@@ -50,7 +55,7 @@ protected:
 	int framcount;
 	int gravSlot;
 	
-	bool bMoving;
+	bool bRunning;
 	bool bFlipped;
 	bool bOnGround;
 private:

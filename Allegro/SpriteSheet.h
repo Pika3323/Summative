@@ -10,6 +10,7 @@ enum class EADirection{
 
 class SpriteSheet{
 public:
+	void PushFrame();
 	void PushFrame(EADirection Direction);
 	ALLEGRO_BITMAP* GetFrameBitmap();
 

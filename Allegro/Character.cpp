@@ -79,6 +79,14 @@ Character::~Character(){
 	al_destroy_bitmap(falling);
 }
 
+void Character::SetCharacterWorldPosition(Vector2D NewV){
+	position = NewV;
+}
+
+Vector2D Character::GetCharacterWorldPosition(){
+	return position;
+}
+
 void Character::SetCharacterDirection(ECharacterDirection NewDirection){
 	direction = NewDirection;
 }

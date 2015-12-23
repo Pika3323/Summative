@@ -26,6 +26,10 @@ ALLEGRO_MOUSE_STATE Engine::GetMouseState(){
 	return mouse_state;
 }
 
+ALLEGRO_KEYBOARD_STATE Engine::GetKeyboardState(){
+	return keyboard_state;
+}
+
 void Engine::DrawFPS(double delta){
 	ALLEGRO_COLOR tColor;
 	if (1 / delta >= 30){
@@ -149,9 +153,10 @@ void Engine::HandleInput(ALLEGRO_EVENT* ev){
 	
 }
 
-void Engine::Tick(){
+void Engine::Tick(float delta){
 	al_get_mouse_state(&mouse_state);
-	Active->Tick();
+	al_get_keyboard_state(&keyboard_state);
+	Active->Tick(delta);
 	bRedraw = true;
 }
 

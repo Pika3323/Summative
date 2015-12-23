@@ -3,7 +3,8 @@
 
 PlayState::PlayState(){
 	CurrentWorld = new World(Vector2D(4096.f, 2048.f), 32);
-	TinTin = Character(Vector2D(0, 0), 64, 128);	//TinTin character
+	TinTin = new Player();	//The main player character
+	TinTin->SetCharacterWorldPosition(Vector2D(0.f, 0.f));
 	CurrentEffects = new Effects(Vector2D(0.f, 1.f));		//current world gravity
 	notPlayingBuff = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f)); //block buffer for when not playing
 	blockBuff = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f));	//play buffer for blocks
@@ -16,13 +17,14 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 	if (ev->type == ALLEGRO_EVENT_KEY_DOWN) {
 		switch (ev->keyboard.keycode) {
 			//Close window if escape key is pressed
-		case ALLEGRO_KEY_D:
+		/*case ALLEGRO_KEY_D:
 		case ALLEGRO_KEY_RIGHT:
 			TinTin.flipped = false;
 			TinTin.velocity.x = 5;
 			moveDelta.x = -5.f;
 			TinTin.moving = true;
 			break;
+			*/
 		case ALLEGRO_KEY_A:
 		case ALLEGRO_KEY_LEFT:
 			moveDelta.x = 5.f;
@@ -175,6 +177,21 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 }
 
 void PlayState::Tick(float delta){
+
+	//Handle key inputs..
+	if (al_key_down(&GEngine->GetKeyboardState(), 'D')){
+		TinTin->Run(Vector2D(5.f, 0.f));
+	}
+	else if (al_key_down(&GEngine->GetKeyboardState(), 'A')){
+		TinTin->Run(Vector2D(-5.f, 0.f));
+	}
+	else if (al_key_down(&GEngine->GetKeyboardState(), 'W')){
+		TinTin->Jump();
+	}
+
+	if (TinTin->GetCharacterWorldPosition().y < CurrentWorld->dimensions.x){
+		TinTin->Die();
+	}
 	if (CurrentWorld->bPlay) {
 		CurrentEffects->GravTick();
 		CurrentEffects->ColTick(CurrentWorld, TinTin);
