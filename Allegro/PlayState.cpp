@@ -174,7 +174,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 	}
 }
 
-void PlayState::Tick(){
+void PlayState::Tick(float delta){
 	if (CurrentWorld->bPlay) {
 		CurrentEffects->GravTick();
 		CurrentEffects->ColTick(CurrentWorld, TinTin);

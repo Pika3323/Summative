@@ -22,7 +22,9 @@
     <ClInclude Include="GameState.h" />
     <ClInclude Include="IMath.h" />
     <ClInclude Include="MainMenuState.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="PlayState.h" />
+    <ClInclude Include="SpriteSheet.h" />
     <ClInclude Include="TextBox.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="UIComponent.h" />
@@ -41,7 +43,9 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenuState.cpp" />
     <ClCompile Include="NewMain.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayState.cpp" />
+    <ClCompile Include="SpriteSheet.cpp" />
     <ClCompile Include="TextBox.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="UIComponent.cpp" />

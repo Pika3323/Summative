@@ -22,7 +22,7 @@ public:
 	void Resume();
 
 	void HandleEvents(ALLEGRO_EVENT *ev);
-	void Tick();
+	void Tick(float delta);
 	void Draw();
 
 	void Destroy();

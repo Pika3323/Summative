@@ -3,13 +3,13 @@
 Character::Character(Vector2D xy, int width, int height){
 	position = xy;
 	delay = 5;
-	delta = Vector2D(5.f, 5.f);
 	curfram = 0;
 	framcount = 0;
 	ActualWidth = width;
 	ActualHeight = height;
-	moving = false;
-	flipped = false;
+	bMoving = false;
+	bFlipped = false;
+	direction = ECharacterDirection::R_Right;
 	running = al_load_bitmap("Textures/running_e.png");
 	falling = al_load_bitmap("Textures/fall_e.png");
 	idle = al_load_bitmap("Textures/idle_e.png");
@@ -73,8 +73,16 @@ void Character::Animate(bool flipped){
 	//add more here
 }
 
-void Character::shutdown(){
+Character::~Character(){
 	al_destroy_bitmap(running);
 	al_destroy_bitmap(idle);
 	al_destroy_bitmap(falling);
+}
+
+void Character::SetCharacterDirection(ECharacterDirection NewDirection){
+	direction = NewDirection;
+}
+
+void Character::Draw(){
+	al_draw_bitmap(texture, position.x, position.y, static_cast<int>(direction));
 }

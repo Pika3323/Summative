@@ -37,7 +37,7 @@ void MainMenuState::HandleEvents(ALLEGRO_EVENT *ev){
 	}
 }
 
-void MainMenuState::Tick(){
+void MainMenuState::Tick(float delta){
 	for (int i = 0; i < 5; i++){
 		if (InRange(GEngine->GetMouseState().x, AllUIComponents[i]->position.x, AllUIComponents[i]->position.x + AllUIComponents[i]->width) && InRange(GEngine->GetMouseState().y, AllUIComponents[i]->position.y, AllUIComponents[i]->position.y + AllUIComponents[i]->height)){
 			AllUIComponents[i]->onHoverIn();

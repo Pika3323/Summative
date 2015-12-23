@@ -52,6 +52,12 @@
     <ClCompile Include="TextBox.cpp">
       <Filter>Engine\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Game\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteSheet.cpp">
+      <Filter>Engine\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Block.h">
@@ -103,6 +109,12 @@
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UIComponent.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Game\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteSheet.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
