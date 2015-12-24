@@ -7,13 +7,16 @@
 #include "Effects.h"
 #include "Block.h"
 
-
 class PlayState : public GameState {
 public:
-
+	//The active World (or level) that is being played
 	World* CurrentWorld;
-	Player* TinTin;	//The main player character
-	Effects* CurrentEffects;		//current world gravity
+
+	//The main player
+	Player* TinTin;
+
+	//Effects (including gravity) for the current world
+	Effects* CurrentEffects;		
 	Buffer notPlayingBuff; //block buffer for when not playing
 	Buffer blockBuff;	//play buffer for blocks
 	Buffer dubBuff;	//buffer for grid
@@ -24,7 +27,7 @@ public:
 	EBlockType SelectedBlock = EBlockType::B_Brick;		//the block type the user selects
 	bool DeleteMode = false;
 	bool TinTinGrav = true;
-	Vector2D moveDelta = Vector2D(0.f, 0.f);
+	Vector2D WorldMoveDelta = Vector2D(0.f, 0.f);
 
 	ALLEGRO_BITMAP* output;
 

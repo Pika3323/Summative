@@ -2,6 +2,7 @@
 
 #include "Engine.h"
 
+//Represents the direction in which the character is facing
 enum class ECharacterDirection{
 	R_Right,
 	R_Left
@@ -9,55 +10,69 @@ enum class ECharacterDirection{
 
 class Character{
 public:
-	//essentials of class
-	
-
-	//constructors
-	Character(){}
-	Character(Vector2D xy, int width, int height);
-
-	//event handlers (i idle, r run, s stop, j jump)
-	virtual void Run(Vector2D velocity) = 0;
-	virtual void Jump() = 0;
-	virtual void Tick(float delta) = 0;
-	virtual void Die() = 0;
-
-	void DoEv(char CharacterEv);
-	void EvHandle();
-	void Animate(bool flipped);
-	void shutdown();
-
-	void SetCharacterWorldPosition(Vector2D NewV);
-	Vector2D GetCharacterWorldPosition();
-
-	void SetCharacterDirection(ECharacterDirection NewDirection);
-	void Draw();
-
-	~Character();
-
-protected:
-	Vector2D position;
+	//The character's instantaneous velocity
 	Vector2D velocity;
 
-	ALLEGRO_BITMAP* texture;
-
-	ALLEGRO_BITMAP *spritesheet;
-	ALLEGRO_BITMAP *running;
-	ALLEGRO_BITMAP *idle;
-	ALLEGRO_BITMAP *falling;
-
-	int ActualWidth;
-	int ActualHeight;
-	char animation;
-	int maxfram;
-	int curfram;
-	int delay;
-	int framcount;
+	//The gravity effect slot
 	int gravSlot;
-	
+
+	//Whether the character is running
 	bool bRunning;
+
+	//Whether the character has been flipped
 	bool bFlipped;
+
+	//Whether the character is touching the ground or is in the air
 	bool bOnGround;
-private:
+
+	//The actual width of the character
+	int ActualWidth;
+
+	//The actual height of the character
+	int ActualHeight;
+
+	//Default constructor
+	Character(){}
+	
+	//Character Constructor
+	Character(Vector2D xy, int width, int height);
+
+	//Called while the character is running
+	virtual void Run(Vector2D velocity) = 0;
+
+	//Called when the character jumps
+	virtual void Jump() = 0;
+
+	//Called on every frame
+	virtual void Tick(float delta) = 0;
+
+	//Called when the character dies
+	virtual void Die() = 0;
+	
+	//Sets the position of the character
+	void SetCharacterWorldPosition(Vector2D NewV);
+
+	//Returns the position of the character
+	Vector2D GetCharacterWorldPosition();
+
+	//Set the direction in which the character is facing
+	void SetCharacterDirection(ECharacterDirection NewDirection);
+	
+	//Return the direction in which the character is facing
+	ECharacterDirection GetCharacterDirection();
+
+	//Draws the character to the screen
+	void Draw();
+
+	//Character destructor
+	~Character();
+protected:
+	//The position of the character
+	Vector2D position;
+
+	//The overall texture of the character which is drawn to the screen
+	ALLEGRO_BITMAP* texture;
+	
+	//The direction that the character is facing
 	ECharacterDirection direction;
 };

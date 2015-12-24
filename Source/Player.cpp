@@ -8,11 +8,23 @@ Player::Player(){
 
 void Player::Run(Vector2D vel){
 	Clamp(velocity.x += 0.1f, 0.f, vel.x);
-	//Clamp(velocity.y += 0.1f, 0.f, vel.y);
+
+	bRunning = true;
 
 	this->SetCharacterDirection(static_cast<ECharacterDirection>(velocity.x > 0.f));
 
 	position += velocity;
+}
+
+//Called when the player jumps
+void Player::Jump(){
+	velocity.y = 20.f;
+	bOnGround = false;
+}
+
+//Called when the player dies
+void Player::Die(){
+
 }
 
 //Called every frame
