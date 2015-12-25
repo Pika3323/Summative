@@ -17,14 +17,10 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 	if (ev->type == ALLEGRO_EVENT_KEY_DOWN) {
 		switch (ev->keyboard.keycode) {
 			//Close window if escape key is pressed
-		/*case ALLEGRO_KEY_D:
+		case ALLEGRO_KEY_D:
 		case ALLEGRO_KEY_RIGHT:
-			TinTin.flipped = false;
-			TinTin.velocity.x = 5;
-			moveDelta.x = -5.f;
-			TinTin.moving = true;
+			WorldMoveDelta.x = -5.f;
 			break;
-			*/
 		case ALLEGRO_KEY_A:
 		case ALLEGRO_KEY_LEFT:
 			WorldMoveDelta.x = 5.f;
