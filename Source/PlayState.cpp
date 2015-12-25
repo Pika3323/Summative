@@ -3,7 +3,7 @@
 
 PlayState::PlayState(){
 	CurrentWorld = new World(Vector2D(4096.f, 2048.f), 32);
-	TinTin = new Player();	//The main player character
+	TinTin = new Player(128, 64);	//The main player character
 	TinTin->SetCharacterWorldPosition(Vector2D(0.f, 0.f));
 	CurrentEffects = new Effects(Vector2D(0.f, 1.f));		//current world gravity
 	notPlayingBuff = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f)); //block buffer for when not playing
@@ -19,10 +19,16 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 			//Close window if escape key is pressed
 		case ALLEGRO_KEY_D:
 		case ALLEGRO_KEY_RIGHT:
+			if (CurrentWorld->bPlay)
+				TinTin->SetCharacterDirection(ECharacterDirection::R_Right);
+				TinTin->Run(Vector2D(5.f, 0.f));
 			WorldMoveDelta.x = -5.f;
 			break;
 		case ALLEGRO_KEY_A:
 		case ALLEGRO_KEY_LEFT:
+			if (CurrentWorld->bPlay)
+				TinTin->SetCharacterDirection(ECharacterDirection::R_Left);
+				TinTin->Run(Vector2D(-5.f, 0.f));
 			WorldMoveDelta.x = 5.f;
 			break;
 		case ALLEGRO_KEY_S:
@@ -31,6 +37,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 			break;
 		case ALLEGRO_KEY_W:
 		case ALLEGRO_KEY_UP:
+			TinTin->Jump();
 			WorldMoveDelta.y = 5.f;
 			break;
 		case ALLEGRO_KEY_C:
@@ -75,9 +82,6 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 		case ALLEGRO_KEY_ESCAPE:
 			GEngine->Quit();
 			break;
-		case ALLEGRO_KEY_E:
-			TinTin->velocity.y = -20;
-			break;
 		default:
 			break;
 		}
@@ -91,6 +95,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 		case ALLEGRO_KEY_LEFT:
 			WorldMoveDelta.x = 0.f;
 			TinTin->bRunning = false;
+			TinTin->velocity.x = 0;
 			break;
 		case ALLEGRO_KEY_S:
 		case ALLEGRO_KEY_DOWN:
@@ -162,46 +167,26 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 }
 
 void PlayState::Tick(float delta){
-
-	//Handle key inputs..
-	if (al_key_down(&GEngine->GetKeyboardState(), 'D')){
-		TinTin->Run(Vector2D(5.f, 0.f));
-	}
-	else if (al_key_down(&GEngine->GetKeyboardState(), 'A')){
-		TinTin->Run(Vector2D(-5.f, 0.f));
-	}
-	else if (al_key_down(&GEngine->GetKeyboardState(), 'W')){
-		TinTin->Jump();
-	}
-
-	if (TinTin->GetCharacterWorldPosition().y < CurrentWorld->dimensions.x){
-		TinTin->Die();
-	}
 	if (CurrentWorld->bPlay) {
 		CurrentEffects->GravTick();
 		CurrentEffects->ColTick(CurrentWorld, *TinTin);
 	}
-	if (CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 20) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bSpawned) {
-		TinTin->SetCharacterWorldPosition(Vector2D(TinTin->GetCharacterWorldPosition().x, CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y) / CurrentWorld->gridSize].position.y));
+	if (TinTin->GetCharacterWorldPosition().y < CurrentWorld->dimensions.x){
+		TinTin->Die();
+	}
+	if (!TinTin->bOnGround && CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bSpawned) {
+		TinTin->SetCharacterWorldPosition(Vector2D(TinTin->GetCharacterWorldPosition().x, CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y) / CurrentWorld->gridSize].position. y));
+		TinTin->bOnGround = true;
 		if (TinTin->velocity.y > 0) {
 			TinTin->velocity.y = 0;
 		}
 		CurrentEffects->GonOff[TinTin->gravSlot] = false;
 	}
 	else if (!CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bSpawned) {
+		TinTin->bOnGround = false;
 		CurrentEffects->GonOff[TinTin->gravSlot] = true;
 	}
-	if (CurrentEffects->GonOff[TinTin->gravSlot]) {
-		TinTin->bOnGround = false;
-	}
-	else if (TinTin->bRunning && !CurrentEffects->GonOff[TinTin->gravSlot]) {
-		//TinTin.DoEv('r');
-	}
-	//else if (!TinTin.moving) {
-		//TinTin.DoEv('i');
-	//}
-	//TinTin.position += TinTin.velocity;		//moving character with all added velocities to y
-	//TinTin.EvHandle();
+
 	TinTin->Tick(delta);
 	CurrentWorld->Tick(delta);
 	CurrentWorld->moveWorld(WorldMoveDelta, dubBuff, Background, blockBuff, notPlayingBuff, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()));
