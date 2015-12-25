@@ -12,8 +12,6 @@ void Player::Run(Vector2D vel){
 	bRunning = true;
 
 	this->SetCharacterDirection(static_cast<ECharacterDirection>(velocity.x > 0.f));
-
-	position += velocity;
 }
 
 //Called when the player jumps
@@ -33,13 +31,16 @@ void Player::Tick(float delta){
 	if (bRunning && bOnGround){
 		texture = run.GetFrameBitmap();
 		run.PushFrame();
+		position += velocity;
 	}
 	else if (bOnGround){
 		texture = still.GetFrameBitmap();
 		still.PushFrame();
+		position += velocity;
 	}
 	else if (!bOnGround){
 		texture = fall.GetFrameBitmap();
 		fall.PushFrame();
+		position += velocity;
 	}
 }
