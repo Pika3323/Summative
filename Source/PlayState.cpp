@@ -112,42 +112,60 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 		case MOUSE_LB:
 			if (!CurrentWorld->bPlay) {
 				bClicked = true;
+				
+				//Check if the box placement mode isn't enabled
 				if (!bBoxSelect) {
 					//Get the mouse's location
-					Clicked = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
+					ClickLocation = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
+
 					//Get the tile that was clicked
-					clickedTile = CurrentWorld->GetClickedTile(Clicked);
-					if (!clickedTile->occupied){
-						CurrentWorld->Blocks[clickedTile->x][clickedTile->y].position = clickedTile->location;
-						CurrentWorld->Blocks[clickedTile->x][clickedTile->y].type = SelectedBlock;
-						CurrentWorld->Blocks[clickedTile->x][clickedTile->y].bSpawned = !DeleteMode;
-						clickedTile->occupied = !DeleteMode;
+					clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
+
+					if (!clickedTile->occupied && !DeleteMode){
+						//Place a new block if there isn't already a block in that location
+						CurrentWorld->PlaceBlock(clickedTile, SelectedBlock);
 					}
-					else {
-						CurrentWorld->Blocks[clickedTile->x][clickedTile->y].bSpawned = !DeleteMode;
-						clickedTile->occupied = !DeleteMode;
+					else if(DeleteMode) {
+						//Destroy the block the target location
+						CurrentWorld->DestroyBlock(clickedTile);
 					}
 				}
 				else {
-					Clicked = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
-
+					//If a start location of the rectangle select has been set
 					if (bFirstBoxSelected){
+						Vector2D NewMouseLocation = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
+						Vector2D BoxVector;
 
-						GridTile* SecondTile = CurrentWorld->GetClickedTile(Clicked);
+						//Handle different directions in which the box extends
+						if (NewMouseLocation > ClickLocation) {
+							BoxVector = ClickLocation;
+						}
+						else{
+							BoxVector = NewMouseLocation;
+						}
 
-						for (int i = 0; i < SecondTile->x - FirstTile->x; i++) {
-							for (int j = 0; j < SecondTile->y - FirstTile->y; j++) {
-								CurrentWorld->Blocks[i + SecondTile->x][j + SecondTile->y].position = CurrentWorld->Tile[i][j].location;
-								CurrentWorld->Blocks[i + SecondTile->x][j + SecondTile->y].type = SelectedBlock;
-								CurrentWorld->Blocks[i + SecondTile->x][j + SecondTile->y].bSpawned = !DeleteMode;
-								clickedTile->occupied = !DeleteMode;
+						if (!DeleteMode){
+							//Place multiple boxes
+							for (int i = 0; i < abs((int)(NewMouseLocation.x - ClickLocation.x) / 32); i++) {
+								for (int j = 0; j < abs((int)(NewMouseLocation.y - ClickLocation.y) / 32); j++) {
+									CurrentWorld->PlaceBlock(CurrentWorld->GetClickedTile(BoxVector + Vector2D(i * 32, j * 32)), SelectedBlock);
+								}
 							}
 						}
+						else {
+							//Destroy a rectangle of boxes
+							for (int i = 0; i < abs((int)(NewMouseLocation.x - ClickLocation.x) / 32); i++) {
+								for (int j = 0; j < abs((int)(NewMouseLocation.y - ClickLocation.y) / 32); j++) {
+									CurrentWorld->DestroyBlock(CurrentWorld->GetClickedTile(BoxVector + Vector2D(i * 32, j * 32)));
+								}
+							}
+						}
+						
 					}
 
 					bFirstBoxSelected = !bFirstBoxSelected;
-
-					FirstTile = CurrentWorld->GetClickedTile(Clicked);
+					ClickLocation = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
+					FirstTile = CurrentWorld->GetClickedTile(ClickLocation);
 				}
 			}
 			break;
@@ -217,19 +235,15 @@ void PlayState::Tick(float delta){
 	}
 
 	if (bClicked && !bBoxSelect){
-		Clicked = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
+		ClickLocation = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
 
 		//Get the tile that was clicked
-		clickedTile = CurrentWorld->GetClickedTile(Clicked);
-		if (!clickedTile->occupied){
-			CurrentWorld->Blocks[clickedTile->x][clickedTile->y].position = clickedTile->location;
-			CurrentWorld->Blocks[clickedTile->x][clickedTile->y].type = SelectedBlock;
-			CurrentWorld->Blocks[clickedTile->x][clickedTile->y].bSpawned = !DeleteMode;
-			clickedTile->occupied = !DeleteMode;
+		clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
+		if (!clickedTile->occupied && !DeleteMode){
+			CurrentWorld->PlaceBlock(clickedTile, SelectedBlock);
 		}
-		else {
-			CurrentWorld->Blocks[clickedTile->x][clickedTile->y].bSpawned = !DeleteMode;
-			clickedTile->occupied = !DeleteMode;
+		else if (DeleteMode) {
+			CurrentWorld->DestroyBlock(clickedTile);
 		}
 	}
 }

@@ -29,8 +29,16 @@ GridTile* World::GetClickedTile(Vector2D inLoc){
 	return &Tile[(int)ceil(inLoc.x) / gridSize][(int)ceil(inLoc.y) / gridSize];
 }
 
-void World::PlaceBlock(GridTile Target){
+void World::PlaceBlock(GridTile* Target, EBlockType Type){
+	Blocks[Target->x][Target->y].position = Target->location;
+	Blocks[Target->x][Target->y].type = Type;
+	Blocks[Target->x][Target->y].bSpawned = true;
+	Target->occupied = true;
+}
 
+void World::DestroyBlock(GridTile* Target){
+	Blocks[Target->x][Target->y].bSpawned = false;
+	Target->occupied = false;
 }
 
 //Called on every frame For Logic Updates.

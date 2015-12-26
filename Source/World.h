@@ -32,7 +32,8 @@ public:
 
 	GridTile* GetClickedTile(Vector2D inLoc);
 
-	void PlaceBlock(GridTile Target);
+	void PlaceBlock(GridTile* Target, EBlockType Type);
+	void DestroyBlock(GridTile* Target);
 
 	void Tick(float delta);
 
