@@ -116,27 +116,38 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 					//Get the mouse's location
 					Clicked = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
 					//Get the tile that was clicked
-					clickedTile = CurrentWorld->getClickedTile(Clicked);
-
-					if (!DeleteMode) {
-						//if the tile is not already occupied by a block, create a new block
-						if (!clickedTile.occupied){
-							CurrentWorld->Blocks[clickedTile.x][clickedTile.y].position = clickedTile.location;
-							CurrentWorld->Blocks[clickedTile.x][clickedTile.y].type = SelectedBlock;
-							CurrentWorld->Blocks[clickedTile.x][clickedTile.y].bSpawned = true;
-							clickedTile.occupied = true;
-						}
+					clickedTile = CurrentWorld->GetClickedTile(Clicked);
+					if (!clickedTile->occupied){
+						CurrentWorld->Blocks[clickedTile->x][clickedTile->y].position = clickedTile->location;
+						CurrentWorld->Blocks[clickedTile->x][clickedTile->y].type = SelectedBlock;
+						CurrentWorld->Blocks[clickedTile->x][clickedTile->y].bSpawned = !DeleteMode;
+						clickedTile->occupied = !DeleteMode;
 					}
-					else if (DeleteMode) {
-						CurrentWorld->Blocks[clickedTile.x][clickedTile.y].bSpawned = false;
-						clickedTile.occupied = false;
+					else {
+						CurrentWorld->Blocks[clickedTile->x][clickedTile->y].bSpawned = !DeleteMode;
+						clickedTile->occupied = !DeleteMode;
 					}
-
 				}
-				else{
+				else {
 					Clicked = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
 
-					FirstTile = CurrentWorld->getClickedTile(Clicked);
+					if (bFirstBoxSelected){
+
+						GridTile* SecondTile = CurrentWorld->GetClickedTile(Clicked);
+
+						for (int i = 0; i < SecondTile->x - FirstTile->x; i++) {
+							for (int j = 0; j < SecondTile->y - FirstTile->y; j++) {
+								CurrentWorld->Blocks[i + SecondTile->x][j + SecondTile->y].position = CurrentWorld->Tile[i][j].location;
+								CurrentWorld->Blocks[i + SecondTile->x][j + SecondTile->y].type = SelectedBlock;
+								CurrentWorld->Blocks[i + SecondTile->x][j + SecondTile->y].bSpawned = !DeleteMode;
+								clickedTile->occupied = !DeleteMode;
+							}
+						}
+					}
+
+					bFirstBoxSelected = !bFirstBoxSelected;
+
+					FirstTile = CurrentWorld->GetClickedTile(Clicked);
 				}
 			}
 			break;
@@ -194,14 +205,6 @@ void PlayState::Tick(float delta){
 	if (CurrentEffects->GonOff[TinTin->gravSlot]) {
 		TinTin->bOnGround = false;
 	}
-	else if (TinTin->bRunning && !CurrentEffects->GonOff[TinTin->gravSlot]) {
-		//TinTin.DoEv('r');
-	}
-	//else if (!TinTin.moving) {
-		//TinTin.DoEv('i');
-	//}
-	//TinTin.position += TinTin.velocity;		//moving character with all added velocities to y
-	//TinTin.EvHandle();
 	TinTin->Tick(delta);
 	CurrentWorld->Tick(delta);
 	CurrentWorld->moveWorld(WorldMoveDelta, dubBuff, Background, blockBuff, notPlayingBuff, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()));
@@ -217,19 +220,16 @@ void PlayState::Tick(float delta){
 		Clicked = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
 
 		//Get the tile that was clicked
-		clickedTile = CurrentWorld->getClickedTile(Clicked);
-		if (!DeleteMode) {
-			//if the tile is not already occupied by a block, create a new block
-			if (!clickedTile.occupied){
-				CurrentWorld->Blocks[clickedTile.x][clickedTile.y].position = clickedTile.location;
-				CurrentWorld->Blocks[clickedTile.x][clickedTile.y].type = SelectedBlock;
-				CurrentWorld->Blocks[clickedTile.x][clickedTile.y].bSpawned = true;
-				clickedTile.occupied = true;
-			}
+		clickedTile = CurrentWorld->GetClickedTile(Clicked);
+		if (!clickedTile->occupied){
+			CurrentWorld->Blocks[clickedTile->x][clickedTile->y].position = clickedTile->location;
+			CurrentWorld->Blocks[clickedTile->x][clickedTile->y].type = SelectedBlock;
+			CurrentWorld->Blocks[clickedTile->x][clickedTile->y].bSpawned = !DeleteMode;
+			clickedTile->occupied = !DeleteMode;
 		}
-		else if (DeleteMode) {
-			CurrentWorld->Blocks[clickedTile.x][clickedTile.y].bSpawned = false;
-			clickedTile.occupied = false;
+		else {
+			CurrentWorld->Blocks[clickedTile->x][clickedTile->y].bSpawned = !DeleteMode;
+			clickedTile->occupied = !DeleteMode;
 		}
 	}
 }
@@ -262,9 +262,9 @@ void PlayState::Draw(){
 
 	al_hold_bitmap_drawing(false);
 
-	if (bBoxSelect) {
-		GridTile newTile = CurrentWorld->getClickedTile(Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1)));
-		al_draw_filled_rectangle(FirstTile.location.x, FirstTile.location.y, newTile.location.x, newTile.location.y, al_map_rgba(137, 231, 255, 100));
+	if (bBoxSelect && bFirstBoxSelected) {
+		GridTile* newTile = CurrentWorld->GetClickedTile(Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1)));
+		al_draw_filled_rectangle(FirstTile->location.x, FirstTile->location.y, newTile->location.x, newTile->location.y, al_map_rgba(6, 27, 73, 25));
 	}
 
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));

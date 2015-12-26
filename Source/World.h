@@ -30,7 +30,9 @@ public:
 
 	
 
-	GridTile getClickedTile(Vector2D inLoc);
+	GridTile* GetClickedTile(Vector2D inLoc);
+
+	void PlaceBlock(GridTile Target);
 
 	void Tick(float delta);
 
