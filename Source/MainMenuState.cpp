@@ -6,6 +6,7 @@ MainMenuState::MainMenuState(){
 	BEditorGame = Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 100, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 50, GEngine->GetDisplayHeight() / 2 - 54), 0, "LEVEL EDITOR", &MainMenu::LoadEditor);
 	BOptions = Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 100, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 50, GEngine->GetDisplayHeight() / 2 - 18), 0, "OPTIONS", &MainMenu::OpenSettings);
 	BExit = Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 100, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 50, GEngine->GetDisplayHeight() / 2 + 18), 0, "EXIT", &GEngine->Quit);
+	BFullscreen = Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 100, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 50, GEngine->GetDisplayHeight() / 2 + 54), 0, "TOGGLE FULLSCREEN", &MainMenu::ToggleFullscreen);
 
 	t = TextBox(BLUE500, al_map_rgb(33, 33, 33), 100, 72, Vector2D(GEngine->GetDisplayWidth() / 2 - 50, 0), 1, "Test");
 
@@ -13,7 +14,8 @@ MainMenuState::MainMenuState(){
 	AllUIComponents[1] = &BEditorGame;
 	AllUIComponents[2] = &BOptions;
 	AllUIComponents[3] = &BExit;
-	AllUIComponents[4] = &t;
+	AllUIComponents[4] = &BFullscreen;
+	AllUIComponents[5] = &t;
 }
 
 void MainMenuState::Init(){
@@ -24,7 +26,7 @@ void MainMenuState::HandleEvents(ALLEGRO_EVENT *ev){
 	if (ev->type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
 		switch (ev->mouse.button){
 		case MOUSE_LB:
-			for (int i = 0; i < 5; i++){
+			for (int i = 0; i < 6; i++){
 				if (InRange(GEngine->GetMouseState().x, AllUIComponents[i]->position.x, AllUIComponents[i]->position.x + AllUIComponents[i]->width) && InRange(GEngine->GetMouseState().y, AllUIComponents[i]->position.y, AllUIComponents[i]->position.y + AllUIComponents[i]->height)){
 					AllUIComponents[i]->onMouseDown();
 					break;
@@ -38,7 +40,7 @@ void MainMenuState::HandleEvents(ALLEGRO_EVENT *ev){
 }
 
 void MainMenuState::Tick(float delta){
-	for (int i = 0; i < 5; i++){
+	for (int i = 0; i < 6; i++){
 		if (InRange(GEngine->GetMouseState().x, AllUIComponents[i]->position.x, AllUIComponents[i]->position.x + AllUIComponents[i]->width) && InRange(GEngine->GetMouseState().y, AllUIComponents[i]->position.y, AllUIComponents[i]->position.y + AllUIComponents[i]->height)){
 			AllUIComponents[i]->onHoverIn();
 			break;
@@ -52,7 +54,7 @@ void MainMenuState::Tick(float delta){
 void MainMenuState::Draw(){
 	//Draws the buttons to the screen
 	al_clear_to_color(al_map_rgb(250, 250, 250));
-	for (int i = 0; i < 4; i++){
+	for (int i = 0; i < 6; i++){
 		AllUIComponents[i]->Draw();
 	}
 	t.Draw();
@@ -85,4 +87,16 @@ void MainMenu::LoadEditor(){
 
 void MainMenu::OpenSettings(){
 	printf("Open the settings\n");
+}
+
+void MainMenu::ToggleFullscreen(){
+	if (!dynamic_cast<MainMenuState*>(GEngine->GetCurrentGameState())->bFullscreen){
+		al_set_display_flag(GEngine->GetDisplay(), ALLEGRO_FULLSCREEN, true);
+		al_resize_display(GEngine->GetDisplay(), GEngine->GetDisplayData().width, GEngine->GetDisplayData().height);
+		al_set_window_position(GEngine->GetDisplay(), 0, 0);
+	}
+	else{
+		al_set_display_flag(GEngine->GetDisplay(), ALLEGRO_FULLSCREEN, false);
+		al_resize_display(GEngine->GetDisplay(), GEngine->GetDisplayWidth(), GEngine->GetDisplayHeight());
+	}
 }

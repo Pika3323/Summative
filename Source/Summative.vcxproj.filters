@@ -4,9 +4,6 @@
     <ClCompile Include="Block.cpp">
       <Filter>Engine\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Engine\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Vector2D.cpp">
       <Filter>Engine\Source Files</Filter>
     </ClCompile>
@@ -37,9 +34,6 @@
     <ClCompile Include="GameState.cpp">
       <Filter>Engine\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NewMain.cpp">
-      <Filter>Engine\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MainMenuState.cpp">
       <Filter>Game\Source Files</Filter>
     </ClCompile>
@@ -60,6 +54,9 @@
     </ClCompile>
     <ClCompile Include="EditorState.cpp">
       <Filter>Game\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Engine\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -143,5 +140,16 @@
     <Filter Include="Game\Header Files">
       <UniqueIdentifier>{58f3e852-e9f1-417b-8915-150e7afaa6af}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Docs">
+      <UniqueIdentifier>{269e59db-bb8f-4995-8a38-7fe7cdc3b1fb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Docs\index.html">
+      <Filter>Docs</Filter>
+    </None>
+    <None Include="..\Docs\style.css">
+      <Filter>Docs</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -17,6 +17,7 @@ public:
 
 	ALLEGRO_BITMAP* output;
 	bool Initialized = false;
+	bool Paused = false;
 
 	GameState(){}
 	//virtual ~GameState() = 0;

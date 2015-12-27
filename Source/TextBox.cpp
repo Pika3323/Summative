@@ -15,6 +15,7 @@ TextBox::TextBox(ALLEGRO_COLOR bg, ALLEGRO_COLOR tx, int w, int h, Vector2D pos,
 	al_draw_line(0, height - 1, width, height - 1, pColor, 1);
 	al_draw_textf(roboto, pColor, 4, height / 2 + 8, ALLEGRO_ALIGN_LEFT, "%s", placeholder);
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
+	cursorPosition = 0;
 }
 
 void TextBox::onMouseDown(){
@@ -38,11 +39,20 @@ void TextBox::Draw(){
 }
 
 void TextBox::handleKeyInput(ALLEGRO_EVENT *ev){
-	char temp[2] = { ev->keyboard.unichar, '\0' };
-	strcat(text, temp);
-	al_set_target_bitmap(tex);
-	al_clear_to_color(al_map_rgba(0, 0, 0, 0));
-	al_draw_line(0, height - 1, width, height - 1, pColor, 1);
-	al_draw_textf(roboto, textColor, 4, height / 2 + 8, ALLEGRO_ALIGN_LEFT, "%s", text);
-	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
+	if (ev->type == ALLEGRO_EVENT_KEY_DOWN){
+		if (ev->keyboard.keycode >= 0 || ev->keyboard.keycode <= 26) {
+			char temp[2] = { *al_keycode_to_name(ev->keyboard.keycode), '\0' };
+			text[cursorPosition] = *al_keycode_to_name(ev->keyboard.keycode);
+			cursorPosition++;
+			al_set_target_bitmap(tex);
+			al_clear_to_color(al_map_rgba(0, 0, 0, 0));
+			al_draw_line(0, height - 1, width, height - 1, pColor, 1);
+			al_draw_textf(roboto, textColor, 4, height / 2 + 8, ALLEGRO_ALIGN_LEFT, "%s", text);
+			al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
+		}
+		if (ev->keyboard.keycode == ALLEGRO_KEY_BACKSPACE){
+			text[cursorPosition] = '\0';
+			cursorPosition--;
+		}
+	}
 }

@@ -19,4 +19,7 @@ protected:
 	SpriteSheet run;
 	SpriteSheet fall;
 	SpriteSheet still;
+	SpriteSheet attack;
+
+	int Damage;
 };

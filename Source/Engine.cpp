@@ -11,6 +11,7 @@ ALLEGRO_TIMER* Engine::GetTimer(){
 }
 
 ALLEGRO_DISPLAY_MODE Engine::GetDisplayData(){
+	al_get_display_mode(al_get_num_display_modes() - 1, &disp_data);
 	return disp_data;
 }
 
@@ -182,4 +183,8 @@ void Engine::LockInputToUIComponent(UIComponent *c){
 
 void Engine::ReleaseInput(){
 	LockedComponent = NULL;
+}
+
+GameState* Engine::GetCurrentGameState(){
+	return Active;
 }

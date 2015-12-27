@@ -42,9 +42,8 @@
     <ClCompile Include="Effects.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="IMath.cpp" />
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenuState.cpp" />
-    <ClCompile Include="NewMain.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayState.cpp" />
     <ClCompile Include="SpriteSheet.cpp" />
@@ -53,6 +52,10 @@
     <ClCompile Include="UIComponent.cpp" />
     <ClCompile Include="Vector2D.cpp" />
     <ClCompile Include="World.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Docs\index.html" />
+    <None Include="..\Docs\style.css" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{405126D2-CD56-495D-BDD8-290E3C7FC9DC}</ProjectGuid>
