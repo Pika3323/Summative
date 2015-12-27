@@ -53,11 +53,13 @@ public:
 		Active = new T();
 		Active->Init();
 	}
-	//void RegisterState(class GameState* state);
 
 	void HandleInput(ALLEGRO_EVENT *ev);
 	void Tick(float delta);
 	void Draw();
+
+	bool GamePaused();
+	void PauseGame();
 
 	static void Quit();
 
@@ -99,6 +101,7 @@ private:
 	UIComponent* LockedComponent;
 	
 	bool bRedraw;
+	bool bGamePaused;
 	int StateIndex;
 	class GameState* Active;
 	int DisplayHeight = 720, DisplayWidth = 1280;
@@ -108,4 +111,4 @@ private:
 bool Engine::bExit = false;
 
 
-	Engine* GEngine = new Engine();
+Engine* GEngine = new Engine();

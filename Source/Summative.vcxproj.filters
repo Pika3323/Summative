@@ -4,9 +4,6 @@
     <ClCompile Include="Block.cpp">
       <Filter>Engine\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Engine\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Vector2D.cpp">
       <Filter>Engine\Source Files</Filter>
     </ClCompile>
@@ -37,9 +34,6 @@
     <ClCompile Include="GameState.cpp">
       <Filter>Engine\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NewMain.cpp">
-      <Filter>Engine\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MainMenuState.cpp">
       <Filter>Game\Source Files</Filter>
     </ClCompile>
@@ -60,6 +54,9 @@
     </ClCompile>
     <ClCompile Include="EditorState.cpp">
       <Filter>Game\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Engine\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

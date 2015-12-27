@@ -16,23 +16,48 @@ public:
 	Player* TinTin;
 
 	//Effects (including gravity) for the current world
-	Effects* CurrentEffects;		
-	Buffer notPlayingBuff; //block buffer for when not playing
-	Buffer blockBuff;	//play buffer for blocks
-	Buffer dubBuff;	//buffer for grid
-	Buffer Background;	//buffer for background
-	Vector2D ClickLocation;	//The location of a click
-	GridTile* clickedTile;	//The clicked tile from the world grid
-	bool bClicked = false;	//Whether a click was registered
-	EBlockType SelectedBlock = EBlockType::B_Brick;		//the block type the user selects
+	Effects* CurrentEffects;	
+
+	//block buffer for when not playing
+	Buffer notPlayingBuff; 
+
+	//play buffer for blocks
+	Buffer blockBuff;	
+
+	//buffer for grid
+	Buffer dubBuff;	
+
+	//buffer for background
+	Buffer Background;	
+
+	//The location of a click
+	Vector2D ClickLocation;	
+
+	//The clicked tile from the world grid
+	GridTile* clickedTile;	
+
+	//Whether a click was registered
+	bool bClicked = false;	
+
+	//the block type the user selects
+	EBlockType SelectedBlock = EBlockType::B_Brick;		
+
 	bool DeleteMode = false;
+	
 	bool TinTinGrav = true;
+	
 	Vector2D WorldMoveDelta = Vector2D(0.f, 0.f);
 
 	ALLEGRO_BITMAP* output;
+	
+	ALLEGRO_BITMAP* BoxSelectCursor;
+	
+	ALLEGRO_MOUSE_CURSOR* CircleSelect;
 
 	bool bBoxSelect = false;
+	
 	bool bFirstBoxSelected = false;
+
 	GridTile* FirstTile;
 
 	//keyboard bool catches
