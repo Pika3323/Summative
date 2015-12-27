@@ -53,6 +53,10 @@
     <ClCompile Include="Vector2D.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Docs\index.html" />
+    <None Include="..\Docs\style.css" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{405126D2-CD56-495D-BDD8-290E3C7FC9DC}</ProjectGuid>
     <RootNamespace>Allegro</RootNamespace>

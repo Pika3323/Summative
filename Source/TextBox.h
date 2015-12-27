@@ -4,6 +4,7 @@
 
 class TextBox : public UIComponent{
 public:
+	int cursorPosition;
 	char text[256];
 	char placeholder[256];
 	ALLEGRO_COLOR bgColor;

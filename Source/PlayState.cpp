@@ -94,13 +94,6 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				CurrentEffects->GonOff[TinTin->gravSlot] = true;
 				TinTin->velocity = Vector2D(0.f, 0.f);
 				break;
-			case ALLEGRO_KEY_P:
-
-				break;
-			case ALLEGRO_KEY_BACKSPACE:
-				//Perhaps the cleverest line of code in this whole project
-				DeleteMode = !DeleteMode;
-				break;
 			case ALLEGRO_KEY_ESCAPE:
 				GEngine->Quit();
 				break;
@@ -251,6 +244,9 @@ void PlayState::Tick(float delta){
 	if (InRange(GEngine->GetMouseState().x, PauseButton->position.x, PauseButton->position.x + PauseButton->width) && InRange(GEngine->GetMouseState().y, PauseButton->position.y, PauseButton->position.y + PauseButton->height)){
 		PauseButton->onHoverIn();
 	}
+	else{
+		PauseButton->onHoverOut();
+	}
 	if (!Paused) {
 		if (CurrentWorld->bPlay) {
 			CurrentEffects->GravTick();
@@ -314,38 +310,39 @@ void PlayState::Draw(){
 		al_clear_to_color(al_map_rgba(0, 0, 0, 0));
 	}
 	else{
+		//If the play mode has been selected, then draw the character
 		al_set_target_bitmap(blockBuff.image);
 		al_clear_to_color(al_map_rgba(0, 0, 0, 0));
 		TinTin->Draw();
-		//TinTin.Animate(TinTin.flipped);
 	}
 
-	//For each loop that goes through every block
-	al_hold_bitmap_drawing(true);
+	//For-each loop that goes through every block in the array
 	for (auto& sub : CurrentWorld->Blocks){
 		for (auto& elem : sub){
-			//If the block has been created, draw it!
+			//Calculates the block's offset relative to the top left corner of the display
 			elem.offset = elem.position + CurrentWorld->offset;
 
+			//If the block has been created, draw it!
 			if (elem.bSpawned && InRange(elem.offset.x, -32, al_get_display_width(GEngine->GetDisplay()) + 32) && InRange(elem.offset.y, -32, al_get_display_height(GEngine->GetDisplay()) + 32)){
+				//Draws the block using a texture from the current selected type of block
 				elem.Draw(CurrentWorld->Type[static_cast<int>(elem.type)].texture);
-
 			}
 		}
 	}
 
-	al_hold_bitmap_drawing(false);
-
+	//Draws a transparent blue rectangle over the area selected by the box select
 	if (bBoxSelect && bFirstBoxSelected) {
 		GridTile* newTile = CurrentWorld->GetClickedTile(Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1)));
 		al_draw_filled_rectangle(FirstTile->location.x, FirstTile->location.y, newTile->location.x, newTile->location.y, al_map_rgba(6, 27, 73, 25));
 	}
 
+	//Reset the target bitmap to the backbuffer
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 
+	//Draw the background image
 	al_draw_bitmap_region(Background.image, Background.offset.x * -1, Background.offset.y * -1, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()), 0, 0, 0);
 
-
+	//Draw the grid overlay if editor mode is enabled
 	if (!CurrentWorld->bPlay) {
 		al_draw_bitmap_region(dubBuff.image, dubBuff.offset.x * -1, dubBuff.offset.y * -1, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()), 0, 0, 0);
 		al_draw_bitmap_region(notPlayingBuff.image, notPlayingBuff.offset.x * -1, notPlayingBuff.offset.y * -1, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()), 0, 0, 0);
@@ -353,12 +350,13 @@ void PlayState::Draw(){
 	else {
 		al_draw_bitmap_region(blockBuff.image, blockBuff.offset.x *-1, blockBuff.offset.y * -1, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()), 0, 0, 0);
 	}
-
-	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
+	
+	//Draw the pause button
 	PauseButton->Draw();
 }
 
 void PlayState::Init(){
+	//Set the different types of blocks, as well as load their textures
 	CurrentWorld->Type[0] = BlockType("Rainbow", al_load_bitmap("Textures/Rainbow.png"));
 	CurrentWorld->Type[1] = BlockType("Brick", al_load_bitmap("Textures/Brick.png"));
 	CurrentWorld->Type[2] = BlockType("Grass", al_load_bitmap("Textures/Grass.png"));
@@ -367,6 +365,7 @@ void PlayState::Init(){
 	CurrentWorld->Type[5] = BlockType("Fancy", al_load_bitmap("Textures/Fancy.png"));
 	CurrentWorld->Type[6] = BlockType("Mossy", al_load_bitmap("Textures/Mossy.png"));
 
+	//Create buffers used for rendering
 	dubBuff.image = al_create_bitmap(4096, 2048);
 	notPlayingBuff.image = al_create_bitmap(4096, 2048);
 	Background.image = al_create_bitmap(4096, 2048);
@@ -378,6 +377,7 @@ void PlayState::Init(){
 	//Setting Multiple Images to Background Buffer
 	al_set_target_bitmap(Background.image);
 
+	//Load the background image
 	for (int i = 0; i < 2; i++) {
 		for (int y = 0; y < 3; y++) {
 			al_draw_bitmap(al_load_bitmap("Textures/Background_Original.png"), (y * 1024), (i * 1024), 0);

@@ -11,8 +11,10 @@ public:
 	class Button BEditorGame;
 	class Button BOptions;
 	class Button BExit;
+	Button BFullscreen;
 
 	class TextBox t;
+	bool bFullscreen = false;
 
 	UIComponent* AllUIComponents[10];
 
@@ -34,4 +36,5 @@ namespace MainMenu{
 	void PlayGame();
 	void LoadEditor();
 	void OpenSettings();
+	void ToggleFullscreen();
 }

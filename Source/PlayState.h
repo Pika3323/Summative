@@ -42,8 +42,6 @@ public:
 
 	//the block type the user selects
 	EBlockType SelectedBlock = EBlockType::B_Brick;		
-
-	bool DeleteMode = false;
 	
 	bool TinTinGrav = true;
 	

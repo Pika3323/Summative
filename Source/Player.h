@@ -19,4 +19,5 @@ protected:
 	SpriteSheet run;
 	SpriteSheet fall;
 	SpriteSheet still;
+	int Health;
 };
