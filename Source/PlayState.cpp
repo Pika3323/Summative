@@ -357,13 +357,13 @@ void PlayState::Draw(){
 
 void PlayState::Init(){
 	//Set the different types of blocks, as well as load their textures
-	CurrentWorld->Type[0] = BlockType("Rainbow", al_load_bitmap("Textures/Rainbow.png"));
-	CurrentWorld->Type[1] = BlockType("Brick", al_load_bitmap("Textures/Brick.png"));
-	CurrentWorld->Type[2] = BlockType("Grass", al_load_bitmap("Textures/Grass.png"));
-	CurrentWorld->Type[3] = BlockType("Dirt", al_load_bitmap("Textures/Dirt.png"));
-	CurrentWorld->Type[4] = BlockType("Stone", al_load_bitmap("Textures/Stone.png"));
-	CurrentWorld->Type[5] = BlockType("Fancy", al_load_bitmap("Textures/Fancy.png"));
-	CurrentWorld->Type[6] = BlockType("Mossy", al_load_bitmap("Textures/Mossy.png"));
+	CurrentWorld->Type[0] = BlockType("Rainbow", al_load_bitmap("Textures/Objects/Rainbow.png"));
+	CurrentWorld->Type[1] = BlockType("Brick", al_load_bitmap("Textures/Objects/Brick.png"));
+	CurrentWorld->Type[2] = BlockType("Grass", al_load_bitmap("Textures/Objects/Grass.png"));
+	CurrentWorld->Type[3] = BlockType("Dirt", al_load_bitmap("Textures/Objects/Dirt.png"));
+	CurrentWorld->Type[4] = BlockType("Stone", al_load_bitmap("Textures/Objects/Stone.png"));
+	CurrentWorld->Type[5] = BlockType("Fancy", al_load_bitmap("Textures/Objects/Fancy.png"));
+	CurrentWorld->Type[6] = BlockType("Mossy", al_load_bitmap("Textures/Objects/Mossy.png"));
 
 	//Create buffers used for rendering
 	dubBuff.image = al_create_bitmap(4096, 2048);
@@ -380,7 +380,7 @@ void PlayState::Init(){
 	//Load the background image
 	for (int i = 0; i < 2; i++) {
 		for (int y = 0; y < 3; y++) {
-			al_draw_bitmap(al_load_bitmap("Textures/Background_Original.png"), (y * 1024), (i * 1024), 0);
+			al_draw_bitmap(al_load_bitmap("Textures/Scenes/Background_Original.png"), (y * 1024), (i * 1024), 0);
 		}
 	}
 
