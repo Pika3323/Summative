@@ -14,7 +14,7 @@ public:
 
 	void Die();
 
-	Player();
+	Player(int Height, int Width);
 protected:
 	SpriteSheet run;
 	SpriteSheet fall;

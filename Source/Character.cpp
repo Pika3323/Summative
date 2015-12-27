@@ -33,5 +33,10 @@ ECharacterDirection Character::GetCharacterDirection(){
 }
 
 void Character::Draw(){
-	al_draw_bitmap(texture, position.x, position.y, static_cast<int>(direction));
+	if ((int)direction == 0) {
+		al_draw_bitmap(texture, position.x, position.y, 0);
+	}
+	else if ((int)direction == 1) {
+		al_draw_bitmap(texture, position.x, position.y, ALLEGRO_FLIP_HORIZONTAL);
+	}
 }
