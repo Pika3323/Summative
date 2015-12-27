@@ -30,7 +30,10 @@ public:
 
 	
 
-	GridTile getClickedTile(Vector2D inLoc);
+	GridTile* GetClickedTile(Vector2D inLoc);
+
+	void PlaceBlock(GridTile* Target, EBlockType Type);
+	void DestroyBlock(GridTile* Target);
 
 	void Tick(float delta);
 

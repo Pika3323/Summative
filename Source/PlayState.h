@@ -21,8 +21,8 @@ public:
 	Buffer blockBuff;	//play buffer for blocks
 	Buffer dubBuff;	//buffer for grid
 	Buffer Background;	//buffer for background
-	Vector2D Clicked;	//The location of a click
-	GridTile clickedTile;	//The clicked tile from the world grid
+	Vector2D ClickLocation;	//The location of a click
+	GridTile* clickedTile;	//The clicked tile from the world grid
 	bool bClicked = false;	//Whether a click was registered
 	EBlockType SelectedBlock = EBlockType::B_Brick;		//the block type the user selects
 	bool DeleteMode = false;
@@ -32,7 +32,8 @@ public:
 	ALLEGRO_BITMAP* output;
 
 	bool bBoxSelect = false;
-	GridTile FirstTile;
+	bool bFirstBoxSelected = false;
+	GridTile* FirstTile;
 
 	//keyboard bool catches
 	bool up = false;

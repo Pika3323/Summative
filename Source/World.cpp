@@ -7,9 +7,9 @@ World::World(Vector2D s, int gs){
 	gridSize = gs;
 	offset = Vector2D(0.f, 0.f);
 
-	for (auto& sub : Blocks){
-		for (auto& elem : sub){
-			elem = Block();
+	for (int i = 0; i < 128; i++) {
+		for (int j = 0; j < 64; j++) {
+			Blocks[i][j] = Block();
 		}
 	}
 
@@ -25,8 +25,20 @@ World::World(Vector2D s, int gs){
 }
 
 //Returns which tile was clicked based on the location of the click
-GridTile World::getClickedTile(Vector2D inLoc){
-	return Tile[(int)ceil(inLoc.x) / gridSize][(int)ceil(inLoc.y) / gridSize];
+GridTile* World::GetClickedTile(Vector2D inLoc){
+	return &Tile[(int)ceil(inLoc.x) / gridSize][(int)ceil(inLoc.y) / gridSize];
+}
+
+void World::PlaceBlock(GridTile* Target, EBlockType Type){
+	Blocks[Target->x][Target->y].position = Target->location;
+	Blocks[Target->x][Target->y].type = Type;
+	Blocks[Target->x][Target->y].bSpawned = true;
+	Target->occupied = true;
+}
+
+void World::DestroyBlock(GridTile* Target){
+	Blocks[Target->x][Target->y].bSpawned = false;
+	Target->occupied = false;
 }
 
 //Called on every frame For Logic Updates.
