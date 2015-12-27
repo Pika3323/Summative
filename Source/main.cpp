@@ -31,10 +31,12 @@ int main(int argc, char* argv[]){
 		
 		//Draw to the screen
 		if (GEngine->ShouldRedraw() && al_event_queue_is_empty(GEngine->GetEventQueue())){
+			//Calculate the change in time between two frames
 			double new_time = al_get_time();
 			GEngine->delta = new_time - old_time;
 			old_time = new_time;
 
+			//Draws everything from the current frame to the screen
 			GEngine->Draw();
 		}
 	}

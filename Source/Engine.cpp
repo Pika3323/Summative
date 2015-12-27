@@ -183,3 +183,7 @@ void Engine::LockInputToUIComponent(UIComponent *c){
 void Engine::ReleaseInput(){
 	LockedComponent = NULL;
 }
+
+GameState* Engine::GetCurrentGameState(){
+	return Active;
+}

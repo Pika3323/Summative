@@ -34,6 +34,7 @@ public:
 	ALLEGRO_EVENT_QUEUE* GetEventQueue();
 	ALLEGRO_MOUSE_STATE GetMouseState();
 	ALLEGRO_KEYBOARD_STATE GetKeyboardState();
+	GameState* GetCurrentGameState();
 	int GetDisplayWidth();
 	int GetDisplayHeight();
 

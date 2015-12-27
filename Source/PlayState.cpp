@@ -13,6 +13,8 @@ PlayState::PlayState(){
 	CurrentWorld->bPlay = false;
 	BoxSelectCursor = al_load_bitmap("Textures/Cursor_BoxSelect.png");
 	CircleSelect = al_create_mouse_cursor(BoxSelectCursor, 8, 8);
+
+	PauseButton = new Button(al_map_rgb(255, 255, 255), BLUE500, 32, 32, Vector2D(0.f, 0.f), 2, "||", &PauseButtonDown);
 }
 
 void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
@@ -246,6 +248,9 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 }
 
 void PlayState::Tick(float delta){
+	if (InRange(GEngine->GetMouseState().x, PauseButton->position.x, PauseButton->position.x + PauseButton->width) && InRange(GEngine->GetMouseState().y, PauseButton->position.y, PauseButton->position.y + PauseButton->height)){
+		PauseButton->onHoverIn();
+	}
 	if (!Paused) {
 		if (CurrentWorld->bPlay) {
 			CurrentEffects->GravTick();
@@ -350,6 +355,7 @@ void PlayState::Draw(){
 	}
 
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
+	PauseButton->Draw();
 }
 
 void PlayState::Init(){
@@ -450,4 +456,8 @@ void PlayState::Destroy(){
 PlayState::~PlayState(){
 	delete CurrentEffects;
 	delete CurrentWorld;
+}
+
+void PauseButtonDown(){
+	GEngine->GetCurrentGameState()->Pause();
 }

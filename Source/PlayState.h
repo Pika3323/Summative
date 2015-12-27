@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "Effects.h"
 #include "Block.h"
+#include "Button.h"
 
 class PlayState : public GameState {
 public:
@@ -60,6 +61,9 @@ public:
 
 	GridTile* FirstTile;
 
+	//A Button to pause the game
+	Button* PauseButton;
+
 	//keyboard bool catches
 	bool up = false;
 	bool down = false;
@@ -87,3 +91,5 @@ public:
 	PlayState();
 	~PlayState();
 };
+
+void PauseButtonDown();
