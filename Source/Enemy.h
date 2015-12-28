@@ -3,6 +3,7 @@
 #include "Engine.h"
 #include "Character.h"
 #include "SpriteSheet.h"
+#include "Player.h"
 
 enum class EnemyType{
 	E_Cinas,
@@ -18,11 +19,11 @@ public:
 
 	bool Active;
 
-	virtual void Run(Vector2D velocity);
+	virtual void Run(Vector2D velocity) = 0;
 
-	virtual void Jump();
+	virtual void Jump() = 0;
 
-	virtual void Tick(float delta);
+	void Tick(float delta, Player* player);
 
 	virtual void Die();
 

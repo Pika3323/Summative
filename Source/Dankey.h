@@ -3,6 +3,7 @@
 #include "Enemy.h"
 #include "Player.h"
 #include "IMath.h"
+#include "World.h"
 
 class Dankey : public Enemy{
 public:
@@ -18,7 +19,7 @@ public:
 	
 	void Die();
 
-	void Tick(float delta, Player* player);
+	void Tick(float delta, Player* player, class World* Current);
 protected:
 	SpriteSheet toss;
 	SpriteSheet still;
