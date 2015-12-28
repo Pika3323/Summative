@@ -149,7 +149,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 					else {
 						//If a start location of the rectangle select has been set
 						if (bFirstBoxSelected){
-							Vector2D NewMouseLocation = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
+							Vector2D NewMouseLocation = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1) + 64, GEngine->GetMouseState().y + (dubBuff.offset.y * -1) + 32);
 							Vector2D BoxVector;
 
 							//Handle different directions in which the box extends
@@ -332,7 +332,7 @@ void PlayState::Draw(){
 
 	//Draws a transparent blue rectangle over the area selected by the box select
 	if (bBoxSelect && bFirstBoxSelected) {
-		GridTile* newTile = CurrentWorld->GetClickedTile(Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1)));
+		GridTile* newTile = CurrentWorld->GetClickedTile(Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1) + 32, GEngine->GetMouseState().y + (dubBuff.offset.y * -1) + 32));
 		al_draw_filled_rectangle(FirstTile->location.x, FirstTile->location.y, newTile->location.x, newTile->location.y, al_map_rgba(6, 27, 73, 25));
 	}
 
