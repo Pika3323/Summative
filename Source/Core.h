@@ -14,6 +14,7 @@
 #include <time.h>
 #include <ctype.h>
 #include <math.h>
+#include <vector>
 
 //Core Engine components
 #include "Vector2D.h"		//Vector header, including some vector math

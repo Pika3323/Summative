@@ -13,6 +13,7 @@ PlayState::PlayState(){
 	CurrentWorld->bPlay = false;
 	BoxSelectCursor = al_load_bitmap("Textures/Cursor_BoxSelect.png");
 	CircleSelect = al_create_mouse_cursor(BoxSelectCursor, 8, 8);
+	std::vector<Enemy*> Enemies;
 
 	PauseButton = new Button(al_map_rgb(255, 255, 255), BLUE500, 32, 32, Vector2D(0.f, 0.f), 2, "||", &PauseButtonDown);
 }

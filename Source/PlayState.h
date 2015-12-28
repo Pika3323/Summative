@@ -7,6 +7,7 @@
 #include "Effects.h"
 #include "Block.h"
 #include "Button.h"
+#include "Enemy.h"
 
 class PlayState : public GameState {
 public:

@@ -21,6 +21,7 @@
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="Dankey.h" />
     <ClInclude Include="IMath.h" />
     <ClInclude Include="MainMenuState.h" />
     <ClInclude Include="Player.h" />
@@ -46,6 +47,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayState.cpp" />
+    <ClCompile Include="Dankey.cpp" />
     <ClCompile Include="SpriteSheet.cpp" />
     <ClCompile Include="TextBox.cpp" />
     <ClCompile Include="UI.cpp" />

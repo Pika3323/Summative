@@ -4,10 +4,10 @@ SpriteSheet::SpriteSheet(ALLEGRO_BITMAP* s, int width, int height, int frames){
 	Sheet = s;
 	FrameHeight = height;
 	FrameWidth = width;
-	FramesInAnimation = frames;
-	TotFrameCount = 0;
-	Delay = 5;
-	CurrentFrame = 0;
+	FramesInAnimation = frames;		//all frames in animation
+	TotFrameCount = 0;		//counting frames to check for delay
+	Delay = 5;			//the delay for the animation
+	CurrentFrame = 0;	//holding the current frame
 }
 
 void SpriteSheet::PushFrame(){

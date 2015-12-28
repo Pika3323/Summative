@@ -6,13 +6,15 @@
 
 class Enemy : public Character{
 public:
-	void Run(Vector2D velocity);
+	int Damage;
 
-	void Jump();
+	virtual void Run(Vector2D velocity);
 
-	void Tick(float delta);
+	virtual void Jump();
 
-	void Die();
+	virtual void Tick(float delta);
+
+	virtual void Die();
 
 	Enemy();
 protected:
@@ -21,5 +23,4 @@ protected:
 	SpriteSheet still;
 	SpriteSheet attack;
 
-	int Damage;
 };
