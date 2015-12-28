@@ -45,7 +45,7 @@ public:
 	//the block type the user selects
 	EBlockType SelectedBlock = EBlockType::B_Brick;	
 
-	std::vector<Dankey> AllDankeys;
+	std::vector<Enemy*> Enemies;
 
 	//make a vector for each enemy type as they are made
 	

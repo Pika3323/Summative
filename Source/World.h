@@ -38,7 +38,7 @@ public:
 	void PlaceBlock(GridTile* Target, EBlockType Type);
 	void DestroyBlock(GridTile* Target);
 
-	void PlaceEnemy(GridTile* Target, EnemyType Type, std::vector<Dankey> *All);	//add each enemy vector in as it is made
+	void PlaceEnemy(GridTile* Target, EnemyType Type, std::vector<Enemy*> *All);	//add each enemy vector in as it is made
 
 	void Tick(float delta);
 

@@ -32,5 +32,4 @@ protected:
 	SpriteSheet fall;
 	SpriteSheet still;
 	SpriteSheet attack;
-
 };

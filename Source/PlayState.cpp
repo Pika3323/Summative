@@ -102,6 +102,9 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				}
 				CurrentEffects->GonOff[TinTin->gravSlot] = true;
 				TinTin->velocity = Vector2D(0.f, 0.f);
+				for (int i = 0; i < (int) Enemies.size(); i++) {
+					Enemies[i]->Active = true;
+				}
 				break;
 			case ALLEGRO_KEY_ESCAPE:
 				GEngine->Quit();
@@ -156,7 +159,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 							clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
 
 							if (!clickedTile->occupied){
-								CurrentWorld->PlaceEnemy(clickedTile, SelectedEnemy, &AllDankeys);
+								CurrentWorld->PlaceEnemy(clickedTile, SelectedEnemy, &Enemies);
 							}
 					}
 					//Check if the box placement mode isn't enabled
@@ -267,6 +270,10 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 }
 
 void PlayState::Tick(float delta){
+	//Enemy ticks
+	for (int i = 0; i < (int) Enemies.size(); i++) {
+		Enemies[i]->Tick(delta);
+	}
 	if (InRange(GEngine->GetMouseState().x, PauseButton->position.x, PauseButton->position.x + PauseButton->width) && InRange(GEngine->GetMouseState().y, PauseButton->position.y, PauseButton->position.y + PauseButton->height)){
 		PauseButton->onHoverIn();
 	}
@@ -339,6 +346,9 @@ void PlayState::Draw(){
 		//If the play mode has been selected, then draw the character
 		al_set_target_bitmap(blockBuff.image);
 		al_clear_to_color(al_map_rgba(0, 0, 0, 0));
+		for (int i = 0; i < (int) Enemies.size(); i++) {
+			Enemies[i]->Draw();
+		}
 		TinTin->Draw();
 	}
 

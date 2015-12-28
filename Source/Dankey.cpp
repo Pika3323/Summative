@@ -9,6 +9,17 @@ Dankey::Dankey(Vector2D pos){
 	still = SpriteSheet(al_load_bitmap("Textures/Characters/Dankey idle_e.png"), 64, 64, 5);
 }
 
-void Dankey::Tick(float delta){
-
+void Dankey::Tick(float delta, Player* player){
+	if (InRange(player->position.x, position.x - 320, position.x + 320) && Active) {
+		texture = toss.GetFrameBitmap();
+		toss.PushFrame();
+	}
+	else if (!InRange(player->position.x, position.x - 320, position.x + 320) && Active) {
+		texture = still.GetFrameBitmap();
+		still.PushFrame();
+	}
+	else if (!Active) {
+		texture = still.GetFrameBitmap();
+		still.PushFrame();
+	}
 }
