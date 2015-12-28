@@ -8,6 +8,7 @@
 #include "Block.h"
 #include "Button.h"
 #include "Enemy.h"
+#include "Dankey.h"
 
 class PlayState : public GameState {
 public:
@@ -42,7 +43,13 @@ public:
 	bool bClicked = false;	
 
 	//the block type the user selects
-	EBlockType SelectedBlock = EBlockType::B_Brick;		
+	EBlockType SelectedBlock = EBlockType::B_Brick;	
+
+	std::vector<Dankey> AllDankeys;
+
+	//make a vector for each enemy type as they are made
+	
+	EnemyType SelectedEnemy;
 	
 	bool TinTinGrav = true;
 	

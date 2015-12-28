@@ -13,6 +13,9 @@ public:
 	//The character's instantaneous velocity
 	Vector2D velocity;
 
+	//The position of the character
+	Vector2D position;
+
 	//The gravity effect slot
 	int gravSlot;
 
@@ -67,9 +70,6 @@ public:
 	//Character destructor
 	~Character();
 protected:
-	//The position of the character
-	Vector2D position;
-
 	//The overall texture of the character which is drawn to the screen
 	ALLEGRO_BITMAP* texture;
 	

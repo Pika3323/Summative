@@ -4,11 +4,11 @@
 
 class Dankey : public Enemy{
 public:
+	bool Active;
+
 	void Tick(float delta);
 
-	void Die();
-
-	Dankey();
+	Dankey(Vector2D pos);
 protected:
 	SpriteSheet toss;
 	SpriteSheet still;

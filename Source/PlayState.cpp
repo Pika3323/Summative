@@ -13,7 +13,6 @@ PlayState::PlayState(){
 	CurrentWorld->bPlay = false;
 	BoxSelectCursor = al_load_bitmap("Textures/Cursor_BoxSelect.png");
 	CircleSelect = al_create_mouse_cursor(BoxSelectCursor, 8, 8);
-	std::vector<Enemy*> Enemies;
 
 	PauseButton = new Button(al_map_rgb(255, 255, 255), BLUE500, 32, 32, Vector2D(0.f, 0.f), 2, "||", &PauseButtonDown);
 }
@@ -64,13 +63,22 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				}
 				break;
 			case ALLEGRO_KEY_1:
-				SelectedBlock = EBlockType::B_Rainbow;
+				if (!CurrentWorld->EnemySelect)
+					SelectedBlock = EBlockType::B_Rainbow;
+				else if (CurrentWorld->EnemySelect)
+					SelectedEnemy = EnemyType::E_Cinas;
 				break;
 			case ALLEGRO_KEY_2:
-				SelectedBlock = EBlockType::B_Brick;
+				if (!CurrentWorld->EnemySelect)
+					SelectedBlock = EBlockType::B_Brick;
+				else if (CurrentWorld->EnemySelect)
+					SelectedEnemy = EnemyType::E_Dankey;
 				break;
 			case ALLEGRO_KEY_3:
-				SelectedBlock = EBlockType::B_Grass;
+				if (!CurrentWorld->EnemySelect)
+					SelectedBlock = EBlockType::B_Grass;
+				else if (CurrentWorld->EnemySelect)
+					SelectedEnemy = EnemyType::E_Yash;
 				break;
 			case ALLEGRO_KEY_4:
 				SelectedBlock = EBlockType::B_Dirt;
@@ -98,6 +106,11 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 			case ALLEGRO_KEY_ESCAPE:
 				GEngine->Quit();
 				break;
+			case ALLEGRO_KEY_E:
+				if (!CurrentWorld->EnemySelect)
+					CurrentWorld->EnemySelect = true;
+				else if (CurrentWorld->EnemySelect)
+					CurrentWorld->EnemySelect = false;
 			default:
 				break;
 			}
@@ -134,8 +147,20 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				if (!CurrentWorld->bPlay) {
 					bClicked = true;
 
+					//check if enemy select is true
+					if (CurrentWorld->EnemySelect){
+							//get the mouse location
+							ClickLocation = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
+
+							//get the tile that was clicked
+							clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
+
+							if (!clickedTile->occupied){
+								CurrentWorld->PlaceEnemy(clickedTile, SelectedEnemy, &AllDankeys);
+							}
+					}
 					//Check if the box placement mode isn't enabled
-					if (!bBoxSelect) {
+					else if (!bBoxSelect) {
 						//Get the mouse's location
 						ClickLocation = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
 
@@ -147,7 +172,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 							CurrentWorld->PlaceBlock(clickedTile, SelectedBlock);
 						}
 					}
-					else {
+					else if (bBoxSelect) {
 						//If a start location of the rectangle select has been set
 						if (bFirstBoxSelected){
 							Vector2D NewMouseLocation = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
