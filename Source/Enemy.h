@@ -23,9 +23,9 @@ public:
 
 	virtual void Jump() = 0;
 
-	void Tick(float delta, Player* player);
+	virtual void Tick(float delta) = 0;
 
-	virtual void Die();
+	virtual void Die() = 0;
 
 	Enemy();
 protected:

@@ -272,7 +272,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 void PlayState::Tick(float delta){
 	//Enemy ticks
 	for (int i = 0; i < (int) Enemies.size(); i++) {
-		Enemies[i]->Tick(delta, TinTin);
+		Enemies[i]->Tick(delta);
 	}
 	if (InRange(GEngine->GetMouseState().x, PauseButton->position.x, PauseButton->position.x + PauseButton->width) && InRange(GEngine->GetMouseState().y, PauseButton->position.y, PauseButton->position.y + PauseButton->height)){
 		PauseButton->onHoverIn();
