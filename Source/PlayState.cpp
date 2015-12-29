@@ -250,9 +250,9 @@ void PlayState::Tick(float delta){
 	if (!Paused) {
 		if (CurrentWorld->bPlay) {
 			CurrentEffects->GravTick();
-			CurrentEffects->ColTick(CurrentWorld, *TinTin);
+			CurrentEffects->ColTick(CurrentWorld, TinTin);
 		}
-		if (TinTin->GetCharacterWorldPosition().y < CurrentWorld->dimensions.x){
+		if (TinTin->GetCharacterWorldPosition().y > CurrentWorld->dimensions.x){
 			TinTin->Die();
 		}
 		if (!TinTin->bOnGround && CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bSpawned) {

@@ -35,7 +35,7 @@ void Player::Jump(){
 
 //Called when the player dies
 void Player::Die(){
-
+	this->SetCharacterWorldPosition(Vector2D(0, 0));
 }
 
 //Called every frame
