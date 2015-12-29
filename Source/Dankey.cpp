@@ -14,11 +14,7 @@ void Dankey::Tick(float delta){
 		texture = toss.GetFrameBitmap();
 		toss.PushFrame();
 	}
-	else if (Vector2D(dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->TinTin->position - position).Magnitude() > 320 && dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->bPlay) {
-		texture = still.GetFrameBitmap();
-		still.PushFrame();
-	}
-	else if (!dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->bPlay) {
+	else {
 		texture = still.GetFrameBitmap();
 		still.PushFrame();
 	}

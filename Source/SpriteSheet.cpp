@@ -53,3 +53,7 @@ ALLEGRO_BITMAP* SpriteSheet::GetFrameBitmap(){
 
 	return temp;
 }
+
+SpriteSheet::~SpriteSheet(){
+	al_destroy_bitmap(Sheet);
+}
