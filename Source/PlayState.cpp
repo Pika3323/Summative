@@ -13,6 +13,7 @@ PlayState::PlayState(){
 	CurrentWorld->bPlay = false;
 	BoxSelectCursor = al_load_bitmap("Textures/Cursor_BoxSelect.png");
 	CircleSelect = al_create_mouse_cursor(BoxSelectCursor, 8, 8);
+	CurrentWorld->EnemySelect = false;
 
 	PauseButton = new Button(al_map_rgb(255, 255, 255), BLUE500, 32, 32, Vector2D(0.f, 0.f), 2, "||", &PauseButtonDown);
 }
@@ -114,6 +115,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 					CurrentWorld->EnemySelect = true;
 				else if (CurrentWorld->EnemySelect)
 					CurrentWorld->EnemySelect = false;
+				break;
 			default:
 				break;
 			}
@@ -149,21 +151,20 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 			case MOUSE_LB:
 				if (!CurrentWorld->bPlay) {
 					bClicked = true;
-
 					//check if enemy select is true
-					if (CurrentWorld->EnemySelect){
+					if (CurrentWorld->EnemySelect) {
 							//get the mouse location
 							ClickLocation = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
 
 							//get the tile that was clicked
 							clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
 
-							if (!clickedTile->occupied){
+							if (!clickedTile->occupied) {
 								CurrentWorld->PlaceEnemy(clickedTile, SelectedEnemy, &Enemies);
 							}
 					}
 					//Check if the box placement mode isn't enabled
-					else if (!bBoxSelect) {
+					else if (!bBoxSelect && !CurrentWorld->EnemySelect) {
 						//Get the mouse's location
 						ClickLocation = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
 
@@ -175,7 +176,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 							CurrentWorld->PlaceBlock(clickedTile, SelectedBlock);
 						}
 					}
-					else if (bBoxSelect) {
+					else if (bBoxSelect && !CurrentWorld->EnemySelect) {
 						//If a start location of the rectangle select has been set
 						if (bFirstBoxSelected){
 							Vector2D NewMouseLocation = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
@@ -315,7 +316,7 @@ void PlayState::Tick(float delta){
 
 		switch (GEngine->GetMouseState().buttons){
 		case MOUSE_LB:
-			if (!bBoxSelect){
+			if (!bBoxSelect && !CurrentWorld->EnemySelect){
 				ClickLocation = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
 				//Get the tile that was clicked
 				clickedTile = CurrentWorld->GetClickedTile(ClickLocation);

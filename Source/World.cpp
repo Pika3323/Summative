@@ -41,7 +41,7 @@ void World::DestroyBlock(GridTile* Target){
 	Target->occupied = false;
 }
 
-void World::PlaceEnemy(GridTile* Target, EnemyType Type, std::vector<Enemy*> &All){
+void World::PlaceEnemy(GridTile* Target, EnemyType Type, std::vector<Enemy*> *All){
 	//if (Type == EnemyType::E_Cinas) {
 	//	All->pushback(Cinas(Vector2D(Target->location.x, Target->location.y)));
 	//}
