@@ -10,11 +10,11 @@ Dankey::Dankey(Vector2D pos){
 }
 
 void Dankey::Tick(float delta){
-	if (InRange(dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->TinTin->position.x, position.x - 320, position.x + 320) && dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->bPlay) {
+	if (Vector2D(dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->TinTin->position - position).Magnitude() <= 320 && dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->bPlay) {
 		texture = toss.GetFrameBitmap();
 		toss.PushFrame();
 	}
-	else if (!InRange(dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->TinTin->position.x, position.x - 320, position.x + 320) && dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->bPlay) {
+	else if (Vector2D(dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->TinTin->position - position).Magnitude() > 320 && dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->bPlay) {
 		texture = still.GetFrameBitmap();
 		still.PushFrame();
 	}
