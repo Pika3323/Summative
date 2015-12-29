@@ -7,17 +7,19 @@
 #include "Effects.h"
 #include "Block.h"
 #include "Button.h"
+#include "Enemy.h"
+#include "Dankey.h"
 
 class PlayState : public GameState {
 public:
 	//The active World (or level) that is being played
-	World* CurrentWorld;
+	class World* CurrentWorld;
 
 	//The main player
 	Player* TinTin;
 
 	//Effects (including gravity) for the current world
-	Effects* CurrentEffects;	
+	class Effects* CurrentEffects;	
 
 	//block buffer for when not playing
 	Buffer notPlayingBuff; 
@@ -35,13 +37,19 @@ public:
 	Vector2D ClickLocation;	
 
 	//The clicked tile from the world grid
-	GridTile* clickedTile;	
+	struct GridTile* clickedTile;	
 
 	//Whether a click was registered
 	bool bClicked = false;	
 
 	//the block type the user selects
-	EBlockType SelectedBlock = EBlockType::B_Brick;		
+	EBlockType SelectedBlock = EBlockType::B_Brick;	
+
+	std::vector<Enemy*> Enemies;
+
+	//make a vector for each enemy type as they are made
+	
+	EnemyType SelectedEnemy;
 	
 	bool TinTinGrav = true;
 	
@@ -57,7 +65,7 @@ public:
 	
 	bool bFirstBoxSelected = false;
 
-	GridTile* FirstTile;
+	struct GridTile* FirstTile;
 
 	//A Button to pause the game
 	Button* PauseButton;

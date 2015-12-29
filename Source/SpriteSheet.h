@@ -17,6 +17,8 @@ public:
 	SpriteSheet(){ Sheet = NULL; }
 
 	SpriteSheet(ALLEGRO_BITMAP* Sheet, int width, int height, int frames);
+
+	~SpriteSheet();
 protected:
 	int FrameHeight;
 	int FrameWidth;

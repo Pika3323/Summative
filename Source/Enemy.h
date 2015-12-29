@@ -3,16 +3,29 @@
 #include "Engine.h"
 #include "Character.h"
 #include "SpriteSheet.h"
+#include "Player.h"
+
+enum class EnemyType{
+	E_Cinas,
+	E_Dankey,
+	E_Yash
+};
 
 class Enemy : public Character{
 public:
-	void Run(Vector2D velocity);
+	int Damage;
 
-	void Jump();
+	EnemyType Type; //type of monster it is
 
-	void Tick(float delta);
+	bool Active;
 
-	void Die();
+	virtual void Run(Vector2D velocity) = 0;
+
+	virtual void Jump() = 0;
+
+	virtual void Tick(float delta) = 0;
+
+	virtual void Die() = 0;
 
 	Enemy();
 protected:
@@ -20,6 +33,4 @@ protected:
 	SpriteSheet fall;
 	SpriteSheet still;
 	SpriteSheet attack;
-
-	int Damage;
 };

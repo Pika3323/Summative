@@ -2,6 +2,8 @@
 #include "Block.h"
 #include "Buffer.h"
 #include "Engine.h"
+#include "Enemy.h"
+#include "Dankey.h"
 
 struct GridTile{
 	Vector2D location;
@@ -24,6 +26,7 @@ public:
 	Block Blocks[128][64];
 	BlockType Type[15];
 	bool bPlay;
+	bool EnemySelect;
 
 	World(){}
 	World(Vector2D s, int gs);
@@ -34,6 +37,8 @@ public:
 
 	void PlaceBlock(GridTile* Target, EBlockType Type);
 	void DestroyBlock(GridTile* Target);
+
+	void PlaceEnemy(GridTile* Target, EnemyType Type, std::vector<Enemy*> *All);	//add each enemy vector in as it is made
 
 	void Tick(float delta);
 
