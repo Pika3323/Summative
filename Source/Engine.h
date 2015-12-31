@@ -22,10 +22,14 @@
 
 //The core headers of the Engine
 #include "Core.h"
+#include "version.h"
 
 class Engine{
 public:
 	const int FPS = 60;
+
+	int VersionMajor = 1;
+	int VersionMinor = 1;
 
 	ALLEGRO_DISPLAY* GetDisplay();
 	ALLEGRO_DISPLAY_MODE GetDisplayData();

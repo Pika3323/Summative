@@ -7,11 +7,17 @@ PlayState::PlayState(){
 	TinTin->SetCharacterWorldPosition(Vector2D(0.f, 0.f));
 	CurrentEffects = new Effects(Vector2D(0.f, 1.f));		//current world gravity
 	notPlayingBuff = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f)); //block buffer for when not playing
-	blockBuff = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f));	//play buffer for blocks
-	dubBuff = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f));	//buffer for grid
+	BlockBuffer = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f));	//play buffer for blocks
+	GridBuffer = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f));	//buffer for grid
 	Background = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(2.5f, 2.5f));	//buffer for background
 	CurrentWorld->bPlay = false;
+
+	//Load a cursor and check if it loaded properly
 	BoxSelectCursor = al_load_bitmap("Textures/Cursor_BoxSelect.png");
+	if (!BoxSelectCursor){
+		fprintf(stderr, "Could not load cursor\n");
+	}
+
 	CircleSelect = al_create_mouse_cursor(BoxSelectCursor, 8, 8);
 	CurrentWorld->EnemySelect = false;
 
@@ -154,7 +160,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 					//check if enemy select is true
 					if (CurrentWorld->EnemySelect) {
 							//get the mouse location
-							ClickLocation = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
+							ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 
 							//get the tile that was clicked
 							clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
@@ -166,7 +172,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 					//Check if the box placement mode isn't enabled
 					else if (!bBoxSelect && !CurrentWorld->EnemySelect) {
 						//Get the mouse's location
-						ClickLocation = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
+						ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 
 						//Get the tile that was clicked
 						clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
@@ -179,7 +185,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 					else if (bBoxSelect && !CurrentWorld->EnemySelect) {
 						//If a start location of the rectangle select has been set
 						if (bFirstBoxSelected){
-							Vector2D NewMouseLocation = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1) + 64, GEngine->GetMouseState().y + (dubBuff.offset.y * -1) + 32);
+							Vector2D NewMouseLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1) + 64, GEngine->GetMouseState().y + (GridBuffer.offset.y * -1) + 32);
 							Vector2D BoxVector;
 
 							//Handle different directions in which the box extends
@@ -199,7 +205,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 						}
 
 						bFirstBoxSelected = !bFirstBoxSelected;
-						ClickLocation = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
+						ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 						FirstTile = CurrentWorld->GetClickedTile(ClickLocation);
 					}
 				}
@@ -208,7 +214,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				//Check if the box placement mode isn't enabled
 				if (!bBoxSelect) {
 					//Get the mouse's location
-					ClickLocation = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
+					ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 
 					//Get the tile that was clicked
 					clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
@@ -219,7 +225,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				else {
 					//If a start location of the rectangle select has been set
 					if (bFirstBoxSelected){
-						Vector2D NewMouseLocation = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
+						Vector2D NewMouseLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 						Vector2D BoxVector;
 
 						//Handle different directions in which the box extends
@@ -242,7 +248,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 					bFirstBoxSelected = !bFirstBoxSelected;
 
 					//Set the first selected Tile
-					ClickLocation = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
+					ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 					FirstTile = CurrentWorld->GetClickedTile(ClickLocation);
 				}
 				break;
@@ -285,31 +291,32 @@ void PlayState::Tick(float delta){
 		if (CurrentWorld->bPlay) {
 			CurrentEffects->GravTick();
 			CurrentEffects->ColTick(CurrentWorld, TinTin);
-		}
-		if (TinTin->GetCharacterWorldPosition().y > CurrentWorld->dimensions.x){
-			TinTin->Die();
-		}
-		if (!TinTin->bOnGround && CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bSpawned) {
-			TinTin->SetCharacterWorldPosition(Vector2D(TinTin->GetCharacterWorldPosition().x, CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y) / CurrentWorld->gridSize].position.y));
-			TinTin->bOnGround = true;
-			if (TinTin->velocity.y > 0) {
-				TinTin->velocity.y = 0;
+			if (TinTin->GetCharacterWorldPosition().y > CurrentWorld->dimensions.x){
+				TinTin->Die();
 			}
-			CurrentEffects->GonOff[TinTin->gravSlot] = false;
-		}
-		else if (!CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bSpawned) {
-			TinTin->bOnGround = false;
-			CurrentEffects->GonOff[TinTin->gravSlot] = true;
-		}
+			if (!TinTin->bOnGround && CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bSpawned) {
+				TinTin->SetCharacterWorldPosition(Vector2D(TinTin->GetCharacterWorldPosition().x, CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y) / CurrentWorld->gridSize].position.y));
+				TinTin->bOnGround = true;
+				if (TinTin->velocity.y > 0) {
+					TinTin->velocity.y = 0;
+				}
+				CurrentEffects->GonOff[TinTin->gravSlot] = false;
+			}
+			else if (!CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bSpawned) {
+				TinTin->bOnGround = false;
+				CurrentEffects->GonOff[TinTin->gravSlot] = true;
+			}
 
-		TinTin->Tick(delta);
+			TinTin->Tick(delta);
+		}
+		
 		CurrentWorld->Tick(delta);
-		CurrentWorld->moveWorld(WorldMoveDelta, dubBuff, Background, blockBuff, notPlayingBuff, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()));
+		CurrentWorld->moveWorld(WorldMoveDelta, GridBuffer, Background, BlockBuffer, notPlayingBuff, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()));
 
 		Vector2D DragDelta;
 		if (bMouseDrag){
 			DragDelta = DragStart - Vector2D(GEngine->GetMouseState().x, GEngine->GetMouseState().y);
-			CurrentWorld->moveWorld(DragDelta * -1, dubBuff, Background, blockBuff, notPlayingBuff, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()));
+			CurrentWorld->moveWorld(DragDelta * -1, GridBuffer, Background, BlockBuffer, notPlayingBuff, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()));
 			DragStart = Vector2D(GEngine->GetMouseState().x, GEngine->GetMouseState().y);
 			DragTime += delta;
 		}
@@ -317,7 +324,7 @@ void PlayState::Tick(float delta){
 		switch (GEngine->GetMouseState().buttons){
 		case MOUSE_LB:
 			if (!bBoxSelect && !CurrentWorld->EnemySelect){
-				ClickLocation = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
+				ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 				//Get the tile that was clicked
 				clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
 				CurrentWorld->PlaceBlock(clickedTile, SelectedBlock);
@@ -327,7 +334,7 @@ void PlayState::Tick(float delta){
 			break;
 		case MOUSE_RB:
 			if (!bBoxSelect){
-				ClickLocation = Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1), GEngine->GetMouseState().y + (dubBuff.offset.y * -1));
+				ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 				//Get the tile that was clicked
 				clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
 				CurrentWorld->DestroyBlock(clickedTile);
@@ -345,10 +352,12 @@ void PlayState::Draw(){
 	}
 	else{
 		//If the play mode has been selected, then draw the character
-		al_set_target_bitmap(blockBuff.image);
+		al_set_target_bitmap(BlockBuffer.image);
 		al_clear_to_color(al_map_rgba(0, 0, 0, 0));
 		for (int i = 0; i < (int) Enemies.size(); i++) {
-			Enemies[i]->Draw();
+			if (Enemies[i]){
+				Enemies[i]->Draw();
+			}
 		}
 		TinTin->Draw();
 	}
@@ -369,7 +378,7 @@ void PlayState::Draw(){
 
 	//Draws a transparent blue rectangle over the area selected by the box select
 	if (bBoxSelect && bFirstBoxSelected) {
-		GridTile* newTile = CurrentWorld->GetClickedTile(Vector2D(GEngine->GetMouseState().x + (dubBuff.offset.x * -1) + 32, GEngine->GetMouseState().y + (dubBuff.offset.y * -1) + 32));
+		GridTile* newTile = CurrentWorld->GetClickedTile(Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1) + 32, GEngine->GetMouseState().y + (GridBuffer.offset.y * -1) + 32));
 		al_draw_filled_rectangle(FirstTile->location.x, FirstTile->location.y, newTile->location.x, newTile->location.y, al_map_rgba(6, 27, 73, 25));
 	}
 
@@ -381,15 +390,15 @@ void PlayState::Draw(){
 
 	//Draw the grid overlay if editor mode is enabled
 	if (!CurrentWorld->bPlay) {
-		al_draw_bitmap_region(dubBuff.image, dubBuff.offset.x * -1, dubBuff.offset.y * -1, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()), 0, 0, 0);
+		al_draw_bitmap_region(GridBuffer.image, GridBuffer.offset.x * -1, GridBuffer.offset.y * -1, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()), 0, 0, 0);
 		al_draw_bitmap_region(notPlayingBuff.image, notPlayingBuff.offset.x * -1, notPlayingBuff.offset.y * -1, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()), 0, 0, 0);
 	}
 	else {
-		al_draw_bitmap_region(blockBuff.image, blockBuff.offset.x *-1, blockBuff.offset.y * -1, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()), 0, 0, 0);
+		al_draw_bitmap_region(BlockBuffer.image, BlockBuffer.offset.x *-1, BlockBuffer.offset.y * -1, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()), 0, 0, 0);
 	}
 	
 	//Draw the pause button
-	PauseButton->Draw();
+	//PauseButton->Draw();
 }
 
 void PlayState::Init(){
@@ -403,10 +412,10 @@ void PlayState::Init(){
 	CurrentWorld->Type[6] = BlockType("Mossy", al_load_bitmap("Textures/Objects/Mossy.png"));
 
 	//Create buffers used for rendering
-	dubBuff.image = al_create_bitmap(4096, 2048);
+	GridBuffer.image = al_create_bitmap(4096, 2048);
 	notPlayingBuff.image = al_create_bitmap(4096, 2048);
 	Background.image = al_create_bitmap(4096, 2048);
-	blockBuff.image = al_create_bitmap(4096, 2048);
+	BlockBuffer.image = al_create_bitmap(4096, 2048);
 
 	TinTin->gravSlot = CurrentEffects->Register(TinTin, TinTinGrav);	//registering main character in gravity queue (is affected at beginning)
 	TinTin->velocity = Vector2D(0.f, 0.f);		//velocity starts at zero
@@ -417,14 +426,21 @@ void PlayState::Init(){
 	//Load the background image
 	for (int i = 0; i < 2; i++) {
 		for (int y = 0; y < 3; y++) {
-			al_draw_bitmap(al_load_bitmap("Textures/Scenes/Background_Original.png"), (y * 1024), (i * 1024), 0);
+			ALLEGRO_BITMAP* BackgroundTexture = al_load_bitmap("Textures/Scenes/Background_Original.png");
+			if (BackgroundTexture) {
+				al_draw_bitmap(BackgroundTexture, (y * 1024), (i * 1024), 0);
+			}
+			else {
+				fprintf(stderr, "Could not load background image\n");
+				GEngine->Quit();
+			}
 		}
 	}
 
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 	//Sets the draw target to the grid bitmap
 
-	al_set_target_bitmap(dubBuff.image);
+	al_set_target_bitmap(GridBuffer.image);
 
 	for (int i = 0; i < 129; i++){
 		al_draw_line(i * CurrentWorld->gridSize, 0, i * CurrentWorld->gridSize, 2048, al_map_rgba(50, 50, 50, 150), 1);
@@ -444,7 +460,6 @@ void PlayState::Init(){
 		printf("Enter level name: ");
 		scanf("%s", loadLevel);
 		fflush(stdin);
-		strcat(loadLevel, ".bvl");
 		if (CurrentWorld->Load(loadLevel)){
 			printf("Loaded %s\n", loadLevel);
 		}
@@ -473,10 +488,7 @@ void PlayState::Destroy(){
 		char levelName[64];
 		printf("Enter a file name: ");
 		scanf("%s", levelName);
-		strcat(levelName, ".bvl");
-
 		if (CurrentWorld->Save(levelName)){
-
 			printf("Saved level as %s\n", levelName);
 		}
 		else{
@@ -485,8 +497,8 @@ void PlayState::Destroy(){
 	}
 
 	delete TinTin;
-	al_destroy_bitmap(blockBuff.image);
-	al_destroy_bitmap(dubBuff.image);
+	al_destroy_bitmap(BlockBuffer.image);
+	al_destroy_bitmap(GridBuffer.image);
 	al_destroy_mouse_cursor(CircleSelect);
 }
 

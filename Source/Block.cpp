@@ -11,6 +11,13 @@ void Block::Draw(ALLEGRO_BITMAP* typeTex){
 
 BlockType::BlockType(const char n[16], ALLEGRO_BITMAP* tex){
 	strcpy(name, n);
-	texture = tex;
+	if (tex) {
+		texture = tex;
+	}
+	else {
+		fprintf(stderr, "Could not load BlockType texture\n");
+		GEngine->Quit();
+	}
+	
 }
 

@@ -1,7 +1,13 @@
 #include "SpriteSheet.h"
 
 SpriteSheet::SpriteSheet(ALLEGRO_BITMAP* s, int width, int height, int frames){
-	Sheet = s;
+	if (s){
+		Sheet = s;
+	}
+	else{
+		fprintf(stderr, "Could not load bitmap for spritesheet\n");
+		GEngine->Quit();
+	}
 	FrameHeight = height;
 	FrameWidth = width;
 	FramesInAnimation = frames;		//all frames in animation
@@ -55,5 +61,7 @@ ALLEGRO_BITMAP* SpriteSheet::GetFrameBitmap(){
 }
 
 SpriteSheet::~SpriteSheet(){
-	al_destroy_bitmap(Sheet);
+	if (Sheet){
+		al_destroy_bitmap(Sheet);
+	}
 }

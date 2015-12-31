@@ -41,11 +41,15 @@ void Engine::DrawFPS(double delta){
 	}
 	al_draw_textf(debug_font, al_map_rgb(0, 0, 0), al_get_display_width(display) - 74, 17, 0, "%.2f FPS", 1 / delta);
 	al_draw_textf(debug_font, al_map_rgb(0, 0, 0), al_get_display_width(display) - 74, 33, 0, "%.2fMS", delta * 1000);
+
 	al_draw_textf(debug_font, tColor, al_get_display_width(display) - 75, 16, 0, "%.2f FPS", 1 / delta);
 	al_draw_textf(debug_font, tColor, al_get_display_width(display) - 75, 32, 0, "%.2fMS", delta * 1000);
 }
 
 void Engine::Init(){
+	//Version info
+	printf("Summative version %d.%d.%d\n", MAJORVERSION, MINORVERSION, BUILDNUMBER);
+	
 	//Allegro
 	if (!al_init()) {
 		fprintf(stderr, "Allegro could not initialize\n");

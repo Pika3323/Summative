@@ -11,6 +11,7 @@
 //Standard headers
 #include <stdio.h>
 #include <stdlib.h>
+#include <crtdbg.h>
 #include <time.h>
 #include <ctype.h>
 #include <math.h>
