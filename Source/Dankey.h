@@ -19,6 +19,4 @@ public:
 
 	void Tick(float delta);
 protected:
-	//SpriteSheet toss;
-	//SpriteSheet still;
 };
