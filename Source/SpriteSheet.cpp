@@ -49,23 +49,20 @@ void SpriteSheet::PushFrame(EADirection Direction){
 }
 
 //Returns a bitmap of the current frame of animation
-ALLEGRO_BITMAP* SpriteSheet::GetFrameBitmap(){
-	ALLEGRO_BITMAP* temp = al_create_bitmap(FrameWidth, FrameHeight);
-
-	if (temp){
-		al_set_target_bitmap(temp);
+void SpriteSheet::GetFrameBitmap(ALLEGRO_BITMAP* Target){
+	if (Target){
+		al_set_target_bitmap(Target);
+		al_clear_to_color(al_map_rgba(0, 0, 0, 0));
 		al_draw_bitmap_region(Sheet, FrameWidth * CurrentFrame, 0, FrameWidth, FrameHeight, 0, 0, 0);
 
 		//al_clear_to_color(al_map_rgb(255, 0, 255));
 		//Reset target bitmap to display
 		al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 
-		return temp;
 	}
 	else{
 		fprintf(stderr, "Could not access temporary sprite bitmap\n");
 		GEngine->Quit();
-		return NULL;
 	}
 	
 }

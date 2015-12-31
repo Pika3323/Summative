@@ -6,6 +6,7 @@ Player::Player(int Height, int Width){
 	still = SpriteSheet(al_load_bitmap("Textures/Characters/idle_e.png"), 64, 128, 6);
 	ActualHeight = Height;
 	ActualWidth = Width;
+	texture = al_create_bitmap(Width, Height);
 }
 
 void Player::Run(Vector2D vel){
@@ -42,17 +43,17 @@ void Player::Die(){
 void Player::Tick(float delta){
 	//All of the animation code
 	if (bRunning && bOnGround){
-		texture = run.GetFrameBitmap();
+		run.GetFrameBitmap(this->texture);
 		run.PushFrame();
 		position += velocity;
 	}
 	else if (bOnGround){
-		texture = still.GetFrameBitmap();
+		still.GetFrameBitmap(this->texture);
 		still.PushFrame();
 		position += velocity;
 	}
 	else if (!bOnGround){
-		texture = fall.GetFrameBitmap();
+		fall.GetFrameBitmap(this->texture);
 		fall.PushFrame();
 		position += velocity;
 	}

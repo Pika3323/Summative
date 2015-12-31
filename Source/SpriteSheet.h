@@ -12,7 +12,9 @@ class SpriteSheet{
 public:
 	void PushFrame();
 	void PushFrame(EADirection Direction);
-	ALLEGRO_BITMAP* GetFrameBitmap();
+
+	//Draws the current frame of the spritesheet to the Target bitmap
+	void GetFrameBitmap(ALLEGRO_BITMAP* Target);
 
 	SpriteSheet(){}
 
