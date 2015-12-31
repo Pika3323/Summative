@@ -14,7 +14,7 @@ public:
 	void PushFrame(EADirection Direction);
 	ALLEGRO_BITMAP* GetFrameBitmap();
 
-	SpriteSheet(){ Sheet = NULL; }
+	SpriteSheet(){}
 
 	SpriteSheet(ALLEGRO_BITMAP* Sheet, int width, int height, int frames);
 

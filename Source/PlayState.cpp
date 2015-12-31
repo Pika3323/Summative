@@ -220,7 +220,9 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 					clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
 
 					//Destroy the block the target location
-					CurrentWorld->DestroyBlock(clickedTile);
+					if (clickedTile){
+						CurrentWorld->DestroyBlock(clickedTile);
+					}
 				}
 				else {
 					//If a start location of the rectangle select has been set
@@ -327,7 +329,9 @@ void PlayState::Tick(float delta){
 				ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 				//Get the tile that was clicked
 				clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
-				CurrentWorld->PlaceBlock(clickedTile, SelectedBlock);
+				if (clickedTile) {
+					CurrentWorld->PlaceBlock(clickedTile, SelectedBlock);
+				}
 			}
 			break;
 		case MOUSE_MB:
@@ -337,7 +341,9 @@ void PlayState::Tick(float delta){
 				ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 				//Get the tile that was clicked
 				clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
-				CurrentWorld->DestroyBlock(clickedTile);
+				if (clickedTile){
+					CurrentWorld->DestroyBlock(clickedTile);
+				}
 			}
 		default:
 			break;
@@ -505,6 +511,13 @@ void PlayState::Destroy(){
 PlayState::~PlayState(){
 	delete CurrentEffects;
 	delete CurrentWorld;
+	delete PauseButton;
+
+	//Delete all enemies from memory and clear the vector
+	for (int i = 0; i < (int)Enemies.size(); i++){
+		delete Enemies[i];
+	}
+	Enemies.clear();
 }
 
 void PauseButtonDown(){

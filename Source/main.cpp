@@ -1,5 +1,4 @@
 #include "Engine.h"
-#define _CRTDBG_MAP_ALLOC
 
 int main(int argc, char* argv[]){
 	

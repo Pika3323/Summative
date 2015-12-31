@@ -10,7 +10,7 @@ MainMenuState::MainMenuState(){
 
 	t = TextBox(BLUE500, al_map_rgb(33, 33, 33), 100, 72, Vector2D(GEngine->GetDisplayWidth() / 2 - 50, 0), 1, "Test");
 
-	AllUIComponents[0] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 150, 243), 100, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 50, GEngine->GetDisplayHeight() / 2 - 90), 0, "PLAY GAME", &MainMenu::PlayGame);
+	AllUIComponents[0] = &BPlayGame;
 	AllUIComponents[1] = &BEditorGame;
 	AllUIComponents[2] = &BOptions;
 	AllUIComponents[3] = &BExit;
@@ -92,11 +92,14 @@ void MainMenu::OpenSettings(){
 void MainMenu::ToggleFullscreen(){
 	if (!dynamic_cast<MainMenuState*>(GEngine->GetCurrentGameState())->bFullscreen){
 		al_set_display_flag(GEngine->GetDisplay(), ALLEGRO_FULLSCREEN, true);
+		al_set_display_flag(GEngine->GetDisplay(), ALLEGRO_NOFRAME, true);
 		al_resize_display(GEngine->GetDisplay(), GEngine->GetDisplayData().width, GEngine->GetDisplayData().height);
 		al_set_window_position(GEngine->GetDisplay(), 0, 0);
+		dynamic_cast<MainMenuState*>(GEngine->GetCurrentGameState())->bFullscreen = true;
 	}
 	else{
 		al_set_display_flag(GEngine->GetDisplay(), ALLEGRO_FULLSCREEN, false);
+		al_set_display_flag(GEngine->GetDisplay(), ALLEGRO_NOFRAME, false);
 		al_resize_display(GEngine->GetDisplay(), GEngine->GetDisplayWidth(), GEngine->GetDisplayHeight());
 	}
 }

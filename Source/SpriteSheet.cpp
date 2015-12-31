@@ -54,9 +54,9 @@ ALLEGRO_BITMAP* SpriteSheet::GetFrameBitmap(){
 
 	if (temp){
 		al_set_target_bitmap(temp);
-		//al_draw_bitmap_region(Sheet, FrameWidth * CurrentFrame, 0, FrameWidth, FrameHeight, 0, 0, 0);
+		al_draw_bitmap_region(Sheet, FrameWidth * CurrentFrame, 0, FrameWidth, FrameHeight, 0, 0, 0);
 
-		al_clear_to_color(al_map_rgb(255, 0, 255));
+		//al_clear_to_color(al_map_rgb(255, 0, 255));
 		//Reset target bitmap to display
 		al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 
@@ -71,7 +71,6 @@ ALLEGRO_BITMAP* SpriteSheet::GetFrameBitmap(){
 }
 
 SpriteSheet::~SpriteSheet(){
-	if (Sheet){
-		al_destroy_bitmap(Sheet);
-	}
+	//Apparently al_destroy_bitmap() doesn't work...
+	Sheet = NULL;
 }

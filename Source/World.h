@@ -31,11 +31,10 @@ public:
 	World(){ bPlay = false; }
 	World(Vector2D s, int gs);
 
-	
-
 	GridTile* GetClickedTile(Vector2D inLoc);
 
 	void PlaceBlock(GridTile* Target, EBlockType Type);
+
 	void DestroyBlock(GridTile* Target);
 
 	void PlaceEnemy(GridTile* Target, EnemyType Type, std::vector<Enemy*> *All);	//add each enemy vector in as it is made

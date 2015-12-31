@@ -25,9 +25,14 @@ World::World(Vector2D s, int gs){
 
 }
 
-//Returns which tile was clicked based on the location of the click
+//Returns which tile was clicked based on the location of the click. Returns NULL if inLoc was invalid
 GridTile* World::GetClickedTile(Vector2D inLoc){
-	return &Tile[(int)ceil(inLoc.x) / gridSize][(int)ceil(inLoc.y) / gridSize];
+	if (inLoc.x < 0 || inLoc.y < 0){
+		return NULL;
+	}
+	else{
+		return &Tile[(int)ceil(inLoc.x) / gridSize][(int)ceil(inLoc.y) / gridSize];
+	}
 }
 
 void World::PlaceBlock(GridTile* Target, EBlockType Type){

@@ -2,6 +2,11 @@
 #include "PlayState.h"
 #include "MainMenuState.h"
 
+Engine::Engine(){
+	Active = NULL;
+	LockedComponent = NULL;
+}
+
 ALLEGRO_DISPLAY* Engine::GetDisplay(){
 	return display;
 }
@@ -131,10 +136,13 @@ void Engine::Init(){
 
 void Engine::Cleanup(){
 	Active->Destroy();
+	delete Active;
 	al_destroy_display(display);
 	al_destroy_timer(timer);
 	al_destroy_event_queue(event_queue);
 	al_shutdown_primitives_addon();
+
+	delete this;
 }
 
 bool Engine::ShouldTick(){

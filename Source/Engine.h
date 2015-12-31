@@ -76,7 +76,7 @@ public:
 	double delta;
 	static bool bExit;
 
-	Engine(){}
+	Engine();
 	
 private:
 	//The active game display
