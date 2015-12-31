@@ -6,6 +6,7 @@ World::World(Vector2D s, int gs){
 	dimensions = s;
 	gridSize = gs;
 	offset = Vector2D(0.f, 0.f);
+	bPlay = false;
 
 	for (int i = 0; i < 128; i++) {
 		for (int j = 0; j < 64; j++) {
@@ -24,9 +25,14 @@ World::World(Vector2D s, int gs){
 
 }
 
-//Returns which tile was clicked based on the location of the click
+//Returns which tile was clicked based on the location of the click. Returns NULL if inLoc was invalid
 GridTile* World::GetClickedTile(Vector2D inLoc){
-	return &Tile[(int)ceil(inLoc.x) / gridSize][(int)ceil(inLoc.y) / gridSize];
+	if (inLoc.x < 0 || inLoc.y < 0){
+		return NULL;
+	}
+	else{
+		return &Tile[(int)ceil(inLoc.x) / gridSize][(int)ceil(inLoc.y) / gridSize];
+	}
 }
 
 void World::PlaceBlock(GridTile* Target, EBlockType Type){
@@ -59,21 +65,39 @@ void World::Tick(float delta){
 }
 
 //Loads a level from a path
-bool World::Load(const char file[64]){
+bool World::Load(const char LevelName[64]){
 	FILE *fptr = NULL;
-	fptr = fopen(file, "rb");
+	strcpy(name, LevelName);
+
+	char FileName[64];
+	strcpy(FileName, LevelName);
+	strcat(FileName, ".bvl");
+
+	fptr = fopen(FileName, "rb");
+	bool bValidLevel = true;
 
 	if (fptr){
-		for (int i = 0; i < 128; i++){
-			for (int j = 0; j < 64; j++)
-			{
-				//fseek(fptr, sizeof(Block)*i*j, SEEK_SET);
-				fread(&Blocks[i][j], sizeof(Block), 1, fptr);
+		//Read version info
+		int Major, Minor;
+		fread(&Major, sizeof(int), 1, fptr);
+		fread(&Minor, sizeof(int), 1, fptr);
+
+		if (Major < GEngine->VersionMajor || Minor < GEngine->VersionMinor){
+			fprintf(stderr, "Game levels of version %d.%d are incompatible with game version %d.%d\n", Major, Minor, GEngine->VersionMajor, GEngine->VersionMinor);
+			bValidLevel = false;
+		}
+
+		if (bValidLevel) {
+			fread(&name, sizeof(char) * 64, 1, fptr);
+			for (int i = 0; i < 128; i++) {
+				for (int j = 0; j < 64; j++) {
+					fread(&Blocks[i][j], sizeof(Block), 1, fptr);
+				}
 			}
 		}
 
 		fclose(fptr);
-		return true;
+		return true && bValidLevel;
 	}
 	else{
 		return false;
@@ -81,10 +105,21 @@ bool World::Load(const char file[64]){
 }
 
 //Saves a level 
-bool World::Save(const char file[64]){
+bool World::Save(const char LevelName[64]){
 	FILE *fptr = NULL;
-	fptr = fopen(file, "wb+");
+
+	char FileName[64];
+	strcpy(FileName, LevelName);
+	strcat(FileName, ".bvl");
+
+	fptr = fopen(FileName, "wb+");
 	if (fptr){
+		//Save version info
+		fwrite(&GEngine->VersionMajor, sizeof(int), 1, fptr);
+		fwrite(&GEngine->VersionMinor, sizeof(int), 1, fptr);
+		//Save level name
+		fwrite(&name, sizeof(char) * 64, 1, fptr);
+		//Save the array of blocks
 		for (int i = 0; i < 128; i++){
 			for (int j = 0; j < 64; j++){
 				fwrite(&Blocks[i][j], sizeof(Block), 1, fptr);

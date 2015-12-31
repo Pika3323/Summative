@@ -1,0 +1,3 @@
+#define MAJORVERSION 0
+#define MINORVERSION 1
+#define BUILDNUMBER 0

@@ -28,22 +28,21 @@ public:
 	bool bPlay;
 	bool EnemySelect;
 
-	World(){}
+	World(){ bPlay = false; }
 	World(Vector2D s, int gs);
-
-	
 
 	GridTile* GetClickedTile(Vector2D inLoc);
 
 	void PlaceBlock(GridTile* Target, EBlockType Type);
+
 	void DestroyBlock(GridTile* Target);
 
 	void PlaceEnemy(GridTile* Target, EnemyType Type, std::vector<Enemy*> *All);	//add each enemy vector in as it is made
 
 	void Tick(float delta);
 
-	bool Load(const char file[64]);
-	bool Save(const char file[64]);
+	bool Load(const char LevelName[64]);
+	bool Save(const char LevelName[64]);
 
 	void moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, Buffer &block, Buffer &notplay, int w, int h);
 private:

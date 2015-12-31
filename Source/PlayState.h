@@ -25,10 +25,10 @@ public:
 	Buffer notPlayingBuff; 
 
 	//play buffer for blocks
-	Buffer blockBuff;	
+	Buffer BlockBuffer;	
 
 	//buffer for grid
-	Buffer dubBuff;	
+	Buffer GridBuffer;	
 
 	//buffer for background
 	Buffer Background;	

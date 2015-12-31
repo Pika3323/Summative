@@ -1,7 +1,13 @@
 #include "SpriteSheet.h"
 
 SpriteSheet::SpriteSheet(ALLEGRO_BITMAP* s, int width, int height, int frames){
-	Sheet = s;
+	if (s){
+		Sheet = s;
+	}
+	else{
+		fprintf(stderr, "Could not load bitmap for spritesheet\n");
+		GEngine->Quit();
+	}
 	FrameHeight = height;
 	FrameWidth = width;
 	FramesInAnimation = frames;		//all frames in animation
@@ -43,17 +49,25 @@ void SpriteSheet::PushFrame(EADirection Direction){
 }
 
 //Returns a bitmap of the current frame of animation
-ALLEGRO_BITMAP* SpriteSheet::GetFrameBitmap(){
-	ALLEGRO_BITMAP* temp = al_create_bitmap(FrameWidth, FrameHeight);
+void SpriteSheet::GetFrameBitmap(ALLEGRO_BITMAP* Target){
+	if (Target){
+		al_set_target_bitmap(Target);
+		al_clear_to_color(al_map_rgba(0, 0, 0, 0));
+		al_draw_bitmap_region(Sheet, FrameWidth * CurrentFrame, 0, FrameWidth, FrameHeight, 0, 0, 0);
 
-	al_set_target_bitmap(temp);
-	al_draw_bitmap_region(Sheet, FrameWidth * CurrentFrame, 0, FrameWidth, FrameHeight, 0, 0, 0);
-	//Reset target bitmap to display
-	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
+		//al_clear_to_color(al_map_rgb(255, 0, 255));
+		//Reset target bitmap to display
+		al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 
-	return temp;
+	}
+	else{
+		fprintf(stderr, "Could not access temporary sprite bitmap\n");
+		GEngine->Quit();
+	}
+	
 }
 
 SpriteSheet::~SpriteSheet(){
-	al_destroy_bitmap(Sheet);
+	//Apparently al_destroy_bitmap() doesn't work...
+	Sheet = NULL;
 }
