@@ -182,11 +182,11 @@ void Engine::Draw(){
 }
 
 int Engine::GetDisplayWidth(){
-	return DisplayWidth;
+	return al_get_display_width(display);
 }
 
 int Engine::GetDisplayHeight(){
-	return DisplayHeight;
+	return al_get_display_height(display);
 }
 
 void Engine::LockInputToUIComponent(UIComponent *c){

@@ -11,6 +11,7 @@ PlayState::PlayState(){
 	GridBuffer = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f));	//buffer for grid
 	Background = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(2.5f, 2.5f));	//buffer for background
 	CurrentWorld->bPlay = false;
+	PlayerOldPosition = Vector2D(0.f, 0.f);
 
 	//Load a cursor and check if it loaded properly
 	BoxSelectCursor = al_load_bitmap("Textures/Cursor_BoxSelect.png");
@@ -39,26 +40,38 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				//Close window if escape key is pressed
 			case ALLEGRO_KEY_D:
 			case ALLEGRO_KEY_RIGHT:
-				if (CurrentWorld->bPlay)
+				if (CurrentWorld->bPlay) {
 					TinTin->SetCharacterDirection(ECharacterDirection::R_Right);
-				TinTin->Run(Vector2D(5.f, 0.f));
-				WorldMoveDelta.x = -5.f;
+					TinTin->Run(Vector2D(5.f, 0.f));
+				}
+				else{
+					WorldMoveDelta.x = -5.f;
+				}
 				break;
 			case ALLEGRO_KEY_A:
 			case ALLEGRO_KEY_LEFT:
-				if (CurrentWorld->bPlay)
+				if (CurrentWorld->bPlay) {
 					TinTin->SetCharacterDirection(ECharacterDirection::R_Left);
-				TinTin->Run(Vector2D(-5.f, 0.f));
-				WorldMoveDelta.x = 5.f;
+					TinTin->Run(Vector2D(-5.f, 0.f));
+				}
+				else{
+					WorldMoveDelta.x = 5.f;
+				}
 				break;
 			case ALLEGRO_KEY_S:
 			case ALLEGRO_KEY_DOWN:
-				WorldMoveDelta.y = -5.f;
+				if (!CurrentWorld->bPlay){
+					WorldMoveDelta.y = -5.f;
+				}
 				break;
 			case ALLEGRO_KEY_W:
 			case ALLEGRO_KEY_UP:
-				TinTin->Jump();
-				WorldMoveDelta.y = 5.f;
+				if (CurrentWorld->bPlay){
+					TinTin->Jump();
+				}
+				else{
+					WorldMoveDelta.y = 5.f;
+				}
 				break;
 			case ALLEGRO_KEY_C:
 				bBoxSelect = !bBoxSelect;
@@ -272,7 +285,6 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				break;
 			default:
 				break;
-
 			}
 		}
 	}
@@ -310,10 +322,16 @@ void PlayState::Tick(float delta){
 			}
 
 			TinTin->Tick(delta);
+			Vector2D PlayerScreenPosition = CurrentWorld->offset + TinTin->position;
+			if (PlayerScreenPosition.x > GEngine->GetDisplayWidth() / 2 || PlayerScreenPosition.y > GEngine->GetDisplayHeight() / 2){
+				WorldMoveDelta = PlayerOldPosition - TinTin->position;
+			}
+			
 		}
 		
-		CurrentWorld->Tick(delta);
 		CurrentWorld->moveWorld(WorldMoveDelta, GridBuffer, Background, BlockBuffer, notPlayingBuff, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()));
+		
+		CurrentWorld->Tick(delta);
 
 		Vector2D DragDelta;
 		if (bMouseDrag){
@@ -323,6 +341,9 @@ void PlayState::Tick(float delta){
 			DragTime += delta;
 		}
 
+		PlayerOldPosition = TinTin->position;
+
+		//Mouse states
 		switch (GEngine->GetMouseState().buttons){
 		case MOUSE_LB:
 			if (!bBoxSelect && !CurrentWorld->EnemySelect){
@@ -402,6 +423,16 @@ void PlayState::Draw(){
 	else {
 		al_draw_bitmap_region(BlockBuffer.image, BlockBuffer.offset.x *-1, BlockBuffer.offset.y * -1, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()), 0, 0, 0);
 	}
+	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 50, ALLEGRO_ALIGN_RIGHT, "World X: %.0f", CurrentWorld->offset.x);
+	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 66, ALLEGRO_ALIGN_RIGHT, "World Y: %.0f", CurrentWorld->offset.y);
+	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 255, 255), GEngine->GetDisplayWidth() - 6, 49, ALLEGRO_ALIGN_RIGHT, "World X: %.0f", CurrentWorld->offset.x);
+	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 255, 255), GEngine->GetDisplayWidth() - 6, 65, ALLEGRO_ALIGN_RIGHT, "World Y: %.0f", CurrentWorld->offset.y);
+
+	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 82, ALLEGRO_ALIGN_RIGHT, "Character X: %.0f", TinTin->position.x);
+	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 98, ALLEGRO_ALIGN_RIGHT, "Character Y: %.0f", TinTin->position.y);
+	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(255, 255, 0), GEngine->GetDisplayWidth() - 6, 81, ALLEGRO_ALIGN_RIGHT, "Character X: %.0f", TinTin->position.x);
+	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(255, 255, 0), GEngine->GetDisplayWidth() - 6, 97, ALLEGRO_ALIGN_RIGHT, "Character Y: %.0f", TinTin->position.y);
+
 	
 	//Draw the pause button
 	//PauseButton->Draw();

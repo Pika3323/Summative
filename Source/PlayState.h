@@ -18,6 +18,9 @@ public:
 	//The main player
 	Player* TinTin;
 
+	//Vector coordinate for the player from an earlier frame to calculate a delta
+	Vector2D PlayerOldPosition;
+
 	//Effects (including gravity) for the current world
 	class Effects* CurrentEffects;	
 
