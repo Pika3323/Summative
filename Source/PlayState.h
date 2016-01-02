@@ -20,6 +20,7 @@ public:
 
 	//Vector coordinate for the player from an earlier frame to calculate a delta
 	Vector2D PlayerOldPosition;
+	Vector2D Debug;
 
 	//Effects (including gravity) for the current world
 	class Effects* CurrentEffects;	
