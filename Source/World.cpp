@@ -35,9 +35,10 @@ GridTile* World::GetClickedTile(Vector2D inLoc){
 	}
 }
 
-void World::PlaceBlock(GridTile* Target, EBlockType Type){
+void World::PlaceBlock(GridTile* Target, EBlockType T){
+	Blocks[Target->x][Target->y].bCollision = Type[static_cast<int>(T)].bCollision;
 	Blocks[Target->x][Target->y].position = Target->location;
-	Blocks[Target->x][Target->y].type = Type;
+	Blocks[Target->x][Target->y].type = T;
 	Blocks[Target->x][Target->y].bSpawned = true;
 	Target->occupied = true;
 }

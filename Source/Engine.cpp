@@ -111,7 +111,7 @@ void Engine::Init(){
 
 	//Create a font for the use of debugging
 	//debug_font = al_create_builtin_font();
-	debug_font = al_load_ttf_font("Roboto-Regular.ttf", 12, 0);
+	debug_font = al_load_ttf_font("Roboto-Regular.ttf", 11, 0);
 	if (!debug_font) {
 		fprintf(stderr, "Debugging font could not be created\n");
 		bExit = true;
