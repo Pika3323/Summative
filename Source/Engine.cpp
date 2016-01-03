@@ -2,6 +2,9 @@
 #include "PlayState.h"
 #include "MainMenuState.h"
 
+//Static variable initialization
+bool Engine::bExit = false;
+
 Engine::Engine(){
 	Active = NULL;
 	LockedComponent = NULL;
@@ -247,3 +250,4 @@ GameState* Engine::GetCurrentGameState(){
 void Engine::PrintDebugText(ALLEGRO_COLOR c, float duration, const char* text){
 	DebugStrings.push_back(DebugOutput(c, text, duration));
 }
+

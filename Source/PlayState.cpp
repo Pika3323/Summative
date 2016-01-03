@@ -440,7 +440,7 @@ void PlayState::Draw(){
 	}
 
 	//DEBUG OUTPUTS
-	/*al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 50, ALLEGRO_ALIGN_RIGHT, "World X: %.0f", CurrentWorld->offset.x);
+	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 50, ALLEGRO_ALIGN_RIGHT, "World X: %.0f", CurrentWorld->offset.x);
 	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 66, ALLEGRO_ALIGN_RIGHT, "World Y: %.0f", CurrentWorld->offset.y);
 	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 255, 255), GEngine->GetDisplayWidth() - 6, 49, ALLEGRO_ALIGN_RIGHT, "World X: %.0f", CurrentWorld->offset.x);
 	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 255, 255), GEngine->GetDisplayWidth() - 6, 65, ALLEGRO_ALIGN_RIGHT, "World Y: %.0f", CurrentWorld->offset.y);
@@ -451,7 +451,7 @@ void PlayState::Draw(){
 	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(255, 255, 0), GEngine->GetDisplayWidth() - 6, 97, ALLEGRO_ALIGN_RIGHT, "Character Y: %.0f", TinTin->position.y);
 
 	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 113, ALLEGRO_ALIGN_RIGHT, "Character Delta X, Y: %.0f, %0.f", Debug.x, Debug.y);
-	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(255, 255, 0), GEngine->GetDisplayWidth() - 6, 112, ALLEGRO_ALIGN_RIGHT, "Character Delta X, Y: %.0f, %0.f", Debug.x, Debug.y);*/
+	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(255, 255, 0), GEngine->GetDisplayWidth() - 6, 112, ALLEGRO_ALIGN_RIGHT, "Character Delta X, Y: %.0f, %0.f", Debug.x, Debug.y);
 
 	
 	//Draw the pause button

@@ -1,5 +1,5 @@
 //Standard Engine header
-//Contains all the nescessary headers for anything using the Engine
+//Contains all the necessary headers for anything using the Engine
 
 #pragma once
 
@@ -152,8 +152,4 @@ private:
 	std::vector<DebugOutput> DebugStrings;
 };
 
-//Static variable initialization
-bool Engine::bExit = false;
-
-
-Engine* GEngine = new Engine();
+extern Engine* GEngine = new Engine();

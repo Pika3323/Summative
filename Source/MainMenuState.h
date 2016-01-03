@@ -11,7 +11,7 @@ public:
 	class Button BEditorGame;
 	class Button BOptions;
 	class Button BExit;
-	Button BFullscreen;
+	class Button BFullscreen;
 
 	class TextBox t;
 	bool bFullscreen = false;

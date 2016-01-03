@@ -2,6 +2,11 @@
 
 #include "Engine.h"
 
+/**
+Game states are used to represent different "states" of the game. 
+This could be a menu state, an editor state, or a play state
+Game states are like a program that runs inside the main game program.
+*/
 class GameState {
 public:
 	virtual void Init() = 0;

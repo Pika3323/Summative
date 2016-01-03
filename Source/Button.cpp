@@ -22,7 +22,7 @@ void Button::onHoverIn(){
 	al_clear_to_color(al_map_rgba(0, 0, 0, 0));
 	al_draw_filled_rounded_rectangle(0, 0, width, height, 2, 2, al_map_rgb(221, 221, 221));
 	al_draw_textf(roboto, textColor, width / 2, height / 2 - 7, ALLEGRO_ALIGN_CENTER, "%s", text);
-	al_set_system_mouse_cursor(GEngine->GetDisplay(), ALLEGRO_SYSTEM_MOUSE_CURSOR_LINK);
+	//al_set_system_mouse_cursor(GEngine->GetDisplay(), ALLEGRO_SYSTEM_MOUSE_CURSOR_LINK);
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 }
 void Button::onHoverOut(){

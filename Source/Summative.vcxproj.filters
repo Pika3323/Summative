@@ -25,9 +25,6 @@
     <ClCompile Include="Button.cpp">
       <Filter>Engine\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UI.cpp">
-      <Filter>Engine\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Effects.cpp">
       <Filter>Engine\Source Files</Filter>
     </ClCompile>
