@@ -116,6 +116,9 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 			case ALLEGRO_KEY_8:
 				SelectedBlock = EBlockType::B_BackgroundBrick;
 				break;
+			case ALLEGRO_KEY_9:
+				SelectedBlock = EBlockType::B_FinishFlag;
+				break;
 			case ALLEGRO_KEY_SPACE:
 				GEngine->PrintDebugText(BLUE500, 5.f, "Pressed Space");
 				if (!CurrentWorld->bPlay){
@@ -379,15 +382,21 @@ void PlayState::Tick(float delta){
 }
 
 void PlayState::Draw(){
+	
 	if (!CurrentWorld->bPlay){
 		al_set_target_bitmap(notPlayingBuff.image);
 		al_clear_to_color(al_map_rgba(0, 0, 0, 0));
+		for (int i = 0; i < (int)Enemies.size(); i++) {
+			if (Enemies[i]){
+				Enemies[i]->Draw();
+			}
+		}
 	}
 	else{
 		//If the play mode has been selected, then draw the character
 		al_set_target_bitmap(BlockBuffer.image);
 		al_clear_to_color(al_map_rgba(0, 0, 0, 0));
-		for (int i = 0; i < (int) Enemies.size(); i++) {
+		for (int i = 0; i < (int)Enemies.size(); i++) {
 			if (Enemies[i]){
 				Enemies[i]->Draw();
 			}
@@ -458,7 +467,8 @@ void PlayState::Init(){
 	CurrentWorld->Type[4] = BlockType("Stone", al_load_bitmap("Textures/Objects/Stone.png"), true);
 	CurrentWorld->Type[5] = BlockType("Fancy", al_load_bitmap("Textures/Objects/Fancy.png"), true);
 	CurrentWorld->Type[6] = BlockType("Mossy", al_load_bitmap("Textures/Objects/Mossy.png"), true);
-	CurrentWorld->Type[7] = BlockType("Background Brick", al_load_bitmap("Textures/Objects/Brick.png"), false);
+	CurrentWorld->Type[7] = BlockType("Background Brick", al_load_bitmap("Textures/Objects/Background_Brick.png"), false);
+	CurrentWorld->Type[8] = BlockType("Finish Flag", al_load_bitmap("Textures/Objects/FinishFlag.png"), false);
 
 	//Create buffers used for rendering
 	GridBuffer.image = al_create_bitmap(4096, 2048);

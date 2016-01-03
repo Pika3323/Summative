@@ -10,7 +10,8 @@ enum class EBlockType{
 	B_Stone,
 	B_Fancy,
 	B_Mossy,
-	B_BackgroundBrick
+	B_BackgroundBrick,
+	B_FinishFlag
 };
 
 struct BlockType{
