@@ -11,6 +11,8 @@ public:
 	ALLEGRO_COLOR textColor;
 	ALLEGRO_COLOR pColor;
 
+	int caret;
+
 
 	TextBox(){}
 	TextBox(ALLEGRO_COLOR bg, ALLEGRO_COLOR tx, int w, int h, Vector2D pos, int i, const char placeholder[]);

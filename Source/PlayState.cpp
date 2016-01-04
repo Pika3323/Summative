@@ -354,8 +354,10 @@ void PlayState::Tick(float delta){
 		
 		CurrentWorld->moveWorld(WorldMoveDelta, GridBuffer, Background, BlockBuffer, notPlayingBuff);
 		
+		//Run world tick
 		CurrentWorld->Tick(delta);
 
+		//Calculate the change in mouse position if the middle mouse button is being held
 		Vector2D DragDelta;
 		if (bMouseDrag){
 			DragDelta = DragStart - Vector2D(GEngine->GetMouseState().x, GEngine->GetMouseState().y);
@@ -396,15 +398,9 @@ void PlayState::Tick(float delta){
 }
 
 void PlayState::Draw(){
-	
 	if (!CurrentWorld->bPlay){
 		al_set_target_bitmap(notPlayingBuff.image);
 		al_clear_to_color(al_map_rgba(0, 0, 0, 0));
-		for (int i = 0; i < (int)Enemies.size(); i++) {
-			if (Enemies[i]){
-				Enemies[i]->Draw();
-			}
-		}
 	}
 	else{
 		//If the play mode has been selected, then draw the character
@@ -417,7 +413,6 @@ void PlayState::Draw(){
 		}
 		TinTin->Draw();
 	}
-
 	//For-each loop that goes through every block in the array
 	for (auto& sub : CurrentWorld->Blocks){
 		for (auto& elem : sub){
@@ -431,7 +426,6 @@ void PlayState::Draw(){
 			}
 		}
 	}
-
 	//Draws a transparent blue rectangle over the area selected by the box select
 	if (bBoxSelect && bFirstBoxSelected) {
 		GridTile* newTile = CurrentWorld->GetClickedTile(Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1) + 32, GEngine->GetMouseState().y + (GridBuffer.offset.y * -1) + 32));

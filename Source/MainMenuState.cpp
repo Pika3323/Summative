@@ -8,7 +8,7 @@ MainMenuState::MainMenuState(){
 	BExit = Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 100, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 50, GEngine->GetDisplayHeight() / 2 + 18), 0, "EXIT", &GEngine->Quit);
 	BFullscreen = Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 100, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 50, GEngine->GetDisplayHeight() / 2 + 54), 0, "TOGGLE FULLSCREEN", &MainMenu::ToggleFullscreen);
 
-	t = TextBox(BLUE500, al_map_rgb(33, 33, 33), 100, 72, Vector2D(GEngine->GetDisplayWidth() / 2 - 50, 0), 1, "Test");
+	t = TextBox(BLUE500, al_map_rgb(33, 33, 33), 500, 72, Vector2D(GEngine->GetDisplayWidth() / 2 - 250, 0), 1, "Test");
 
 	AllUIComponents[0] = &BPlayGame;
 	AllUIComponents[1] = &BEditorGame;

@@ -39,20 +39,21 @@ void TextBox::Draw(){
 }
 
 void TextBox::handleKeyInput(ALLEGRO_EVENT *ev){
-	if (ev->type == ALLEGRO_EVENT_KEY_DOWN){
-		if (ev->keyboard.keycode >= 0 || ev->keyboard.keycode <= 26) {
-			char temp[2] = { *al_keycode_to_name(ev->keyboard.keycode), '\0' };
-			text[cursorPosition] = *al_keycode_to_name(ev->keyboard.keycode);
+	if (ev->type == ALLEGRO_EVENT_KEY_CHAR){
+		
+		switch (ev->keyboard.unichar) {
+		case 8:
+			break;
+		default:
+			char temp[2] = { ev->keyboard.unichar, '\0' };
+			text[cursorPosition] = ev->keyboard.unichar;
 			cursorPosition++;
 			al_set_target_bitmap(tex);
 			al_clear_to_color(al_map_rgba(0, 0, 0, 0));
 			al_draw_line(0, height - 1, width, height - 1, pColor, 1);
 			al_draw_textf(roboto, textColor, 4, height / 2 + 8, ALLEGRO_ALIGN_LEFT, "%s", text);
 			al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
-		}
-		if (ev->keyboard.keycode == ALLEGRO_KEY_BACKSPACE){
-			text[cursorPosition] = '\0';
-			cursorPosition--;
+			break;
 		}
 	}
 }
