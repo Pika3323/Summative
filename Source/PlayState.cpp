@@ -311,12 +311,18 @@ void PlayState::Tick(float delta){
 	}
 	if (!Paused) {
 		if (CurrentWorld->bPlay) {
+
+			//Run Gravity and Collision checking code
 			CurrentEffects->GravTick();
 			CurrentEffects->ColTick(CurrentWorld, TinTin);
-			if (TinTin->GetCharacterWorldPosition().y > CurrentWorld->dimensions.x){
+
+			//Kill the Character if he falls out of the world
+			if (TinTin->GetCharacterWorldPosition().y > CurrentWorld->dimensions.x) {
 				TinTin->Die();
 			}
-			if (!TinTin->bOnGround && CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bSpawned) {
+
+			//Stop character from falling through a block
+			if (!TinTin->bOnGround && CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bSpawned && CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bCollision) {
 				TinTin->SetCharacterWorldPosition(Vector2D(TinTin->GetCharacterWorldPosition().x, CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y) / CurrentWorld->gridSize].position.y));
 				TinTin->bOnGround = true;
 				if (TinTin->velocity.y > 0) {
@@ -324,28 +330,36 @@ void PlayState::Tick(float delta){
 				}
 				CurrentEffects->GonOff[TinTin->gravSlot] = false;
 			}
-			else if (!CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bSpawned) {
+			else if (!CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bSpawned || !CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bCollision) {
 				TinTin->bOnGround = false;
 				CurrentEffects->GonOff[TinTin->gravSlot] = true;
 			}
 
+			//Main Character Tick
 			TinTin->Tick(delta);
+
 			Debug = PlayerOldPosition - TinTin->position;
 			Vector2D PlayerScreenPosition = CurrentWorld->offset + TinTin->position;
+
 			if (PlayerScreenPosition.x > GEngine->GetDisplayWidth() / 2 || PlayerScreenPosition.y > GEngine->GetDisplayHeight() / 2 && CurrentWorld->offset.x != 0 && CurrentWorld->offset.x != CurrentWorld->dimensions.x * -1 + GEngine->GetDisplayWidth() && CurrentWorld->offset.y != 0 && CurrentWorld->offset.y != CurrentWorld->dimensions.y * -1 + GEngine->GetDisplayHeight()){
-				WorldMoveDelta = PlayerOldPosition - TinTin->position;
+				if (TinTin->velocity != Vector2D(0.f, 0.f)) {
+					WorldMoveDelta = TinTin->velocity * -1;
+				}
+				else if (CurrentWorld->bPlay) {
+					WorldMoveDelta = Vector2D(0.f, 0.f);
+				}
 			}
 			
 		}
 		
-		CurrentWorld->moveWorld(WorldMoveDelta, GridBuffer, Background, BlockBuffer, notPlayingBuff, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()));
+		CurrentWorld->moveWorld(WorldMoveDelta, GridBuffer, Background, BlockBuffer, notPlayingBuff);
 		
 		CurrentWorld->Tick(delta);
 
 		Vector2D DragDelta;
 		if (bMouseDrag){
 			DragDelta = DragStart - Vector2D(GEngine->GetMouseState().x, GEngine->GetMouseState().y);
-			CurrentWorld->moveWorld(DragDelta * -1, GridBuffer, Background, BlockBuffer, notPlayingBuff, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()));
+			CurrentWorld->moveWorld(DragDelta * -1, GridBuffer, Background, BlockBuffer, notPlayingBuff);
 			DragStart = Vector2D(GEngine->GetMouseState().x, GEngine->GetMouseState().y);
 			DragTime += delta;
 		}
@@ -453,6 +467,8 @@ void PlayState::Draw(){
 	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 113, ALLEGRO_ALIGN_RIGHT, "Character Delta X, Y: %.0f, %0.f", Debug.x, Debug.y);
 	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(255, 255, 0), GEngine->GetDisplayWidth() - 6, 112, ALLEGRO_ALIGN_RIGHT, "Character Delta X, Y: %.0f, %0.f", Debug.x, Debug.y);
 
+	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 129, ALLEGRO_ALIGN_RIGHT, "World Delta X, Y: %.0f, %0.f", WorldMoveDelta.x, WorldMoveDelta.y);
+	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(255, 255, 0), GEngine->GetDisplayWidth() - 6, 128, ALLEGRO_ALIGN_RIGHT, "World Delta X, Y: %.0f, %0.f", WorldMoveDelta.x, WorldMoveDelta.y);
 	
 	//Draw the pause button
 	//PauseButton->Draw();

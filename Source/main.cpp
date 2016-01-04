@@ -44,7 +44,5 @@ int main(int argc, char* argv[]){
 	//Cleanup
 	GEngine->Cleanup();
 
-	//_CrtDumpMemoryLeaks();
-
 	return 0;
 }
