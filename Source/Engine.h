@@ -76,6 +76,7 @@ public:
 	int GetDisplayHeight();
 
 	void LockInputToUIComponent(class UIComponent *c);
+
 	void ReleaseInput();
 
 	//Draws the program's current frame rate

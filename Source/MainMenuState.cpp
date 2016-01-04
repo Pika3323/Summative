@@ -89,7 +89,7 @@ void MainMenu::LoadEditor(){
 	curl = curl_easy_init();
 	if (curl){
 		curl_easy_setopt(curl, CURLOPT_URL, "http://blocks.llamabagel.ca/test.php");
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "testValue=Derek");
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "testValue=Derek\n");
 
 		res = curl_easy_perform(curl);
 
