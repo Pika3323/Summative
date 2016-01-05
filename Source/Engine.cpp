@@ -239,6 +239,10 @@ void Engine::LockInputToUIComponent(UIComponent *c){
 	LockedComponent = c;
 }
 
+bool Engine::IsInputLocked(){
+	return LockedComponent;
+}
+
 void Engine::ReleaseInput(){
 	LockedComponent = NULL;
 }

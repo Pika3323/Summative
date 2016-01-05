@@ -75,8 +75,13 @@ public:
 	//Get the current displays height
 	int GetDisplayHeight();
 
+	//Lock all input functions to a specific UI component (for things such as text boxes)
 	void LockInputToUIComponent(class UIComponent *c);
 
+	//Whether input is currently locked to a UI component
+	bool IsInputLocked();
+
+	//Release input from all UI Components
 	void ReleaseInput();
 
 	//Draws the program's current frame rate
@@ -86,9 +91,13 @@ public:
 	//Be careful of using these in Tick functions!!
 	void PrintDebugText(ALLEGRO_COLOR c, float duration, const char* text);
 	
+	//Initialize all engine components
 	void Init();
+
+	//Cleanup memory when game is exited
 	void Cleanup();
 
+	//Change game states
 	template <class T> void ChangeGameState(){
 		if (Active){
 			Active->Destroy();

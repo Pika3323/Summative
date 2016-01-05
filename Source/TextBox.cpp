@@ -8,6 +8,7 @@ TextBox::TextBox(ALLEGRO_COLOR bg, ALLEGRO_COLOR tx, int w, int h, Vector2D pos,
 	textColor = tx;
 	position = pos;
 	id = i;
+	cursor = ALLEGRO_SYSTEM_MOUSE_CURSOR_EDIT;
 	pColor = al_map_rgb(147, 147, 147);
 	strcpy(placeholder, p);
 	roboto = al_load_font("Roboto-Regular.ttf", 16, 0);
@@ -40,6 +41,26 @@ void TextBox::Draw(){
 }
 
 void TextBox::handleKeyInput(ALLEGRO_EVENT *ev){
+	if (ev->type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && ev->mouse.button == MOUSE_LB){
+		Vector2D RelativeLoc = Vector2D(ev->mouse.x - position.x, ev->mouse.y - position.y);
+
+		//Set the caret location based on the location of a click
+		for (int i = 0; i < TText->slen; i++) {
+			//Create a temporary USTR to store a substring of the text
+			ALLEGRO_USTR* temp = al_ustr_new("");
+			al_ustr_assign_substr(temp, TText, 0, i);
+
+			//Calculate the position of the caret based on the temporary USTR
+			int CarPos = al_get_ustr_width(roboto, temp) + 4;
+			if (RelativeLoc.x + 4 < CarPos){
+				caret = i - 1;
+				break;
+			}
+		}
+
+		this->UpdateText();
+	}
+
 	if (ev->type == ALLEGRO_EVENT_KEY_DOWN) {
 		switch (ev->keyboard.keycode) {
 		case ALLEGRO_KEY_RIGHT:
@@ -62,15 +83,17 @@ void TextBox::handleKeyInput(ALLEGRO_EVENT *ev){
 		switch (ev->keyboard.unichar) {
 		case 8:
 			//Backspace
+			al_ustr_remove_chr(TText, caret - 1);
 			if (--caret < 0){
 				caret = 0;
 			}
-			else {
-				al_ustr_remove_chr(TText, caret - 1);
-			}
 			this->UpdateText();
 			break;
+		case 13:
+			//Enter key
+			break;
 		case 27:
+			//Escape key
 			GEngine->ReleaseInput();
 			break;
 		case 127:

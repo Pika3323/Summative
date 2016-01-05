@@ -32,6 +32,8 @@ void MainMenuState::HandleEvents(ALLEGRO_EVENT *ev){
 }
 
 void MainMenuState::Tick(float delta){
+	bool bIsHoverComponent = false;
+	UIComponent* HoveredComponent = NULL;
 	for (int i = 0; i < 6; i++){
 		if (InRange(GEngine->GetMouseState().x, AllUIComponents[i]->position.x, AllUIComponents[i]->position.x + AllUIComponents[i]->width) && InRange(GEngine->GetMouseState().y, AllUIComponents[i]->position.y, AllUIComponents[i]->position.y + AllUIComponents[i]->height)){
 			AllUIComponents[i]->onHoverIn();
@@ -39,6 +41,16 @@ void MainMenuState::Tick(float delta){
 		else {
 			AllUIComponents[i]->onHoverOut();
 		}
+		if (InRange(GEngine->GetMouseState().x, AllUIComponents[i]->position.x, AllUIComponents[i]->position.x + AllUIComponents[i]->width) && InRange(GEngine->GetMouseState().y, AllUIComponents[i]->position.y, AllUIComponents[i]->position.y + AllUIComponents[i]->height)){
+			HoveredComponent = AllUIComponents[i];
+			bIsHoverComponent = true;
+		}
+	}
+	if (bIsHoverComponent) {
+		al_set_system_mouse_cursor(GEngine->GetDisplay(), HoveredComponent->cursor);
+	}
+	else {
+		al_set_system_mouse_cursor(GEngine->GetDisplay(), ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
 	}
 }
 
