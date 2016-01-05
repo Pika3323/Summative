@@ -328,11 +328,9 @@ void PlayState::Tick(float delta){
 				if (TinTin->velocity.y > 0) {
 					TinTin->velocity.y = 0;
 				}
-				CurrentEffects->GonOff[TinTin->gravSlot] = false;
 			}
 			else if (!CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bSpawned || !CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bCollision) {
 				TinTin->bOnGround = false;
-				CurrentEffects->GonOff[TinTin->gravSlot] = true;
 			}
 
 			//Main Character Tick
@@ -486,7 +484,7 @@ void PlayState::Init(){
 	Background.image = al_create_bitmap(4096, 2048);
 	BlockBuffer.image = al_create_bitmap(4096, 2048);
 
-	TinTin->gravSlot = CurrentEffects->Register(TinTin, TinTinGrav);	//registering main character in gravity queue (is affected at beginning)
+	CurrentEffects->Register(TinTin);	//registering main character in gravity queue (is affected at beginning)
 	TinTin->velocity = Vector2D(0.f, 0.f);		//velocity starts at zero
 
 	//Setting Multiple Images to Background Buffer
