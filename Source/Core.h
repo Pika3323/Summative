@@ -8,19 +8,12 @@
 #include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_opengl.h>
 
+//libcurl headers
+#include "curl/curl.h"
+
 //Standard headers
 #include <stdio.h>
-#ifdef _DEBUG
-	#define _CRTDBG_MAP_ALLOC
-#endif
 #include <stdlib.h>
-#ifdef _DEBUG
-	#include <crtdbg.h>
-	#ifndef DBG_NEW
-		#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
-		#define new DBG_NEW
-	#endif
-#endif
 #include <time.h>
 #include <ctype.h>
 #include <math.h>

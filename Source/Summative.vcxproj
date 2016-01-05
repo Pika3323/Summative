@@ -16,7 +16,7 @@
     <ClInclude Include="Button.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="EditorState.h" />
-    <ClInclude Include="Effects.h" />
+    <ClInclude Include="Physics.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Character.h" />
@@ -42,7 +42,7 @@
     <ClCompile Include="EditorState.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Engine.cpp" />
-    <ClCompile Include="Effects.cpp" />
+    <ClCompile Include="Physics.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="IMath.cpp" />
     <ClCompile Include="MainMenuState.cpp" />
@@ -52,7 +52,6 @@
     <ClCompile Include="Dankey.cpp" />
     <ClCompile Include="SpriteSheet.cpp" />
     <ClCompile Include="TextBox.cpp" />
-    <ClCompile Include="UI.cpp" />
     <ClCompile Include="UIComponent.cpp" />
     <ClCompile Include="Vector2D.cpp" />
     <ClCompile Include="World.cpp" />
@@ -98,12 +97,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)Libraries\Allegro\include;$(SolutionDir)Libraries\libcurl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>CURL_STATICLIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Libraries\Allegro\lib;$(SolutionDir)Libraries\libcurl\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>allegro_monolith.lib;opengl32.lib;glu32.lib;libcurl_a.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>allegro_monolith.lib;opengl32.lib;glu32.lib;libcurl.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PreBuildEvent>
@@ -123,13 +122,15 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>D:\AllegroMSVC\include;D:\libcurl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>D:\AllegroMSVC\lib;D:\libcurl\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>allegro-5.0.10-monolith-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Libraries\Allegro\lib;$(SolutionDir)Libraries\libcurl\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>allegro_monolith.lib;opengl32.lib;glu32.lib;libcurl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PreBuildEvent>
       <Command>

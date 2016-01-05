@@ -4,7 +4,7 @@
 #include "World.h"
 #include "Character.h"
 
-class Effects{
+class Physics{
 public:
 	Vector2D Gravforce;	//actual force exerted (dy)
 	int slot;	//for holding slot in array of characters as they are registered
@@ -13,8 +13,8 @@ public:
 	Vector2D CollisionPos[100];
 
 
-	Effects();
-	Effects(Vector2D f);	//setting the gravity first
+	Physics();
+	Physics(Vector2D f);	//setting the gravity first
 
 	int Register(Character* registrant, bool onOff);	//registering characters and whether and not they are affected
 	void GravTick();	//applying force

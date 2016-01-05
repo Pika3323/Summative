@@ -5,12 +5,13 @@ PlayState::PlayState(){
 	CurrentWorld = new World(Vector2D(4096.f, 2048.f), 32);
 	TinTin = new Player(128, 64);	//The main player character
 	TinTin->SetCharacterWorldPosition(Vector2D(0.f, 0.f));
-	CurrentEffects = new Effects(Vector2D(0.f, 1.f));		//current world gravity
+	CurrentEffects = new Physics(Vector2D(0.f, 1.f));		//current world gravity
 	notPlayingBuff = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f)); //block buffer for when not playing
 	BlockBuffer = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f));	//play buffer for blocks
 	GridBuffer = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f));	//buffer for grid
 	Background = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(2.5f, 2.5f));	//buffer for background
 	CurrentWorld->bPlay = false;
+	PlayerOldPosition = Vector2D(0.f, 0.f);
 
 	//Load a cursor and check if it loaded properly
 	BoxSelectCursor = al_load_bitmap("Textures/Cursor_BoxSelect.png");
@@ -39,28 +40,41 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				//Close window if escape key is pressed
 			case ALLEGRO_KEY_D:
 			case ALLEGRO_KEY_RIGHT:
-				if (CurrentWorld->bPlay)
+				if (CurrentWorld->bPlay) {
 					TinTin->SetCharacterDirection(ECharacterDirection::R_Right);
-				TinTin->Run(Vector2D(5.f, 0.f));
-				WorldMoveDelta.x = -5.f;
+					TinTin->Run(Vector2D(5.f, 0.f));
+				}
+				else{
+					WorldMoveDelta.x = -5.f;
+				}
 				break;
 			case ALLEGRO_KEY_A:
 			case ALLEGRO_KEY_LEFT:
-				if (CurrentWorld->bPlay)
+				if (CurrentWorld->bPlay) {
 					TinTin->SetCharacterDirection(ECharacterDirection::R_Left);
-				TinTin->Run(Vector2D(-5.f, 0.f));
-				WorldMoveDelta.x = 5.f;
+					TinTin->Run(Vector2D(-5.f, 0.f));
+				}
+				else{
+					WorldMoveDelta.x = 5.f;
+				}
 				break;
 			case ALLEGRO_KEY_S:
 			case ALLEGRO_KEY_DOWN:
-				WorldMoveDelta.y = -5.f;
+				if (!CurrentWorld->bPlay){
+					WorldMoveDelta.y = -5.f;
+				}
 				break;
 			case ALLEGRO_KEY_W:
 			case ALLEGRO_KEY_UP:
-				TinTin->Jump();
-				WorldMoveDelta.y = 5.f;
+				if (CurrentWorld->bPlay){
+					TinTin->Jump();
+				}
+				else{
+					WorldMoveDelta.y = 5.f;
+				}
 				break;
 			case ALLEGRO_KEY_C:
+				GEngine->PrintDebugText(al_map_rgb(255, 255, 0), 5.f, "Box Select");
 				bBoxSelect = !bBoxSelect;
 				if (bBoxSelect){
 					al_set_mouse_cursor(GEngine->GetDisplay(), CircleSelect);
@@ -99,7 +113,14 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 			case ALLEGRO_KEY_7:
 				SelectedBlock = EBlockType::B_Mossy;
 				break;
+			case ALLEGRO_KEY_8:
+				SelectedBlock = EBlockType::B_BackgroundBrick;
+				break;
+			case ALLEGRO_KEY_9:
+				SelectedBlock = EBlockType::B_FinishFlag;
+				break;
 			case ALLEGRO_KEY_SPACE:
+				GEngine->PrintDebugText(BLUE500, 5.f, "Pressed Space");
 				if (!CurrentWorld->bPlay){
 					CurrentWorld->bPlay = true;
 				}
@@ -272,7 +293,6 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				break;
 			default:
 				break;
-
 			}
 		}
 	}
@@ -291,12 +311,18 @@ void PlayState::Tick(float delta){
 	}
 	if (!Paused) {
 		if (CurrentWorld->bPlay) {
+
+			//Run Gravity and Collision checking code
 			CurrentEffects->GravTick();
 			CurrentEffects->ColTick(CurrentWorld, TinTin);
-			if (TinTin->GetCharacterWorldPosition().y > CurrentWorld->dimensions.x){
+
+			//Kill the Character if he falls out of the world
+			if (TinTin->GetCharacterWorldPosition().y > CurrentWorld->dimensions.x) {
 				TinTin->Die();
 			}
-			if (!TinTin->bOnGround && CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bSpawned) {
+
+			//Stop character from falling through a block
+			if (!TinTin->bOnGround && CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bSpawned && CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bCollision) {
 				TinTin->SetCharacterWorldPosition(Vector2D(TinTin->GetCharacterWorldPosition().x, CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y) / CurrentWorld->gridSize].position.y));
 				TinTin->bOnGround = true;
 				if (TinTin->velocity.y > 0) {
@@ -304,25 +330,45 @@ void PlayState::Tick(float delta){
 				}
 				CurrentEffects->GonOff[TinTin->gravSlot] = false;
 			}
-			else if (!CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bSpawned) {
+			else if (!CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bSpawned || !CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bCollision) {
 				TinTin->bOnGround = false;
 				CurrentEffects->GonOff[TinTin->gravSlot] = true;
 			}
 
+			//Main Character Tick
 			TinTin->Tick(delta);
+
+			Debug = PlayerOldPosition - TinTin->position;
+			Vector2D PlayerScreenPosition = CurrentWorld->offset + TinTin->position;
+
+			if (PlayerScreenPosition.x > GEngine->GetDisplayWidth() / 2 || PlayerScreenPosition.y > GEngine->GetDisplayHeight() / 2 && CurrentWorld->offset.x != 0 && CurrentWorld->offset.x != CurrentWorld->dimensions.x * -1 + GEngine->GetDisplayWidth() && CurrentWorld->offset.y != 0 && CurrentWorld->offset.y != CurrentWorld->dimensions.y * -1 + GEngine->GetDisplayHeight()){
+				if (TinTin->velocity != Vector2D(0.f, 0.f)) {
+					WorldMoveDelta = TinTin->velocity * -1;
+				}
+				else if (CurrentWorld->bPlay) {
+					WorldMoveDelta = Vector2D(0.f, 0.f);
+				}
+			}
+			
 		}
 		
+		CurrentWorld->moveWorld(WorldMoveDelta, GridBuffer, Background, BlockBuffer, notPlayingBuff);
+		
+		//Run world tick
 		CurrentWorld->Tick(delta);
-		CurrentWorld->moveWorld(WorldMoveDelta, GridBuffer, Background, BlockBuffer, notPlayingBuff, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()));
 
+		//Calculate the change in mouse position if the middle mouse button is being held
 		Vector2D DragDelta;
 		if (bMouseDrag){
 			DragDelta = DragStart - Vector2D(GEngine->GetMouseState().x, GEngine->GetMouseState().y);
-			CurrentWorld->moveWorld(DragDelta * -1, GridBuffer, Background, BlockBuffer, notPlayingBuff, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()));
+			CurrentWorld->moveWorld(DragDelta * -1, GridBuffer, Background, BlockBuffer, notPlayingBuff);
 			DragStart = Vector2D(GEngine->GetMouseState().x, GEngine->GetMouseState().y);
 			DragTime += delta;
 		}
 
+		PlayerOldPosition = TinTin->position;
+
+		//Mouse states
 		switch (GEngine->GetMouseState().buttons){
 		case MOUSE_LB:
 			if (!bBoxSelect && !CurrentWorld->EnemySelect){
@@ -360,14 +406,13 @@ void PlayState::Draw(){
 		//If the play mode has been selected, then draw the character
 		al_set_target_bitmap(BlockBuffer.image);
 		al_clear_to_color(al_map_rgba(0, 0, 0, 0));
-		for (int i = 0; i < (int) Enemies.size(); i++) {
+		for (int i = 0; i < (int)Enemies.size(); i++) {
 			if (Enemies[i]){
 				Enemies[i]->Draw();
 			}
 		}
 		TinTin->Draw();
 	}
-
 	//For-each loop that goes through every block in the array
 	for (auto& sub : CurrentWorld->Blocks){
 		for (auto& elem : sub){
@@ -381,7 +426,6 @@ void PlayState::Draw(){
 			}
 		}
 	}
-
 	//Draws a transparent blue rectangle over the area selected by the box select
 	if (bBoxSelect && bFirstBoxSelected) {
 		GridTile* newTile = CurrentWorld->GetClickedTile(Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1) + 32, GEngine->GetMouseState().y + (GridBuffer.offset.y * -1) + 32));
@@ -402,6 +446,23 @@ void PlayState::Draw(){
 	else {
 		al_draw_bitmap_region(BlockBuffer.image, BlockBuffer.offset.x *-1, BlockBuffer.offset.y * -1, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()), 0, 0, 0);
 	}
+
+	//DEBUG OUTPUTS
+	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 50, ALLEGRO_ALIGN_RIGHT, "World X: %.0f", CurrentWorld->offset.x);
+	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 66, ALLEGRO_ALIGN_RIGHT, "World Y: %.0f", CurrentWorld->offset.y);
+	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 255, 255), GEngine->GetDisplayWidth() - 6, 49, ALLEGRO_ALIGN_RIGHT, "World X: %.0f", CurrentWorld->offset.x);
+	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 255, 255), GEngine->GetDisplayWidth() - 6, 65, ALLEGRO_ALIGN_RIGHT, "World Y: %.0f", CurrentWorld->offset.y);
+
+	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 82, ALLEGRO_ALIGN_RIGHT, "Character X: %.0f", TinTin->position.x);
+	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 98, ALLEGRO_ALIGN_RIGHT, "Character Y: %.0f", TinTin->position.y);
+	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(255, 255, 0), GEngine->GetDisplayWidth() - 6, 81, ALLEGRO_ALIGN_RIGHT, "Character X: %.0f", TinTin->position.x);
+	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(255, 255, 0), GEngine->GetDisplayWidth() - 6, 97, ALLEGRO_ALIGN_RIGHT, "Character Y: %.0f", TinTin->position.y);
+
+	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 113, ALLEGRO_ALIGN_RIGHT, "Character Delta X, Y: %.0f, %0.f", Debug.x, Debug.y);
+	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(255, 255, 0), GEngine->GetDisplayWidth() - 6, 112, ALLEGRO_ALIGN_RIGHT, "Character Delta X, Y: %.0f, %0.f", Debug.x, Debug.y);
+
+	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 129, ALLEGRO_ALIGN_RIGHT, "World Delta X, Y: %.0f, %0.f", WorldMoveDelta.x, WorldMoveDelta.y);
+	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(255, 255, 0), GEngine->GetDisplayWidth() - 6, 128, ALLEGRO_ALIGN_RIGHT, "World Delta X, Y: %.0f, %0.f", WorldMoveDelta.x, WorldMoveDelta.y);
 	
 	//Draw the pause button
 	//PauseButton->Draw();
@@ -409,13 +470,15 @@ void PlayState::Draw(){
 
 void PlayState::Init(){
 	//Set the different types of blocks, as well as load their textures
-	CurrentWorld->Type[0] = BlockType("Rainbow", al_load_bitmap("Textures/Objects/Rainbow.png"));
-	CurrentWorld->Type[1] = BlockType("Brick", al_load_bitmap("Textures/Objects/Brick.png"));
-	CurrentWorld->Type[2] = BlockType("Grass", al_load_bitmap("Textures/Objects/Grass.png"));
-	CurrentWorld->Type[3] = BlockType("Dirt", al_load_bitmap("Textures/Objects/Dirt.png"));
-	CurrentWorld->Type[4] = BlockType("Stone", al_load_bitmap("Textures/Objects/Stone.png"));
-	CurrentWorld->Type[5] = BlockType("Fancy", al_load_bitmap("Textures/Objects/Fancy.png"));
-	CurrentWorld->Type[6] = BlockType("Mossy", al_load_bitmap("Textures/Objects/Mossy.png"));
+	CurrentWorld->Type[0] = BlockType("Rainbow", al_load_bitmap("Textures/Objects/Rainbow.png"), true);
+	CurrentWorld->Type[1] = BlockType("Brick", al_load_bitmap("Textures/Objects/Brick.png"), true);
+	CurrentWorld->Type[2] = BlockType("Grass", al_load_bitmap("Textures/Objects/Grass.png"), true);
+	CurrentWorld->Type[3] = BlockType("Dirt", al_load_bitmap("Textures/Objects/Dirt.png"), true);
+	CurrentWorld->Type[4] = BlockType("Stone", al_load_bitmap("Textures/Objects/Stone.png"), true);
+	CurrentWorld->Type[5] = BlockType("Fancy", al_load_bitmap("Textures/Objects/Fancy.png"), true);
+	CurrentWorld->Type[6] = BlockType("Mossy", al_load_bitmap("Textures/Objects/Mossy.png"), true);
+	CurrentWorld->Type[7] = BlockType("Background Brick", al_load_bitmap("Textures/Objects/Background_Brick.png"), false);
+	CurrentWorld->Type[8] = BlockType("Finish Flag", al_load_bitmap("Textures/Objects/FinishFlag.png"), false);
 
 	//Create buffers used for rendering
 	GridBuffer.image = al_create_bitmap(4096, 2048);

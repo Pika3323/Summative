@@ -21,6 +21,13 @@ void Dankey::Tick(float delta){
 			still.PushFrame();
 		}
 	}
+
+	if (position.x - dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->TinTin->position.x > 0){
+		direction = ECharacterDirection::R_Left;
+	}
+	else{
+		direction = ECharacterDirection::R_Right;
+	}
 }
 
 void Dankey::Run(Vector2D velocity){

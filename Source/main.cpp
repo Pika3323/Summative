@@ -1,7 +1,7 @@
 #include "Engine.h"
 
 int main(int argc, char* argv[]){
-	
+
 	//Initialize the game engine
 	GEngine->Init();
 
@@ -43,8 +43,6 @@ int main(int argc, char* argv[]){
 
 	//Cleanup
 	GEngine->Cleanup();
-
-	_CrtDumpMemoryLeaks();
 
 	return 0;
 }

@@ -7,6 +7,8 @@ Player::Player(int Height, int Width){
 	ActualHeight = Height;
 	ActualWidth = Width;
 	texture = al_create_bitmap(Width, Height);
+	bOnGround = false;
+	position = Vector2D(0.f, 0.f);
 }
 
 void Player::Run(Vector2D vel){
@@ -37,6 +39,7 @@ void Player::Jump(){
 //Called when the player dies
 void Player::Die(){
 	this->SetCharacterWorldPosition(Vector2D(0, 0));
+	printf("You died!\n");
 }
 
 //Called every frame

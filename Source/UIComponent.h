@@ -8,6 +8,7 @@ public:
 	int height;
 	Vector2D position;
 	int id;
+	ALLEGRO_SYSTEM_MOUSE_CURSOR cursor;
 
 	UIComponent(){}
 

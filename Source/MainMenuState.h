@@ -7,13 +7,14 @@
 class MainMenuState : public GameState {
 public:
 
-	class Button BPlayGame;
-	class Button BEditorGame;
-	class Button BOptions;
-	class Button BExit;
-	Button BFullscreen;
+	enum class EMenuScreen{
+		Main,
+		Options,
+		Online
+	};
 
-	class TextBox t;
+	EMenuScreen ActiveScreen;
+
 	bool bFullscreen = false;
 
 	UIComponent* AllUIComponents[10];

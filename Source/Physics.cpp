@@ -1,19 +1,18 @@
-#include "Effects.h"
+#include "Physics.h"
 
-
-Effects::Effects(Vector2D f){
+Physics::Physics(Vector2D f){
 	slot = 0;		//making slot zero when a gravity force is registered
 	Gravforce = f;
 }
 
-int Effects::Register(Character* registrant, bool onOff){
+int Physics::Register(Character* registrant, bool onOff){
 	All[slot] = registrant;		//function for registering character in next slot
 	GonOff[slot] = onOff;
 	slot++;
 	return slot - 1;
 }
 
-void Effects::GravTick(){
+void Physics::GravTick(){
 	for (int i = 0; i < slot; i++) {		//adding gravity to all characters registered
 		if (GonOff[i]){
 			All[i]->velocity.y = All[i]->velocity.y + Gravforce.y;	//could theoretically implement an x gravity if ever wanted to
@@ -24,18 +23,18 @@ void Effects::GravTick(){
 	}
 }
 
-void Effects::ColTick(World* Curr, Character* charac){
-		if (Curr->Blocks[(int)((charac->GetCharacterWorldPosition().x) / 32)][int((charac->GetCharacterWorldPosition().y) / 32)].bSpawned && charac->velocity.y < 0) {
+void Physics::ColTick(World* Curr, Character* charac){
+	if (Curr->Blocks[(int)((charac->GetCharacterWorldPosition().x) / 32)][int((charac->GetCharacterWorldPosition().y) / 32)].bSpawned && charac->velocity.y < 0 && Curr->Blocks[(int)((charac->GetCharacterWorldPosition().x) / 32)][int((charac->GetCharacterWorldPosition().y) / 32)].bCollision) {
 			CollisionPos[charac->gravSlot] = Curr->Blocks[(int)((charac->GetCharacterWorldPosition().x) / 15)][int((charac->GetCharacterWorldPosition().y + 5) / 32)].position;
 			charac->SetCharacterWorldPosition(Vector2D(charac->GetCharacterWorldPosition().x, CollisionPos[charac->gravSlot].y));
 			charac->velocity.y = 0;
 		}
 		for (int i = 33; i < 98; i += 32) {
-			if (!static_cast<bool>(charac->GetCharacterDirection()) && Curr->Blocks[(int)((charac->GetCharacterWorldPosition().x + 65) / 32)][int((charac->GetCharacterWorldPosition().y + i) / 32)].bSpawned) {		//all possible x related collisions
+			if (!static_cast<bool>(charac->GetCharacterDirection()) && Curr->Blocks[(int)((charac->GetCharacterWorldPosition().x + 65) / 32)][int((charac->GetCharacterWorldPosition().y + i) / 32)].bSpawned && Curr->Blocks[(int)((charac->GetCharacterWorldPosition().x + 65) / 32)][int((charac->GetCharacterWorldPosition().y + i) / 32)].bCollision) {		//all possible x related collisions
 				CollisionPos[charac->gravSlot] = Curr->Blocks[(int)((charac->GetCharacterWorldPosition().x) / 32)][int((charac->GetCharacterWorldPosition().y) / 32)].position;
 				charac->SetCharacterWorldPosition(CollisionPos[charac->gravSlot]);
 			}
-			else if (static_cast<bool>(charac->GetCharacterDirection()) && Curr->Blocks[(int)((charac->GetCharacterWorldPosition().x + 1) / 32)][int((charac->GetCharacterWorldPosition().y + i) / 32)].bSpawned) {
+			else if (static_cast<bool>(charac->GetCharacterDirection()) && Curr->Blocks[(int)((charac->GetCharacterWorldPosition().x + 1) / 32)][int((charac->GetCharacterWorldPosition().y + i) / 32)].bSpawned && Curr->Blocks[(int)((charac->GetCharacterWorldPosition().x + 65) / 32)][int((charac->GetCharacterWorldPosition().y + i) / 32)].bCollision) {
 				CollisionPos[charac->gravSlot] = Curr->Blocks[(int)((charac->GetCharacterWorldPosition().x + 30) / 32)][int((charac->GetCharacterWorldPosition().y) / 32)].position;
 				charac->SetCharacterWorldPosition(CollisionPos[charac->gravSlot]);
 			}

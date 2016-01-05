@@ -8,27 +8,3 @@ body {
     margin: 0;
 }
 
-h1 {
-    font-size: 20px;
-    font-weight: 500;
-    height: 246px;
-}
-
-header {
-    height: 150px;
-    width: 100%;
-    background: #2196F3;
-    color: #fff;
-    text-align: center;
-    line-height: 150px;
-    position:relative;
-    z-index: 2;
-}
-
-nav {
-    height: 64px;
-    width: 100%;
-    background: #2196F3;
-    color: #fff;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-}

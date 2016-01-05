@@ -35,7 +35,7 @@ public:
 	int ActualHeight;
 
 	//Default constructor
-	Character(){}
+	Character(){ direction = ECharacterDirection::R_Right; }
 	
 	//Character Constructor
 	Character(Vector2D xy, int width, int height);

@@ -35,9 +35,10 @@ GridTile* World::GetClickedTile(Vector2D inLoc){
 	}
 }
 
-void World::PlaceBlock(GridTile* Target, EBlockType Type){
+void World::PlaceBlock(GridTile* Target, EBlockType T){
+	Blocks[Target->x][Target->y].bCollision = Type[static_cast<int>(T)].bCollision;
 	Blocks[Target->x][Target->y].position = Target->location;
-	Blocks[Target->x][Target->y].type = Type;
+	Blocks[Target->x][Target->y].type = T;
 	Blocks[Target->x][Target->y].bSpawned = true;
 	Target->occupied = true;
 }
@@ -134,7 +135,10 @@ bool World::Save(const char LevelName[64]){
 	}
 }
 
-void World::moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, Buffer &block, Buffer &notplay, int w, int h){
+void World::moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, Buffer &block, Buffer &notplay){
+	int ScreenWidth = GEngine->GetDisplayWidth();
+	int ScreenHeight = GEngine->GetDisplayHeight();
+
 	//Move level
 	grid.offset += delta;
 	bg.offset += delta / 2;
@@ -149,12 +153,12 @@ void World::moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, Buffer &block, B
 		notplay.offset.x = 0;
 		offset.x = 0;
 	}
-	else if (offset.x < dimensions.x  * -1 + w){
-		grid.offset.x = dimensions.x  * -1 + w;
-		notplay.offset.x = dimensions.x  * -1 + w;
-		bg.offset.x = dimensions.x  * -0.5 + w / 2;
-		block.offset.x = dimensions.x * -1 + w;
-		offset.x = dimensions.x  * -1 + w;
+	else if (offset.x < dimensions.x  * -1 + ScreenWidth){
+		grid.offset.x = dimensions.x  * -1 + ScreenWidth;
+		notplay.offset.x = dimensions.x  * -1 + ScreenWidth;
+		bg.offset.x = dimensions.x  * -0.5 + ScreenWidth / 2;
+		block.offset.x = dimensions.x * -1 + ScreenWidth;
+		offset.x = dimensions.x  * -1 + ScreenWidth;
 	}
 
 	if (offset.y > 0){
@@ -164,12 +168,12 @@ void World::moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, Buffer &block, B
 		block.offset.y = 0;
 		offset.y = 0;
 	}
-	else if (offset.y < dimensions.y * -1 + h){
-		grid.offset.y = dimensions.y * -1 + h;
-		notplay.offset.y = dimensions.y * -1 + h;
-		bg.offset.y = (dimensions.y * -0.5f) + (h / 2);
-		block.offset.y = dimensions.y * -1 + h;
-		offset.y = dimensions.y * -1 + h;
+	else if (offset.y < dimensions.y * -1 + ScreenHeight){
+		grid.offset.y = dimensions.y * -1 + ScreenHeight;
+		notplay.offset.y = dimensions.y * -1 + ScreenHeight;
+		bg.offset.y = (dimensions.y * -0.5f) + (ScreenHeight / 2);
+		block.offset.y = dimensions.y * -1 + ScreenHeight;
+		offset.y = dimensions.y * -1 + ScreenHeight;
 	}
 	
 }

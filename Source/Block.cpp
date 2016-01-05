@@ -9,7 +9,8 @@ void Block::Draw(ALLEGRO_BITMAP* typeTex){
 	al_draw_bitmap(typeTex, position.x, position.y, ALLEGRO_VIDEO_BITMAP);
 }
 
-BlockType::BlockType(const char n[16], ALLEGRO_BITMAP* tex){
+BlockType::BlockType(const char n[16], ALLEGRO_BITMAP* tex, bool collision){
+	bCollision = collision;
 	strcpy(name, n);
 	if (tex) {
 		texture = tex;
@@ -18,6 +19,4 @@ BlockType::BlockType(const char n[16], ALLEGRO_BITMAP* tex){
 		fprintf(stderr, "Could not load BlockType texture\n");
 		GEngine->Quit();
 	}
-	
 }
-

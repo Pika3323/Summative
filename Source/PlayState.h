@@ -4,7 +4,7 @@
 #include "World.h"
 #include "Buffer.h"
 #include "Player.h"
-#include "Effects.h"
+#include "Physics.h"
 #include "Block.h"
 #include "Button.h"
 #include "Enemy.h"
@@ -18,8 +18,12 @@ public:
 	//The main player
 	Player* TinTin;
 
+	//Vector coordinate for the player from an earlier frame to calculate a delta
+	Vector2D PlayerOldPosition;
+	Vector2D Debug;
+
 	//Effects (including gravity) for the current world
-	class Effects* CurrentEffects;	
+	class Physics* CurrentEffects;	
 
 	//block buffer for when not playing
 	Buffer notPlayingBuff; 

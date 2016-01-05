@@ -1,5 +1,5 @@
 //Standard Engine header
-//Contains all the nescessary headers for anything using the Engine
+//Contains all the necessary headers for anything using the Engine
 
 #pragma once
 
@@ -24,6 +24,20 @@
 #include "Core.h"
 #include "version.h"
 
+//An encapsulation for debug outputs
+struct DebugOutput{
+	char output[256];
+	ALLEGRO_COLOR color;
+	float duration;
+	float elapsedTime;
+	DebugOutput(ALLEGRO_COLOR c, const char* text, float d){
+		color = c;
+		strcpy(output, text);
+		duration = d;
+		elapsedTime = 0;
+	}
+};
+
 class Engine{
 public:
 	const int FPS = 60;
@@ -31,25 +45,59 @@ public:
 	int VersionMajor = 1;
 	int VersionMinor = 1;
 
+	//Get a reference to the current display
 	ALLEGRO_DISPLAY* GetDisplay();
+
+	//Get the current display data
 	ALLEGRO_DISPLAY_MODE GetDisplayData();
+
+	//Get a reference to the current game timer
 	ALLEGRO_TIMER* GetTimer();
+
+	//Get the debug font
 	ALLEGRO_FONT* GetDebugFont();
+
+	//Get a reference to the current event queue
 	ALLEGRO_EVENT_QUEUE* GetEventQueue();
+
+	//Get the mouse's current state
 	ALLEGRO_MOUSE_STATE GetMouseState();
+
+	//Get the keyboard's current state
 	ALLEGRO_KEYBOARD_STATE GetKeyboardState();
+
+	//Get a reference to the active GameState
 	class GameState* GetCurrentGameState();
+
+	//Get the current displays width
 	int GetDisplayWidth();
+
+	//Get the current displays height
 	int GetDisplayHeight();
 
+	//Lock all input functions to a specific UI component (for things such as text boxes)
 	void LockInputToUIComponent(class UIComponent *c);
+
+	//Whether input is currently locked to a UI component
+	bool IsInputLocked();
+
+	//Release input from all UI Components
 	void ReleaseInput();
 
+	//Draws the program's current frame rate
 	void DrawFPS(double detla);
+
+	//Prints debug text to the screen for a set duration of time
+	//Be careful of using these in Tick functions!!
+	void PrintDebugText(ALLEGRO_COLOR c, float duration, const char* text);
 	
+	//Initialize all engine components
 	void Init();
+
+	//Cleanup memory when game is exited
 	void Cleanup();
 
+	//Change game states
 	template <class T> void ChangeGameState(){
 		if (Active){
 			Active->Destroy();
@@ -110,10 +158,8 @@ private:
 	int StateIndex;
 	class GameState* Active;
 	int DisplayHeight = 720, DisplayWidth = 1280;
+
+	std::vector<DebugOutput> DebugStrings;
 };
 
-//Static variable initialization
-bool Engine::bExit = false;
-
-
-Engine* GEngine = new Engine();
+extern Engine* GEngine = new Engine();
