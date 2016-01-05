@@ -8,6 +8,7 @@ MainMenuState::MainMenuState(){
 	AllUIComponents[3] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 + 18), 0, "EXIT", &GEngine->Quit);
 	AllUIComponents[4] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 + 54), 0, "TOGGLE FULLSCREEN", &MainMenu::ToggleFullscreen);
 	AllUIComponents[5] = new TextBox(BLUE500, al_map_rgb(33, 33, 33), 500, 72, Vector2D(GEngine->GetDisplayWidth() / 2 - 250, 0), 1, "Test");
+	ActiveScreen = 0;
 }
 
 void MainMenuState::Init(){
@@ -55,12 +56,15 @@ void MainMenuState::Tick(float delta){
 }
 
 void MainMenuState::Draw(){
-	//Draws the buttons to the screen
 	al_clear_to_color(al_map_rgb(250, 250, 250));
-	for (int i = 0; i < 6; i++){
-		AllUIComponents[i]->Draw();
+	if (ActiveScreen == 0){
+		for (int i = 0; i < 6; i++){
+			AllUIComponents[i]->Draw();
+		}
 	}
-	//t->Draw();
+	else if (ActiveScreen = 1){
+
+	}
 }
 
 void MainMenuState::Destroy(){
@@ -81,7 +85,7 @@ MainMenuState::~MainMenuState(){
 }
 
 void MainMenu::PlayGame(){
-	GEngine->ChangeGameState<PlayState>();
+	dynamic_cast<MainMenuState*>(GEngine->GetCurrentGameState())->ActiveScreen = 1;
 }
 
 void MainMenu::LoadEditor(){
@@ -133,51 +137,79 @@ void MainMenu::ToggleFullscreen(){
 }
 
 void PushLevel(){
+#define LOCAL_FILE      "VersionTest.bvl"
+#define UPLOAD_FILE_AS  "Level.bvl"
+#define REMOTE_URL      "ftp://llamabagel.ca./blocks/Levels/Files/"  UPLOAD_FILE_AS
+#define RENAME_FILE_TO  "1.bvl"
+
 	CURL *curl;
 	CURLcode res;
+	FILE *hd_src;
 	struct stat file_info;
-	double speed_upload, total_time;
-	FILE *fd;
-	char level[64];
+	curl_off_t fsize;
 
-	printf("Upload level: ");
-	scanf("%s", level);
-	fflush(stdin);
-	strcat(level, ".bvl");
-	fd = fopen(level, "rb");
-	if (!fd){
+	struct curl_slist *headerlist = NULL;
+	static const char buf_1[] = "RNFR " UPLOAD_FILE_AS;
+	static const char buf_2[] = "RNTO " RENAME_FILE_TO;
+
+	/* get the file size of the local file */
+	if (stat(LOCAL_FILE, &file_info)) {
+		printf("Couldnt open '%s': %s\n", LOCAL_FILE, strerror(errno));
 		return;
 	}
+	fsize = (curl_off_t)file_info.st_size;
 
-	if (fstat(_fileno(fd), &file_info) != 0){
-		return;
-	}
-	char url[128] = "http://blocks.llamabagel.ca/Levels/Files/";
+	printf("Local file size: %" CURL_FORMAT_CURL_OFF_T " bytes.\n", fsize);
 
+	/* get a FILE * of the same file */
+	hd_src = fopen(LOCAL_FILE, "rb");
+
+	/* In windows, this will init the winsock stuff */
 	curl_global_init(CURL_GLOBAL_ALL);
 
+	/* get a curl handle */
 	curl = curl_easy_init();
 	if (curl) {
-		curl_easy_setopt(curl, CURLOPT_URL, url);
+		/* build a list of commands to pass to libcurl */
+		headerlist = curl_slist_append(headerlist, buf_1);
+		headerlist = curl_slist_append(headerlist, buf_2);
+
+		/* we want to use our own read function */
+		curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback);
+
+		/* enable uploading */
 		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
-		curl_easy_setopt(curl, CURLOPT_READDATA, fd);
-		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-		curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)file_info.st_size);
+
+		/* specify target */
+		curl_easy_setopt(curl, CURLOPT_URL, REMOTE_URL);
+
+		/* pass in that last of FTP commands to run after the transfer */
+		curl_easy_setopt(curl, CURLOPT_POSTQUOTE, headerlist);
+
+		/* now specify which file to upload */
+		curl_easy_setopt(curl, CURLOPT_READDATA, hd_src);
+
+		/* Set the size of the file to upload (optional).  If you give a *_LARGE
+		option you MUST make sure that the type of the passed-in argument is a
+		curl_off_t. If you use CURLOPT_INFILESIZE (without _LARGE) you must
+		make sure that to pass in a type 'long' argument. */
+		curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE,
+			(curl_off_t)fsize);
+
+		/* Now run off and do what you've been told! */
 		res = curl_easy_perform(curl);
 		/* Check for errors */
-		if (res != CURLE_OK) {
-			fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
-		}
-		else {
-			/* now extract transfer info */
-			curl_easy_getinfo(curl, CURLINFO_SPEED_UPLOAD, &speed_upload);
-			curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &total_time);
+		if (res != CURLE_OK)
+			fprintf(stderr, "curl_easy_perform() failed: %s\n",
+			curl_easy_strerror(res));
 
-			fprintf(stderr, "Speed: %.3f bytes/sec during %.3f seconds\n", speed_upload, total_time);
+		/* clean up the FTP commands list */
+		curl_slist_free_all(headerlist);
 
-		}
 		/* always cleanup */
 		curl_easy_cleanup(curl);
 	}
+	fclose(hd_src); /* close the local file */
+
+	curl_global_cleanup();
 }

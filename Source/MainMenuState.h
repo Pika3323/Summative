@@ -13,7 +13,7 @@ public:
 		Online
 	};
 
-	EMenuScreen ActiveScreen;
+	int ActiveScreen;
 
 	bool bFullscreen = false;
 

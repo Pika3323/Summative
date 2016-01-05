@@ -151,7 +151,7 @@ void Engine::Init(){
 	//Start the game timer
 	al_start_timer(timer);
 
-	//Change the current game state to the
+	//Change the current game state to the main menu state
 	ChangeGameState<MainMenuState>();
 }
 
