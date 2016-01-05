@@ -1,19 +1,18 @@
-#include "Effects.h"
+#include "Physics.h"
 
-
-Effects::Effects(Vector2D f){
+Physics::Physics(Vector2D f){
 	slot = 0;		//making slot zero when a gravity force is registered
 	Gravforce = f;
 }
 
-int Effects::Register(Character* registrant, bool onOff){
+int Physics::Register(Character* registrant, bool onOff){
 	All[slot] = registrant;		//function for registering character in next slot
 	GonOff[slot] = onOff;
 	slot++;
 	return slot - 1;
 }
 
-void Effects::GravTick(){
+void Physics::GravTick(){
 	for (int i = 0; i < slot; i++) {		//adding gravity to all characters registered
 		if (GonOff[i]){
 			All[i]->velocity.y = All[i]->velocity.y + Gravforce.y;	//could theoretically implement an x gravity if ever wanted to
@@ -24,7 +23,7 @@ void Effects::GravTick(){
 	}
 }
 
-void Effects::ColTick(World* Curr, Character* charac){
+void Physics::ColTick(World* Curr, Character* charac){
 	if (Curr->Blocks[(int)((charac->GetCharacterWorldPosition().x) / 32)][int((charac->GetCharacterWorldPosition().y) / 32)].bSpawned && charac->velocity.y < 0 && Curr->Blocks[(int)((charac->GetCharacterWorldPosition().x) / 32)][int((charac->GetCharacterWorldPosition().y) / 32)].bCollision) {
 			CollisionPos[charac->gravSlot] = Curr->Blocks[(int)((charac->GetCharacterWorldPosition().x) / 15)][int((charac->GetCharacterWorldPosition().y + 5) / 32)].position;
 			charac->SetCharacterWorldPosition(Vector2D(charac->GetCharacterWorldPosition().x, CollisionPos[charac->gravSlot].y));

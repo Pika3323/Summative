@@ -4,7 +4,7 @@
 #include "World.h"
 #include "Buffer.h"
 #include "Player.h"
-#include "Effects.h"
+#include "Physics.h"
 #include "Block.h"
 #include "Button.h"
 #include "Enemy.h"
@@ -23,7 +23,7 @@ public:
 	Vector2D Debug;
 
 	//Effects (including gravity) for the current world
-	class Effects* CurrentEffects;	
+	class Physics* CurrentEffects;	
 
 	//block buffer for when not playing
 	Buffer notPlayingBuff; 

@@ -13,7 +13,7 @@ public:
 	class Button BExit;
 	class Button BFullscreen;
 
-	class TextBox t;
+	class TextBox* t;
 	bool bFullscreen = false;
 
 	UIComponent* AllUIComponents[10];

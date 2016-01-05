@@ -5,7 +5,7 @@ PlayState::PlayState(){
 	CurrentWorld = new World(Vector2D(4096.f, 2048.f), 32);
 	TinTin = new Player(128, 64);	//The main player character
 	TinTin->SetCharacterWorldPosition(Vector2D(0.f, 0.f));
-	CurrentEffects = new Effects(Vector2D(0.f, 1.f));		//current world gravity
+	CurrentEffects = new Physics(Vector2D(0.f, 1.f));		//current world gravity
 	notPlayingBuff = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f)); //block buffer for when not playing
 	BlockBuffer = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f));	//play buffer for blocks
 	GridBuffer = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f));	//buffer for grid

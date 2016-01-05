@@ -15,7 +15,8 @@ TextBox::TextBox(ALLEGRO_COLOR bg, ALLEGRO_COLOR tx, int w, int h, Vector2D pos,
 	al_draw_line(0, height - 1, width, height - 1, pColor, 1);
 	al_draw_textf(roboto, pColor, 4, height / 2 + 8, ALLEGRO_ALIGN_LEFT, "%s", placeholder);
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
-	cursorPosition = 0;
+	caret = 0;
+	TText = al_ustr_new("");
 }
 
 void TextBox::onMouseDown(){
@@ -27,11 +28,11 @@ void TextBox::onMouseUp(){
 }
 
 void TextBox::onHoverIn(){
-	al_set_system_mouse_cursor(GEngine->GetDisplay(), ALLEGRO_SYSTEM_MOUSE_CURSOR_EDIT);
+	//al_set_system_mouse_cursor(GEngine->GetDisplay(), ALLEGRO_SYSTEM_MOUSE_CURSOR_EDIT);
 }
 
 void TextBox::onHoverOut(){
-	al_set_system_mouse_cursor(GEngine->GetDisplay(), ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
+	//al_set_system_mouse_cursor(GEngine->GetDisplay(), ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
 }
 
 void TextBox::Draw(){
@@ -39,21 +40,84 @@ void TextBox::Draw(){
 }
 
 void TextBox::handleKeyInput(ALLEGRO_EVENT *ev){
-	if (ev->type == ALLEGRO_EVENT_KEY_CHAR){
-		
-		switch (ev->keyboard.unichar) {
-		case 8:
+	if (ev->type == ALLEGRO_EVENT_KEY_DOWN) {
+		switch (ev->keyboard.keycode) {
+		case ALLEGRO_KEY_RIGHT:
+			if (++caret > TText->slen) {
+				caret = TText->slen;
+			}
+			this->UpdateText();
+			break;
+		case ALLEGRO_KEY_LEFT:
+			if (--caret < 0){
+				caret = 0;
+			}
+			this->UpdateText();
 			break;
 		default:
-			char temp[2] = { ev->keyboard.unichar, '\0' };
-			text[cursorPosition] = ev->keyboard.unichar;
-			cursorPosition++;
-			al_set_target_bitmap(tex);
-			al_clear_to_color(al_map_rgba(0, 0, 0, 0));
-			al_draw_line(0, height - 1, width, height - 1, pColor, 1);
-			al_draw_textf(roboto, textColor, 4, height / 2 + 8, ALLEGRO_ALIGN_LEFT, "%s", text);
-			al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 			break;
 		}
 	}
+	if (ev->type == ALLEGRO_EVENT_KEY_CHAR) {
+		switch (ev->keyboard.unichar) {
+		case 8:
+			//Backspace
+			if (--caret < 0){
+				caret = 0;
+			}
+			else {
+				al_ustr_remove_chr(TText, caret - 1);
+			}
+			this->UpdateText();
+			break;
+		case 27:
+			GEngine->ReleaseInput();
+			break;
+		case 127:
+			//Delete
+			al_ustr_remove_chr(TText, caret);
+			this->UpdateText();
+			break;
+
+		default:
+			if (ev->keyboard.unichar != 0) {
+				al_ustr_insert_chr(TText, caret, ev->keyboard.unichar);
+				caret++;
+				this->UpdateText();
+			}
+			break;
+		}
+	}
+}
+
+void TextBox::UpdateText(){
+	//Set the draw target to this textbox's texture
+	al_set_target_bitmap(tex);
+
+	//Clear the existing bitmap to prevent overlapping
+	al_clear_to_color(al_map_rgba(0, 0, 0, 0));
+	
+	//Draw the text
+	al_draw_ustr(roboto, textColor, 4, height / 2 + 8, ALLEGRO_ALIGN_LEFT, TText);
+
+	//Create a temporary USTR to store a substring of the text
+	ALLEGRO_USTR* temp = al_ustr_new("");
+	al_ustr_assign_substr(temp, TText, 0, caret);
+
+	//Calculate the position of the caret based on the temporary USTR
+	int CarPos = al_get_ustr_width(roboto, temp) + 4;
+
+	//Draw the caret
+	al_draw_line(CarPos, height / 2 + 8, CarPos, height / 2 + 26, al_map_rgb(0, 0, 0), 1);
+
+	//Reset draw target to the display backbuffer
+	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
+
+	//Free the temporary USTR
+	al_ustr_free(temp);
+}
+
+TextBox::~TextBox(){
+	//Free the text from memory
+	al_ustr_free(TText);
 }
