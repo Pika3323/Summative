@@ -3,7 +3,7 @@
 
 MainMenuState::MainMenuState(){
 	AllUIComponents[0] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 150, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 - 90), 0, "PLAY GAME", &MainMenu::PlayGame);
-	AllUIComponents[1] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 - 54), 0, "TEST CURL", &MainMenu::LoadEditor);
+	AllUIComponents[1] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 - 54), 0, "TEST CURL", &PushLevel);
 	AllUIComponents[2] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 - 18), 0, "OPTIONS", &MainMenu::OpenSettings);
 	AllUIComponents[3] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 + 18), 0, "EXIT", &GEngine->Quit);
 	AllUIComponents[4] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 + 54), 0, "TOGGLE FULLSCREEN", &MainMenu::ToggleFullscreen);
@@ -129,5 +129,55 @@ void MainMenu::ToggleFullscreen(){
 		for (int i = 0; i < 6; i++) {
 			dynamic_cast<MainMenuState*>(GEngine->GetCurrentGameState())->AllUIComponents[i]->position.x = GEngine->GetDisplayWidth() / 2 - dynamic_cast<MainMenuState*>(GEngine->GetCurrentGameState())->AllUIComponents[i]->width / 2;
 		}
+	}
+}
+
+void PushLevel(){
+	CURL *curl;
+	CURLcode res;
+	struct stat file_info;
+	double speed_upload, total_time;
+	FILE *fd;
+	char level[64];
+
+	printf("Upload level: ");
+	scanf("%s", level);
+	fflush(stdin);
+	strcat(level, ".bvl");
+	fd = fopen(level, "rb");
+	if (!fd){
+		return;
+	}
+
+	if (fstat(_fileno(fd), &file_info) != 0){
+		return;
+	}
+	char url[128] = "http://blocks.llamabagel.ca/Levels/Files/";
+
+	curl_global_init(CURL_GLOBAL_ALL);
+
+	curl = curl_easy_init();
+	if (curl) {
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
+		curl_easy_setopt(curl, CURLOPT_READDATA, fd);
+		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+		curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)file_info.st_size);
+		res = curl_easy_perform(curl);
+		/* Check for errors */
+		if (res != CURLE_OK) {
+			fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+		}
+		else {
+			/* now extract transfer info */
+			curl_easy_getinfo(curl, CURLINFO_SPEED_UPLOAD, &speed_upload);
+			curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &total_time);
+
+			fprintf(stderr, "Speed: %.3f bytes/sec during %.3f seconds\n", speed_upload, total_time);
+
+		}
+		/* always cleanup */
+		curl_easy_cleanup(curl);
 	}
 }

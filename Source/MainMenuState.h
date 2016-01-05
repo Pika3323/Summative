@@ -39,3 +39,5 @@ namespace MainMenu{
 	void OpenSettings();
 	void ToggleFullscreen();
 }
+
+void PushLevel();
