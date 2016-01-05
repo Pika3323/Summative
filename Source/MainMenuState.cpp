@@ -137,79 +137,81 @@ void MainMenu::ToggleFullscreen(){
 }
 
 void PushLevel(){
-#define LOCAL_FILE      "VersionTest.bvl"
-#define UPLOAD_FILE_AS  "Level.bvl"
-#define REMOTE_URL      "ftp://llamabagel.ca./blocks/Levels/Files/"  UPLOAD_FILE_AS
-#define RENAME_FILE_TO  "1.bvl"
+	char level[64];
+	printf("Upload level:");
+	scanf("%s", level);
+
+	strcat(level, ".bvl");
+
+	FILE* fd;
+
+	fd = fopen(level, "rb");
+	if (!fd){
+		fprintf(stderr, "Could not open %s\n", level);
+		return;
+	}
+	fseek(fd, 0L, SEEK_END);
+	int sz = ftell(fd);
+	fseek(fd, 0L, SEEK_SET);
 
 	CURL *curl;
 	CURLcode res;
-	FILE *hd_src;
-	struct stat file_info;
-	curl_off_t fsize;
 
+	struct curl_httppost *formpost = NULL;
+	struct curl_httppost *lastptr = NULL;
 	struct curl_slist *headerlist = NULL;
-	static const char buf_1[] = "RNFR " UPLOAD_FILE_AS;
-	static const char buf_2[] = "RNTO " RENAME_FILE_TO;
+	static const char buf[] = "Expect:";
 
-	/* get the file size of the local file */
-	if (stat(LOCAL_FILE, &file_info)) {
-		printf("Couldnt open '%s': %s\n", LOCAL_FILE, strerror(errno));
-		return;
-	}
-	fsize = (curl_off_t)file_info.st_size;
-
-	printf("Local file size: %" CURL_FORMAT_CURL_OFF_T " bytes.\n", fsize);
-
-	/* get a FILE * of the same file */
-	hd_src = fopen(LOCAL_FILE, "rb");
-
-	/* In windows, this will init the winsock stuff */
 	curl_global_init(CURL_GLOBAL_ALL);
 
-	/* get a curl handle */
+	/* Fill in the file upload field */
+	curl_formadd(&formpost,
+		&lastptr,
+		CURLFORM_COPYNAME, "levelfile",
+		CURLFORM_BUFFERPTR, &fd,
+		CURLFORM_BUFFERLENGTH, sz,
+		CURLFORM_END);
+
+	/* Fill in the filename field */
+	curl_formadd(&formpost,
+		&lastptr,
+		CURLFORM_COPYNAME, "filename",
+		CURLFORM_COPYCONTENTS, "1.bvl",
+		CURLFORM_END);
+
+
+	/* Fill in the submit field too, even if this is rarely needed */
+	curl_formadd(&formpost,
+		&lastptr,
+		CURLFORM_COPYNAME, "submit",
+		CURLFORM_COPYCONTENTS, "send",
+		CURLFORM_END);
+
 	curl = curl_easy_init();
+	/* initialize custom header list (stating that Expect: 100-continue is not
+	wanted */
+	headerlist = curl_slist_append(headerlist, buf);
 	if (curl) {
-		/* build a list of commands to pass to libcurl */
-		headerlist = curl_slist_append(headerlist, buf_1);
-		headerlist = curl_slist_append(headerlist, buf_2);
+		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+		/* what URL that receives this POST */
 
-		/* we want to use our own read function */
-		curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback);
+		curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
 
-		/* enable uploading */
-		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
+		curl_easy_setopt(curl, CURLOPT_URL, "http://blocks.llamabagel.ca/PostNewLevel");
 
-		/* specify target */
-		curl_easy_setopt(curl, CURLOPT_URL, REMOTE_URL);
-
-		/* pass in that last of FTP commands to run after the transfer */
-		curl_easy_setopt(curl, CURLOPT_POSTQUOTE, headerlist);
-
-		/* now specify which file to upload */
-		curl_easy_setopt(curl, CURLOPT_READDATA, hd_src);
-
-		/* Set the size of the file to upload (optional).  If you give a *_LARGE
-		option you MUST make sure that the type of the passed-in argument is a
-		curl_off_t. If you use CURLOPT_INFILESIZE (without _LARGE) you must
-		make sure that to pass in a type 'long' argument. */
-		curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE,
-			(curl_off_t)fsize);
-
-		/* Now run off and do what you've been told! */
+		/* Perform the request, res will get the return code */
 		res = curl_easy_perform(curl);
 		/* Check for errors */
 		if (res != CURLE_OK)
 			fprintf(stderr, "curl_easy_perform() failed: %s\n",
 			curl_easy_strerror(res));
 
-		/* clean up the FTP commands list */
-		curl_slist_free_all(headerlist);
-
 		/* always cleanup */
 		curl_easy_cleanup(curl);
-	}
-	fclose(hd_src); /* close the local file */
 
-	curl_global_cleanup();
+		/* then cleanup the formpost chain */
+		curl_formfree(formpost);
+		/* free slist */
+		curl_slist_free_all(headerlist);
+	}
 }
