@@ -21,7 +21,24 @@ TextBox::TextBox(ALLEGRO_COLOR bg, ALLEGRO_COLOR tx, int w, int h, Vector2D pos,
 }
 
 void TextBox::onMouseDown(){
+	Vector2D RelativeLoc = Vector2D(GEngine->GetMouseState().x - position.x, GEngine->GetMouseState().y - position.y);
+
 	GEngine->LockInputToUIComponent(this);
+	//Set the caret location based on the location of a click
+	for (int i = 0; i < TText->slen; i++) {
+		//Create a temporary USTR to store a substring of the text
+		ALLEGRO_USTR* temp = al_ustr_new("");
+		al_ustr_assign_substr(temp, TText, 0, i);
+
+		//Calculate the position of the caret based on the temporary USTR
+		int CarPos = al_get_ustr_width(roboto, temp) + 4;
+		if (RelativeLoc.x + 4 < CarPos){
+			caret = i - 1;
+			break;
+		}
+	}
+
+	this->UpdateText();
 }
 
 void TextBox::onMouseUp(){
@@ -43,6 +60,12 @@ void TextBox::Draw(){
 void TextBox::handleKeyInput(ALLEGRO_EVENT *ev){
 	if (ev->type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && ev->mouse.button == MOUSE_LB){
 		Vector2D RelativeLoc = Vector2D(ev->mouse.x - position.x, ev->mouse.y - position.y);
+
+		//Releases input if the click location was outside of the textbox
+		if (RelativeLoc.x < 0 || RelativeLoc.y < 0 || RelativeLoc.x > width || RelativeLoc.y > height) {
+			GEngine->ReleaseInput();
+			return;
+		}
 
 		//Set the caret location based on the location of a click
 		for (int i = 0; i < TText->slen; i++) {
@@ -132,6 +155,8 @@ void TextBox::UpdateText(){
 
 	//Draw the caret
 	al_draw_line(CarPos, height / 2 + 8, CarPos, height / 2 + 26, al_map_rgb(0, 0, 0), 1);
+
+	al_draw_line(0, height - 1, width, height - 1, BLUE500, 2);
 
 	//Reset draw target to the display backbuffer
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
