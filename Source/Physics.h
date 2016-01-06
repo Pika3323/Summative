@@ -8,18 +8,15 @@
 class Physics{
 public:
 	Vector2D Gravforce;	//actual force exerted (dy)
-	int slot;	//for holding slot in array of characters as they are registered
-	//class Character* All[100];		//all character to be affected by gravity
-	bool GonOff[100];
-	Vector2D CollisionPos[100];
-	std::vector<Character*> All;
+	std::vector<Vector2D> ColPos;		//vector for collision postions
+	std::vector<Character*> All;		//stores characters to be affected by physics
 
 	Physics();
 	Physics(Vector2D f);	//setting the gravity first
 
 	void Register(Character* registrant);	//registering characters and whether and not they are affected
 	void GravTick();	//applying force
-	void ColTick(class World* Curr, Character* charac);		//collision conditions
+	void ColTick(class World* Curr);		//collision conditions
 
 private:
 };

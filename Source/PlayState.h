@@ -49,6 +49,13 @@ public:
 	//the block type the user selects
 	EBlockType SelectedBlock = EBlockType::B_Brick;	
 
+	//Character start position
+	Vector2D CharacterStart;
+
+	//bool for if user is changing start postion
+	bool ChangingStart;
+
+	//Enemies in the world
 	std::vector<Enemy*> Enemies;
 
 	//make a vector for each enemy type as they are made

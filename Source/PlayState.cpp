@@ -123,12 +123,12 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				GEngine->PrintDebugText(BLUE500, 5.f, "Pressed Space");
 				if (!CurrentWorld->bPlay){
 					CurrentWorld->bPlay = true;
+					TinTin->SetCharacterWorldPosition(CharacterStart);
 				}
 				else {
 					CurrentWorld->bPlay = false;
-					TinTin->SetCharacterWorldPosition(Vector2D(0.f, 0.f));
 				}
-				CurrentEffects->GonOff[TinTin->gravSlot] = true;
+				TinTin->bOnGround = false;
 				TinTin->velocity = Vector2D(0.f, 0.f);
 				for (int i = 0; i < (int) Enemies.size(); i++) {
 					Enemies[i]->Active = true;
@@ -142,6 +142,10 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 					CurrentWorld->EnemySelect = true;
 				else if (CurrentWorld->EnemySelect)
 					CurrentWorld->EnemySelect = false;
+				break;
+			case ALLEGRO_KEY_H:
+				if (!CurrentWorld->bPlay)
+					ChangingStart = true;
 				break;
 			default:
 				break;
@@ -167,6 +171,9 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 			case ALLEGRO_KEY_M:
 				GEngine->ChangeGameState<MainMenuState>();
 				break;
+			case ALLEGRO_KEY_H:
+				ChangingStart = false;
+				break;
 			default:
 				break;
 			}
@@ -178,8 +185,14 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 			case MOUSE_LB:
 				if (!CurrentWorld->bPlay) {
 					bClicked = true;
+
+					//check if user is changing start position
+					if (ChangingStart) {
+						ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
+						CharacterStart = ClickLocation;
+					}
 					//check if enemy select is true
-					if (CurrentWorld->EnemySelect) {
+					else if (CurrentWorld->EnemySelect) {
 							//get the mouse location
 							ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 
@@ -314,7 +327,7 @@ void PlayState::Tick(float delta){
 
 			//Run Gravity and Collision checking code
 			CurrentEffects->GravTick();
-			CurrentEffects->ColTick(CurrentWorld, TinTin);
+			CurrentEffects->ColTick(CurrentWorld);
 
 			//Kill the Character if he falls out of the world
 			if (TinTin->GetCharacterWorldPosition().y > CurrentWorld->dimensions.x) {
@@ -369,12 +382,14 @@ void PlayState::Tick(float delta){
 		//Mouse states
 		switch (GEngine->GetMouseState().buttons){
 		case MOUSE_LB:
-			if (!bBoxSelect && !CurrentWorld->EnemySelect){
-				ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
-				//Get the tile that was clicked
-				clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
-				if (clickedTile) {
-					CurrentWorld->PlaceBlock(clickedTile, SelectedBlock);
+			if (!ChangingStart){
+				if (!bBoxSelect && !CurrentWorld->EnemySelect){
+					ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
+					//Get the tile that was clicked
+					clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
+					if (clickedTile) {
+						CurrentWorld->PlaceBlock(clickedTile, SelectedBlock);
+					}
 				}
 			}
 			break;
@@ -486,6 +501,8 @@ void PlayState::Init(){
 
 	CurrentEffects->Register(TinTin);	//registering main character in gravity queue (is affected at beginning)
 	TinTin->velocity = Vector2D(0.f, 0.f);		//velocity starts at zero
+	CharacterStart = Vector2D(0.f, 0.f);		//original character start postion is zero
+	ChangingStart = false;				//at beginning, start position is not being changed 
 
 	//Setting Multiple Images to Background Buffer
 	al_set_target_bitmap(Background.image);
