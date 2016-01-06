@@ -29,7 +29,6 @@ int main(int argc, char* argv[]){
 		else {
 			GEngine->HandleInput(&ev);
 		}
-		
 		//Draw to the screen
 		if (GEngine->ShouldRedraw() && al_event_queue_is_empty(GEngine->GetEventQueue())){
 			//Calculate the change in time between two frames
@@ -41,9 +40,7 @@ int main(int argc, char* argv[]){
 			GEngine->Draw();
 		}
 	}
-
 	//Cleanup
 	GEngine->Cleanup();
-
 	return 0;
 }

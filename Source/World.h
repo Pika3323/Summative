@@ -5,6 +5,7 @@
 #include "Enemy.h"
 #include "Dankey.h"
 
+//A struct containing info on a tile in the world
 struct GridTile{
 	Vector2D location;
 	bool occupied;
@@ -49,3 +50,11 @@ public:
 private:
 };
 
+//Structure containing data about a level
+struct WorldLevelData{
+	int VersionMajor, VersionMinor;
+	char Name[64];
+	int LevelAttempts;
+	int LevelCompletions;
+	char Creator[64];
+};

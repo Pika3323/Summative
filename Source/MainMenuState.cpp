@@ -85,7 +85,7 @@ MainMenuState::~MainMenuState(){
 }
 
 void MainMenu::PlayGame(){
-	dynamic_cast<MainMenuState*>(GEngine->GetCurrentGameState())->ActiveScreen = 1;
+	GEngine->ChangeGameState<PlayState>();
 }
 
 void MainMenu::LoadEditor(){
