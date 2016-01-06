@@ -162,4 +162,4 @@ private:
 	std::vector<DebugOutput> DebugStrings;
 };
 
-extern Engine* GEngine = new Engine();
+extern Engine* GEngine;

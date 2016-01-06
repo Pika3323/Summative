@@ -1,5 +1,7 @@
 #include "Engine.h"
 
+Engine* GEngine = new Engine();
+
 int main(int argc, char* argv[]){
 
 	//Initialize the game engine

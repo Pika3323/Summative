@@ -10,6 +10,7 @@ public:
 	Vector2D Gravforce;	//actual force exerted (dy)
 	std::vector<Vector2D> ColPos;		//vector for collision postions
 	std::vector<Character*> All;		//stores characters to be affected by physics
+	int BumpFactor;
 
 	Physics();
 	Physics(Vector2D f);	//setting the gravity first

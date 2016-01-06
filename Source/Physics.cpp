@@ -29,13 +29,17 @@ void Physics::ColTick(World* Curr){
 		}
 		for (int i = 33; i < 98; i += 32) {
 			if (!static_cast<bool>(All[j]->GetCharacterDirection()) && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + 65) / 32)][int((All[j]->GetCharacterWorldPosition().y + i) / 32)].bSpawned && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + 65) / 32)][int((All[j]->GetCharacterWorldPosition().y + i) / 32)].bCollision) {		//all possible x related collisions
-				ColPos[j] = Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x) / 32)][int((All[j]->GetCharacterWorldPosition().y) / 32)].position;
-				All[j]->SetCharacterWorldPosition(ColPos[j]);
+				BumpFactor = 1;
+				//ColPos[j] = Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x) / 32)][int((All[j]->GetCharacterWorldPosition().y) / 32)].position;
+				//All[j]->SetCharacterWorldPosition(ColPos[j]);
+				All[j]->velocity.x -= (All[j]->velocity.x + BumpFactor);
+
 		}
-		else if (static_cast<bool>(All[j]->GetCharacterDirection()) && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + 1) / 32)][int((All[j]->GetCharacterWorldPosition().y + i) / 32)].bSpawned && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + 65) / 32)][int((All[j]->GetCharacterWorldPosition().y + i) / 32)].bCollision) {
-			ColPos[j] = Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + 30) / 32)][int((All[j]->GetCharacterWorldPosition().y) / 32)].position;
-			All[j]->SetCharacterWorldPosition(ColPos[j]);
-		}
+			else if (static_cast<bool>(All[j]->GetCharacterDirection()) && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + 1) / 32)][int((All[j]->GetCharacterWorldPosition().y + i) / 32)].bSpawned && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + 65) / 32)][int((All[j]->GetCharacterWorldPosition().y + i) / 32)].bCollision) {
+				//ColPos[j] = Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + 30) / 32)][int((All[j]->GetCharacterWorldPosition().y) / 32)].position;
+				//All[j]->SetCharacterWorldPosition(ColPos[j]);
+				All[j]->velocity.x += (All[j]->velocity.x - 1);
+			}
 		}
 	}
 }

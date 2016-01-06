@@ -352,9 +352,33 @@ void PlayState::Tick(float delta){
 			Debug = PlayerOldPosition - TinTin->position;
 			Vector2D PlayerScreenPosition = CurrentWorld->offset + TinTin->position;
 
-			if (PlayerScreenPosition.x > GEngine->GetDisplayWidth() / 2 || PlayerScreenPosition.y > GEngine->GetDisplayHeight() / 2 && CurrentWorld->offset.x != 0 && CurrentWorld->offset.x != CurrentWorld->dimensions.x * -1 + GEngine->GetDisplayWidth() && CurrentWorld->offset.y != 0 && CurrentWorld->offset.y != CurrentWorld->dimensions.y * -1 + GEngine->GetDisplayHeight()){
-				if (TinTin->velocity != Vector2D(0.f, 0.f)) {
-					WorldMoveDelta = TinTin->velocity * -1;
+			if (PlayerScreenPosition.x > GEngine->GetDisplayWidth() / 2 && (CurrentWorld->offset.x <= 0 && CurrentWorld->offset.x != CurrentWorld->dimensions.x * -1 + GEngine->GetDisplayWidth())){
+				if (TinTin->velocity.x != 0) {
+					WorldMoveDelta.x = TinTin->velocity.x * -1;
+				}
+				else if (CurrentWorld->bPlay) {
+					WorldMoveDelta = Vector2D(0.f, 0.f);
+				}
+			}
+			if (PlayerScreenPosition.x < GEngine->GetDisplayWidth() / 2 && (CurrentWorld->offset.x <= 0 && CurrentWorld->offset.x != CurrentWorld->dimensions.x * -1 + GEngine->GetDisplayWidth())){
+				if (TinTin->velocity.x != 0) {
+					WorldMoveDelta.x = TinTin->velocity.x * -1;
+				}
+				else if (CurrentWorld->bPlay) {
+					WorldMoveDelta = Vector2D(0.f, 0.f);
+				}
+			}
+			if (PlayerScreenPosition.y > GEngine->GetDisplayHeight() / 2  && (CurrentWorld->offset.y <= 0 && CurrentWorld->offset.y != CurrentWorld->dimensions.y * -1 + GEngine->GetDisplayHeight())){
+				if (TinTin->velocity.y != 0) {
+					WorldMoveDelta.y = TinTin->velocity.y * -1;
+				}
+				else if (CurrentWorld->bPlay) {
+					WorldMoveDelta = Vector2D(0.f, 0.f);
+				}
+			}
+			if (PlayerScreenPosition.y < GEngine->GetDisplayHeight() / 2 && (CurrentWorld->offset.y <= 0 && CurrentWorld->offset.y != CurrentWorld->dimensions.y * -1 + GEngine->GetDisplayHeight())){
+				if (TinTin->velocity.y != 0) {
+					WorldMoveDelta.y = TinTin->velocity.y * -1;
 				}
 				else if (CurrentWorld->bPlay) {
 					WorldMoveDelta = Vector2D(0.f, 0.f);
@@ -364,6 +388,7 @@ void PlayState::Tick(float delta){
 		}
 		
 		CurrentWorld->moveWorld(WorldMoveDelta, GridBuffer, Background, BlockBuffer, notPlayingBuff);
+		WorldMoveDelta = Vector2D(0.f, 0.f);
 		
 		//Run world tick
 		CurrentWorld->Tick(delta);
