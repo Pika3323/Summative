@@ -10,6 +10,9 @@ enum class ECharacterDirection{
 
 class Character{
 public:
+	//The direction that the character is facing
+	ECharacterDirection direction;
+
 	//The character's instantaneous velocity
 	Vector2D velocity;
 
@@ -72,7 +75,5 @@ public:
 protected:
 	//The overall texture of the character which is drawn to the screen
 	ALLEGRO_BITMAP* texture;
-	
-	//The direction that the character is facing
-	ECharacterDirection direction;
+
 };

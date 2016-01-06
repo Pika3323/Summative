@@ -42,7 +42,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 			case ALLEGRO_KEY_RIGHT:
 				if (CurrentWorld->bPlay) {
 					TinTin->SetCharacterDirection(ECharacterDirection::R_Right);
-					TinTin->Run(Vector2D(5.f, 0.f));
+					TinTin->bRunning = true;
 				}
 				else{
 					WorldMoveDelta.x = -5.f;
@@ -52,7 +52,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 			case ALLEGRO_KEY_LEFT:
 				if (CurrentWorld->bPlay) {
 					TinTin->SetCharacterDirection(ECharacterDirection::R_Left);
-					TinTin->Run(Vector2D(-5.f, 0.f));
+					TinTin->bRunning = true;
 				}
 				else{
 					WorldMoveDelta.x = 5.f;
@@ -312,6 +312,13 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 }
 
 void PlayState::Tick(float delta){
+	//Move character if bRunning is true
+	if (TinTin->bRunning && TinTin->direction == ECharacterDirection::R_Right){
+		TinTin->Run(Vector2D(1.f, 0.f));
+	}
+	else if (TinTin->bRunning && TinTin->direction == ECharacterDirection::R_Left){
+		TinTin->Run(Vector2D(-1.f, 0.f));
+	}
 	//Enemy ticks
 	for (int i = 0; i < (int) Enemies.size(); i++) {
 		Enemies[i]->Tick(delta);
@@ -325,9 +332,10 @@ void PlayState::Tick(float delta){
 	if (!Paused) {
 		if (CurrentWorld->bPlay) {
 
-			//Run Gravity and Collision checking code
+			//Run Gravity, Collision checking code, and Friction
 			CurrentEffects->GravTick();
 			CurrentEffects->ColTick(CurrentWorld);
+			CurrentEffects->FricTick();
 
 			//Kill the Character if he falls out of the world
 			if (TinTin->GetCharacterWorldPosition().y > CurrentWorld->dimensions.x) {
@@ -349,42 +357,44 @@ void PlayState::Tick(float delta){
 			//Main Character Tick
 			TinTin->Tick(delta);
 
-			Debug = PlayerOldPosition - TinTin->position;
-			Vector2D PlayerScreenPosition = CurrentWorld->offset + TinTin->position;
+			/*if (CurrentWorld->offset.x == 0 || CurrentWorld->offset.y == 0){}
+			else {
+				Debug = PlayerOldPosition - TinTin->position;
+				Vector2D PlayerScreenPosition = CurrentWorld->offset + TinTin->position;
 
-			if (PlayerScreenPosition.x > GEngine->GetDisplayWidth() / 2 && (CurrentWorld->offset.x <= 0 && CurrentWorld->offset.x != CurrentWorld->dimensions.x * -1 + GEngine->GetDisplayWidth())){
-				if (TinTin->velocity.x != 0) {
-					WorldMoveDelta.x = TinTin->velocity.x * -1;
+				if (PlayerScreenPosition.x > GEngine->GetDisplayWidth() / 2 && (CurrentWorld->offset.x <= 0 && CurrentWorld->offset.x != CurrentWorld->dimensions.x * -1 + GEngine->GetDisplayWidth())){
+					if (TinTin->velocity.x != 0) {
+						WorldMoveDelta.x = TinTin->velocity.x * -1;
+					}
+					else if (CurrentWorld->bPlay) {
+						WorldMoveDelta = Vector2D(0.f, 0.f);
+					}
 				}
-				else if (CurrentWorld->bPlay) {
-					WorldMoveDelta = Vector2D(0.f, 0.f);
+				if (PlayerScreenPosition.x < GEngine->GetDisplayWidth() / 2 && (CurrentWorld->offset.x <= 0 && CurrentWorld->offset.x != CurrentWorld->dimensions.x * -1 + GEngine->GetDisplayWidth())){
+					if (TinTin->velocity.x != 0) {
+						WorldMoveDelta.x = TinTin->velocity.x * -1;
+					}
+					else if (CurrentWorld->bPlay) {
+						WorldMoveDelta = Vector2D(0.f, 0.f);
+					}
 				}
-			}
-			if (PlayerScreenPosition.x < GEngine->GetDisplayWidth() / 2 && (CurrentWorld->offset.x <= 0 && CurrentWorld->offset.x != CurrentWorld->dimensions.x * -1 + GEngine->GetDisplayWidth())){
-				if (TinTin->velocity.x != 0) {
-					WorldMoveDelta.x = TinTin->velocity.x * -1;
+				if (PlayerScreenPosition.y > GEngine->GetDisplayHeight() / 2 && (CurrentWorld->offset.y <= 0 && CurrentWorld->offset.y != CurrentWorld->dimensions.y * -1 + GEngine->GetDisplayHeight())){
+					if (TinTin->velocity.y != 0) {
+						WorldMoveDelta.y = TinTin->velocity.y * -1;
+					}
+					else if (CurrentWorld->bPlay) {
+						WorldMoveDelta = Vector2D(0.f, 0.f);
+					}
 				}
-				else if (CurrentWorld->bPlay) {
-					WorldMoveDelta = Vector2D(0.f, 0.f);
+				if (PlayerScreenPosition.y < GEngine->GetDisplayHeight() / 2 && (CurrentWorld->offset.y <= 0 && CurrentWorld->offset.y != CurrentWorld->dimensions.y * -1 + GEngine->GetDisplayHeight())){
+					if (TinTin->velocity.y != 0) {
+						WorldMoveDelta.y = TinTin->velocity.y * -1;
+					}
+					else if (CurrentWorld->bPlay) {
+						WorldMoveDelta = Vector2D(0.f, 0.f);
+					}
 				}
-			}
-			if (PlayerScreenPosition.y > GEngine->GetDisplayHeight() / 2  && (CurrentWorld->offset.y <= 0 && CurrentWorld->offset.y != CurrentWorld->dimensions.y * -1 + GEngine->GetDisplayHeight())){
-				if (TinTin->velocity.y != 0) {
-					WorldMoveDelta.y = TinTin->velocity.y * -1;
-				}
-				else if (CurrentWorld->bPlay) {
-					WorldMoveDelta = Vector2D(0.f, 0.f);
-				}
-			}
-			if (PlayerScreenPosition.y < GEngine->GetDisplayHeight() / 2 && (CurrentWorld->offset.y <= 0 && CurrentWorld->offset.y != CurrentWorld->dimensions.y * -1 + GEngine->GetDisplayHeight())){
-				if (TinTin->velocity.y != 0) {
-					WorldMoveDelta.y = TinTin->velocity.y * -1;
-				}
-				else if (CurrentWorld->bPlay) {
-					WorldMoveDelta = Vector2D(0.f, 0.f);
-				}
-			}
-			
+			}*/
 		}
 		
 		CurrentWorld->moveWorld(WorldMoveDelta, GridBuffer, Background, BlockBuffer, notPlayingBuff);
