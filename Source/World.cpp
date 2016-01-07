@@ -142,7 +142,7 @@ bool World::Save(const char LevelName[64], std::vector<Enemy*> enemies) {
 			}
 		}
 		//count amount of each type of enemy in enemy vector
-		for (int i = 0; i < enemies.size(); i++) {
+		for (int i = 0; i < (int)enemies.size(); i++) {
 			dCheck = dynamic_cast<Dankey*>(enemies[i]);
 			if (!dCheck) {
 			}
@@ -153,7 +153,7 @@ bool World::Save(const char LevelName[64], std::vector<Enemy*> enemies) {
 		}
 		fwrite(&DankeyCounter, sizeof(int), 1, fptr);
 		dCheck = NULL;
-		for (int i = 0; i < enemies.size(); i++) {
+		for (int i = 0; i < (int)enemies.size(); i++) {
 			dCheck = dynamic_cast<Dankey*>(enemies[i]);
 			if (!dCheck) {
 			}

@@ -312,6 +312,8 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 }
 
 void PlayState::Tick(float delta){
+	printf("%d", Enemies.size());
+	system("pause");
 	//Move character if bRunning is true
 	if (TinTin->bRunning && TinTin->direction == ECharacterDirection::R_Right){
 		TinTin->Run(Vector2D(1.f, 0.f));
