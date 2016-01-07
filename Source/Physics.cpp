@@ -20,7 +20,7 @@ void Physics::GravTick(){
 	}
 }
 
-void Physics::ColTick(World* Curr){
+int Physics::ColTick(World* Curr){
 	for (int j = 0; j < (int)All.size(); j++) {
 		if (Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x) / 32)][int((All[j]->GetCharacterWorldPosition().y) / 32)].bSpawned && All[j]->velocity.y < 0 && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x) / 32)][int((All[j]->GetCharacterWorldPosition().y) / 32)].bCollision) {
 			ColPos[j] = Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x) / 15)][int((All[j]->GetCharacterWorldPosition().y + 5) / 32)].position;
@@ -28,19 +28,26 @@ void Physics::ColTick(World* Curr){
 			All[j]->velocity.y = 0;
 		}
 		for (int i = 33; i < 98; i += 32) {
+			//This assumes that the first character is the player (can add a condition that casts it to check)
+			if (!static_cast<bool>(All[j]->GetCharacterDirection()) && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x - 10) / 32)][int((All[j]->GetCharacterWorldPosition().y + i) / 32)].bSpawned && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x - 10) / 32)][int((All[j]->GetCharacterWorldPosition().y + i) / 32)].type == EBlockType::B_FinishFlag) {
+				return 1;
+			}
+			if (static_cast<bool>(All[j]->GetCharacterDirection()) && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + 74) / 32)][int((All[j]->GetCharacterWorldPosition().y + i) / 32)].bSpawned && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + 74) / 32)][int((All[j]->GetCharacterWorldPosition().y + i) / 32)].type == EBlockType::B_FinishFlag) {
+				return 1;
+			}
 			if (!static_cast<bool>(All[j]->GetCharacterDirection()) && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + 65) / 32)][int((All[j]->GetCharacterWorldPosition().y + i) / 32)].bSpawned && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + 65) / 32)][int((All[j]->GetCharacterWorldPosition().y + i) / 32)].bCollision) {		//all possible x related collisions
 				All[j]->velocity.x = -5.f;
-
-		}
-			else if (static_cast<bool>(All[j]->GetCharacterDirection()) && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + 1) / 32)][int((All[j]->GetCharacterWorldPosition().y + i) / 32)].bSpawned && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + 65) / 32)][int((All[j]->GetCharacterWorldPosition().y + i) / 32)].bCollision) {
+			}
+			else if (static_cast<bool>(All[j]->GetCharacterDirection()) && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + 1) / 32)][int((All[j]->GetCharacterWorldPosition().y + i) / 32)].bSpawned && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + 1) / 32)][int((All[j]->GetCharacterWorldPosition().y + i) / 32)].bCollision) {
 				All[j]->velocity.x = 5.f;
 			}
 		}
 	}
+	return 0;
 }
 
 void Physics::FricTick(){
-	for (int i = 0; i < (int)All.size(); i++){
+	for (int i = 0; i < (int)All.size(); i++) {
 		if (All[i]->velocity.x == 0) {}
 		else if (All[i]->velocity.x > 0 && (All[i]->bRunning || All[i]->bOnGround)) {
 			All[i]->velocity.x -= .5f;

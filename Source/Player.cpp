@@ -34,7 +34,6 @@ void Player::Jump(){
 
 //Called when the player dies
 void Player::Die(){
-	this->SetCharacterWorldPosition(Vector2D(0, 0));
 	printf("You died!\n");
 }
 
@@ -56,4 +55,10 @@ void Player::Tick(float delta){
 		fall.PushFrame();
 		position += velocity;
 	}
+}
+
+void Player::Win(Vector2D Start){
+	this->SetCharacterWorldPosition(Start);
+	printf("You Won!\n");
+	//add stuff here later
 }

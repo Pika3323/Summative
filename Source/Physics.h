@@ -17,7 +17,7 @@ public:
 	void Register(Character* registrant);	//registering characters and whether and not they are affected
 	void GravTick();	//applying force
 	void FricTick();	//Constant friction on any block at the moment
-	void ColTick(class World* Curr);		//collision conditions
+	int ColTick(class World* Curr);		//collision conditions
 
 private:
 };

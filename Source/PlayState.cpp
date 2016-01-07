@@ -334,12 +334,17 @@ void PlayState::Tick(float delta){
 
 			//Run Gravity, Collision checking code, and Friction
 			CurrentEffects->GravTick();
-			CurrentEffects->ColTick(CurrentWorld);
+			if (CurrentEffects->ColTick(CurrentWorld)) {
+				TinTin->Win(CharacterStart);
+				CurrentWorld->bPlay = false;
+			}
 			CurrentEffects->FricTick();
 
 			//Kill the Character if he falls out of the world
 			if (TinTin->GetCharacterWorldPosition().y > CurrentWorld->dimensions.x) {
 				TinTin->Die();
+				TinTin->SetCharacterWorldPosition(CharacterStart);
+				CurrentWorld->bPlay = false;
 			}
 
 			//Stop character from falling through a block

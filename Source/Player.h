@@ -14,6 +14,8 @@ public:
 
 	void Die();
 
+	void Win(Vector2D Start);
+
 	Player(int Height, int Width);
 protected:
 	SpriteSheet run;
