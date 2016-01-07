@@ -105,8 +105,8 @@ bool World::Load(const char LevelName[64], std::vector<Enemy*> *enemies){
 		fread(&DankeyCounter, sizeof(int), 1, fptr);
 
 		for (int i = 0; i < DankeyCounter; i++) {
-			fread(&dTemp, sizeof(Dankey), 1, fptr);
-			enemies->push_back(dTemp);
+			fread(&dTemp, sizeof(Vector2D), 1, fptr);
+			enemies->push_back(new Dankey(dTemp));
 		}
 
 		fclose(fptr);
@@ -158,7 +158,7 @@ bool World::Save(const char LevelName[64], std::vector<Enemy*> enemies) {
 			if (!dCheck) {
 			}
 			else {
-				fwrite(&enemies[i], sizeof(Dankey), 1, fptr);
+				fwrite(&enemies[i]->position, sizeof(Vector2D), 1, fptr);
 			}
 			//add more as new enemies are made
 		}

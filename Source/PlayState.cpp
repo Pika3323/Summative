@@ -312,8 +312,6 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 }
 
 void PlayState::Tick(float delta){
-	printf("%d", Enemies.size());
-	system("pause");
 	//Move character if bRunning is true
 	if (TinTin->bRunning && TinTin->direction == ECharacterDirection::R_Right){
 		TinTin->Run(Vector2D(1.f, 0.f));
@@ -322,6 +320,14 @@ void PlayState::Tick(float delta){
 		TinTin->Run(Vector2D(-1.f, 0.f));
 	}
 	//Enemy ticks
+	for (int i = 0; i < (int)Enemies.size(); i++) {
+		CurrentWorld->dCheck = dynamic_cast<Dankey*>(Enemies[i]);
+		if (CurrentWorld->dCheck) {
+			if (++CurrentWorld->dCheck->BarrelDelay == 8) {
+				Enemies.push_back(new Barrel(CurrentWorld->dCheck->direction, CurrentWorld->dCheck->position));
+			}
+		}
+	}
 	for (int i = 0; i < (int) Enemies.size(); i++) {
 		Enemies[i]->Tick(delta);
 	}

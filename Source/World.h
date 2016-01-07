@@ -27,7 +27,7 @@ public:
 	Block Blocks[128][64];
 	BlockType Type[15];
 	class Dankey* dCheck;		//dankey pointer checker 
-	class Dankey* dTemp;		//temp for pushing back loading vector
+	Vector2D dTemp;		//temp for pushing back loading vector
 	//Cinas *cCheck;		//Cinas pointer checker			for saving files
 	//Cinas cTemp;
 	//Yash *yCheck;		//Yash pointer checker

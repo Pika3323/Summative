@@ -8,7 +8,8 @@
 enum class EnemyType{
 	E_Cinas,
 	E_Dankey,
-	E_Yash
+	E_Yash,
+	E_Barrel
 };
 
 class Enemy : public Character{
@@ -30,7 +31,7 @@ public:
 	Enemy();
 protected:
 	SpriteSheet run;
+	SpriteSheet attack;
 	SpriteSheet fall;
 	SpriteSheet still;
-	SpriteSheet attack;
 };

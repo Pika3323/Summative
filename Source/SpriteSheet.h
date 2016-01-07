@@ -24,10 +24,9 @@ public:
 protected:
 	int FrameHeight;
 	int FrameWidth;
-
+	int CurrentFrame;
 	int TotFrameCount;
 	int Delay;
-	int CurrentFrame;
 	int FramesInAnimation;
 
 	ALLEGRO_BITMAP* Sheet;

@@ -2,6 +2,7 @@
 
 Dankey::Dankey(Vector2D pos){
 	position = pos;
+	BarrelDelay = 0;
 	ActualHeight = 64;
 	ActualWidth = 64;
 	velocity = Vector2D(0.f, 0.f);
