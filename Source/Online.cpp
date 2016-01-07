@@ -1,5 +1,9 @@
 #include "Online.h"
 
+LevelVotes Online::v = { 0, 0 };
+int Online::completions = 0;
+int Online::attempts = 0;
+
 void Online::PostLevel(const char* LevelName){
 	char level[64];
 	strcpy(level, LevelName);
@@ -86,7 +90,7 @@ void Online::PostLevel(const char* LevelName){
 	}
 }
 
-void Online::UpdateLevel(const char* LevelName, int id, LevelData data, const void* change){
+void Online::UpdateLevel(const char* LevelName, int id, LevelData data){
 	char level[64];
 	strcpy(level, LevelName);
 
@@ -104,7 +108,6 @@ void Online::UpdateLevel(const char* LevelName, int id, LevelData data, const vo
 
 	switch (data){
 	case File:
-		
 		/* Fill in the file upload field */
 		curl_formadd(&formpost,
 			&lastptr,
@@ -113,23 +116,54 @@ void Online::UpdateLevel(const char* LevelName, int id, LevelData data, const vo
 			CURLFORM_END);
 		break;
 	case Completions:
+		char sCom[5];
+		_itoa(completions, sCom, 10);
 		curl_formadd(&formpost,
 			&lastptr,
 			CURLFORM_COPYNAME, "levelcompletions",
-			CURLFORM_COPYCONTENTS, (int)*change,
+			CURLFORM_COPYCONTENTS, sCom,
 			CURLFORM_END);
 		break;
 	case Tries:
+		char sTries[5];
+		_itoa(attempts, sTries, 10);
+		curl_formadd(&formpost,
+			&lastptr,
+			CURLFORM_COPYNAME, "leveltries",
+			CURLFORM_COPYCONTENTS, sTries,
+			CURLFORM_END);
 		break;
 	case Votes:
+		char sUp[5];
+		_itoa(v.up, sUp, 10);
+		char sDown[5];
+		_itoa(v.down, sDown, 10);
+		curl_formadd(&formpost,
+			&lastptr,
+			CURLFORM_COPYNAME, "levelupvotes",
+			CURLFORM_COPYCONTENTS, sUp,
+			CURLFORM_END);
+		curl_formadd(&formpost,
+			&lastptr,
+			CURLFORM_COPYNAME, "leveldownvotes",
+			CURLFORM_COPYCONTENTS, sDown,
+			CURLFORM_END);
 		break;
 	}
+	char sType[2];
+	_itoa(data, sType, 10);
 	curl_formadd(&formpost,
 		&lastptr,
 		CURLFORM_COPYNAME, "updatetype",
-		CURLFORM_COPYCONTENTS, data,
+		CURLFORM_COPYCONTENTS, sType,
 		CURLFORM_END);
-	
+	char sID[5];
+	_itoa(id, sID, 10);
+	curl_formadd(&formpost,
+		&lastptr,
+		CURLFORM_COPYNAME, "levelid",
+		CURLFORM_COPYCONTENTS, sID,
+		CURLFORM_END);
 
 	/* Fill in the filename field */
 	curl_formadd(&formpost,
@@ -157,7 +191,7 @@ void Online::UpdateLevel(const char* LevelName, int id, LevelData data, const vo
 
 		curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
 
-		curl_easy_setopt(curl, CURLOPT_URL, "http://blocks.llamabagel.ca/PostNewLevel");
+		curl_easy_setopt(curl, CURLOPT_URL, "http://blocks.llamabagel.ca/UpdateLevel");
 
 		/* Perform the request, res will get the return code */
 		res = curl_easy_perform(curl);
@@ -174,4 +208,8 @@ void Online::UpdateLevel(const char* LevelName, int id, LevelData data, const vo
 		//free slist 
 		curl_slist_free_all(headerlist);
 	}
+}
+
+void Online::DeleteLevel(int id){
+
 }
