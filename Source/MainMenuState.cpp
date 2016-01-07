@@ -168,15 +168,20 @@ void PushLevel(){
 	curl_formadd(&formpost,
 		&lastptr,
 		CURLFORM_COPYNAME, "levelfile",
-		CURLFORM_BUFFERPTR, &fd,
-		CURLFORM_BUFFERLENGTH, sz,
+		CURLFORM_FILE, level,
 		CURLFORM_END);
 
 	/* Fill in the filename field */
 	curl_formadd(&formpost,
 		&lastptr,
-		CURLFORM_COPYNAME, "filename",
-		CURLFORM_COPYCONTENTS, "1.bvl",
+		CURLFORM_COPYNAME, "username",
+		CURLFORM_COPYCONTENTS, "TestUser",
+		CURLFORM_END);
+
+	curl_formadd(&formpost,
+		&lastptr,
+		CURLFORM_COPYNAME, "levelname",
+		CURLFORM_COPYCONTENTS, "Other Test",
 		CURLFORM_END);
 
 
@@ -194,6 +199,8 @@ void PushLevel(){
 	if (curl) {
 		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 		/* what URL that receives this POST */
+
+		curl_easy_setopt(curl, CURLOPT_POST, 1L);
 
 		curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
 
