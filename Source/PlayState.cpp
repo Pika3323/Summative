@@ -584,7 +584,7 @@ void PlayState::Init(){
 		printf("Enter level name: ");
 		scanf("%s", loadLevel);
 		fflush(stdin);
-		if (CurrentWorld->Load(loadLevel)){
+		if (CurrentWorld->Load(loadLevel, &Enemies)){
 			printf("Loaded %s\n", loadLevel);
 		}
 		else{
@@ -612,7 +612,7 @@ void PlayState::Destroy(){
 		char levelName[64];
 		printf("Enter a file name: ");
 		scanf("%s", levelName);
-		if (CurrentWorld->Save(levelName)){
+		if (CurrentWorld->Save(levelName, Enemies)){
 			printf("Saved level as %s\n", levelName);
 		}
 		else{
