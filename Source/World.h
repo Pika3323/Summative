@@ -63,6 +63,7 @@ private:
 struct WorldLevelData{
 	int VersionMajor, VersionMinor;
 	char Name[64];
+	char Date[64];
 	int LevelAttempts;
 	int LevelCompletions;
 	char Creator[64];

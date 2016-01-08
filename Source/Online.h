@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine.h"
+#include "World.h"
 
 struct MemoryStruct {
 	char *memory;
@@ -40,10 +41,10 @@ public:
 	static void DeleteLevel(int id);
 
 	//Gets all levels belonging to a user
-	static void GetLevelData(const char* username);
+	static WorldLevelData* GetLevelData(const char* username);
 
 	//Get data from a level on the server
-	static void GetLevelData(int id);
+	static WorldLevelData GetLevelData(int id);
 
 	//Get a level from the server by its ID
 	static void GetLevel(int id);

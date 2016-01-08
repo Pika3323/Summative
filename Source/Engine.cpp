@@ -56,7 +56,7 @@ void Engine::DrawFPS(double delta){
 
 void Engine::Init(){
 	//Version info
-	printf("Summative version %d.%d.%d\n", MAJORVERSION, MINORVERSION, BUILDNUMBER);
+	printf("Summative version %d.%d\n", VersionMajor, VersionMinor);
 	
 	//Allegro
 	if (!al_init()) {

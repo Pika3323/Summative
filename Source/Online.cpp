@@ -286,7 +286,13 @@ void Online::DeleteLevel(int id){
 	}
 }
 
-void Online::GetLevelData(const char* username){
+WorldLevelData* Online::GetLevelData(const char* username){
+
+	struct MemoryStruct chunk;
+
+	chunk.memory = (char*)malloc(1);  /* will be grown as needed by the realloc above */
+	chunk.size = 0;    /* no data at this point */
+
 	CURL *curl;
 	CURLcode res;
 
@@ -320,6 +326,10 @@ void Online::GetLevelData(const char* username){
 
 		curl_easy_setopt(curl, CURLOPT_POST, 1L);
 
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
+
 		curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
 
 		curl_easy_setopt(curl, CURLOPT_URL, "http://blocks.llamabagel.ca/GetUserLevels");
@@ -331,15 +341,27 @@ void Online::GetLevelData(const char* username){
 			fprintf(stderr, "curl_easy_perform() failed: %s\n",
 			curl_easy_strerror(res));
 
+		FILE *tmp = NULL;
+
+		tmp = fopen("temp.temp", "w");
+
+		fputs(chunk.memory, tmp);
+
 		//always cleanup
 		curl_easy_cleanup(curl);
+
+		//then cleanup the formpost chain
+
+		free(chunk.memory);
 
 		//then cleanup the formpost chain
 
 		curl_formfree(formpost);
 		//free slist 
 		curl_slist_free_all(headerlist);
+		
 	}
+	return NULL;
 }
 
 

@@ -3,6 +3,7 @@
 #include "Engine.h"
 #include "Button.h"
 #include "TextBox.h"
+#include "Online.h"
 
 class MainMenuState : public GameState {
 public:

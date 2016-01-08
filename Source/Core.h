@@ -36,7 +36,6 @@
 #include "IMath.h"			//Isaac's math header
 #include "GameState.h"		//Game states
 #include "UIComponent.h"	//UI
-#include "Online.h"
 
 static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 {
