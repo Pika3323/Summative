@@ -133,6 +133,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				for (int i = 0; i < (int) Enemies.size(); i++) {
 					Enemies[i]->Active = true;
 				}
+
 				break;
 			case ALLEGRO_KEY_ESCAPE:
 				GEngine->Quit();
@@ -312,6 +313,21 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 }
 
 void PlayState::Tick(float delta){
+	//checking if any new enemies have been added (most likely barrels)
+	if (Enemies.size() != EnemyCheck) {
+		ReregisterEnemies = true;
+		EnemyCheck = Enemies.size();
+	}
+
+	//Reregistering enemies in physics if they were just placed before playing
+	if (ReregisterEnemies){
+		CurrentEffects->All.clear();
+		CurrentEffects->Register(TinTin);
+		for (int i = 0; i < (int)Enemies.size(); i++) {
+			CurrentEffects->Register(Enemies[i]);
+		}
+		ReregisterEnemies = false;
+	}
 	//Move character if bRunning is true
 	if (TinTin->bRunning && TinTin->direction == ECharacterDirection::R_Right){
 		TinTin->Run(Vector2D(1.f, 0.f));
@@ -323,8 +339,15 @@ void PlayState::Tick(float delta){
 	for (int i = 0; i < (int)Enemies.size(); i++) {
 		CurrentWorld->dCheck = dynamic_cast<Dankey*>(Enemies[i]);
 		if (CurrentWorld->dCheck) {
-			if (++CurrentWorld->dCheck->BarrelDelay == 8) {
-				Enemies.push_back(new Barrel(CurrentWorld->dCheck->direction, CurrentWorld->dCheck->position));
+			if (CurrentWorld->dCheck->BarrelDelay == 40) {
+				if (CurrentWorld->dCheck->direction == ECharacterDirection::R_Left){
+					Enemies.push_back(new Barrel(CurrentWorld->dCheck->direction, Vector2D(CurrentWorld->dCheck->position.x, CurrentWorld->dCheck->position.y + 48)));
+					CurrentWorld->dCheck->BarrelDelay = 0;
+				}
+				else {
+					Enemies.push_back(new Barrel(CurrentWorld->dCheck->direction, Vector2D(CurrentWorld->dCheck->position.x + 64, CurrentWorld->dCheck->position.y + 48)));
+					CurrentWorld->dCheck->BarrelDelay = 0;
+				}
 			}
 		}
 	}
@@ -353,18 +376,6 @@ void PlayState::Tick(float delta){
 				TinTin->Die();
 				TinTin->SetCharacterWorldPosition(CharacterStart);
 				CurrentWorld->bPlay = false;
-			}
-
-			//Stop character from falling through a block
-			if (!TinTin->bOnGround && CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bSpawned && CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bCollision) {
-				TinTin->SetCharacterWorldPosition(Vector2D(TinTin->GetCharacterWorldPosition().x, CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y) / CurrentWorld->gridSize].position.y));
-				TinTin->bOnGround = true;
-				if (TinTin->velocity.y > 0) {
-					TinTin->velocity.y = 0;
-				}
-			}
-			else if (!CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bSpawned || !CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bCollision) {
-				TinTin->bOnGround = false;
 			}
 
 			//Main Character Tick
@@ -599,6 +610,16 @@ void PlayState::Init(){
 			printf("Could not load %s\n", loadLevel);
 		}
 	}
+	
+	//checking number of initial enemies
+	EnemyCheck = Enemies.size();
+
+	for (int i = 0; i < (int)Enemies.size(); i++){
+		CurrentEffects->Register(Enemies[i]);
+	}
+
+	//Reregister Enemies autoset to false
+	ReregisterEnemies = false;
 }
 
 void PlayState::Pause(){

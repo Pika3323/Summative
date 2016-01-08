@@ -16,6 +16,7 @@ void Dankey::Tick(float delta){
 		if (Vector2D(dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->TinTin->position - position).Magnitude() <= 320 && dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->bPlay) {
 			attack.GetFrameBitmap(this->texture);
 			attack.PushFrame();
+			BarrelDelay++;
 		}
 		else {
 			still.GetFrameBitmap(this->texture);

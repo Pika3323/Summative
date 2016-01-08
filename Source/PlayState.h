@@ -25,6 +25,12 @@ public:
 	//Effects (including gravity) for the current world
 	class Physics* CurrentEffects;	
 
+	//Enemy vector size checker
+	int EnemyCheck;
+
+	//Bool for reregistering Enemies in physics vector
+	bool ReregisterEnemies;
+
 	//block buffer for when not playing
 	Buffer notPlayingBuff; 
 

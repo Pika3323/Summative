@@ -2,6 +2,7 @@
 
 #include "Engine.h"
 #include "Enemy.h"
+#include "PlayState.h"
 
 class Barrel : public Enemy{
 public:
@@ -19,5 +20,4 @@ public:
 
 private:
 	SpriteSheet Roll;
-	Vector2D RollSpeed;
 };
