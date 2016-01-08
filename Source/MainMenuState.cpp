@@ -4,10 +4,11 @@
 MainMenuState::MainMenuState(){
 	AllUIComponents[0] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 150, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 - 90), 0, "PLAY GAME", &MainMenu::PlayGame);
 	AllUIComponents[1] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 - 54), 0, "TEST CURL", &PushLevel);
-	AllUIComponents[2] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 - 18), 0, "OPTIONS", &MainMenu::OpenSettings);
+	AllUIComponents[2] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 - 18), 0, "OPTIONS", &MainMenu::LoadEditor);
 	AllUIComponents[3] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 + 18), 0, "EXIT", &GEngine->Quit);
 	AllUIComponents[4] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 + 54), 0, "TOGGLE FULLSCREEN", &MainMenu::ToggleFullscreen);
 	AllUIComponents[5] = new TextBox(BLUE500, al_map_rgb(33, 33, 33), 500, 72, Vector2D(GEngine->GetDisplayWidth() / 2 - 250, 0), 1, "Test");
+	ActiveScreen = 0;
 }
 
 void MainMenuState::Init(){
@@ -55,12 +56,15 @@ void MainMenuState::Tick(float delta){
 }
 
 void MainMenuState::Draw(){
-	//Draws the buttons to the screen
 	al_clear_to_color(al_map_rgb(250, 250, 250));
-	for (int i = 0; i < 6; i++){
-		AllUIComponents[i]->Draw();
+	if (ActiveScreen == 0){
+		for (int i = 0; i < 6; i++){
+			AllUIComponents[i]->Draw();
+		}
 	}
-	//t->Draw();
+	else if (ActiveScreen = 1){
+
+	}
 }
 
 void MainMenuState::Destroy(){
@@ -85,24 +89,7 @@ void MainMenu::PlayGame(){
 }
 
 void MainMenu::LoadEditor(){
-	CURL *curl;
-	CURLcode res;
-
-	curl_global_init(CURL_GLOBAL_ALL);
-
-	curl = curl_easy_init();
-	if (curl){
-		curl_easy_setopt(curl, CURLOPT_URL, "http://blocks.llamabagel.ca/test.php");
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "testValue=Derek\n");
-
-		res = curl_easy_perform(curl);
-
-		if (res != CURLE_OK){
-			fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
-		}
-		curl_easy_cleanup(curl);
-	}
-	curl_global_cleanup();
+	Online::PostLevel("Seanisdumb");
 }
 
 void MainMenu::OpenSettings(){
@@ -133,51 +120,6 @@ void MainMenu::ToggleFullscreen(){
 }
 
 void PushLevel(){
-	CURL *curl;
-	CURLcode res;
-	struct stat file_info;
-	double speed_upload, total_time;
-	FILE *fd;
-	char level[64];
-
-	printf("Upload level: ");
-	scanf("%s", level);
-	fflush(stdin);
-	strcat(level, ".bvl");
-	fd = fopen(level, "rb");
-	if (!fd){
-		return;
-	}
-
-	if (fstat(_fileno(fd), &file_info) != 0){
-		return;
-	}
-	char url[128] = "http://blocks.llamabagel.ca/Levels/Files/";
-
-	curl_global_init(CURL_GLOBAL_ALL);
-
-	curl = curl_easy_init();
-	if (curl) {
-		curl_easy_setopt(curl, CURLOPT_URL, url);
-		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
-		curl_easy_setopt(curl, CURLOPT_READDATA, fd);
-		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-		curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)file_info.st_size);
-		res = curl_easy_perform(curl);
-		/* Check for errors */
-		if (res != CURLE_OK) {
-			fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
-		}
-		else {
-			/* now extract transfer info */
-			curl_easy_getinfo(curl, CURLINFO_SPEED_UPLOAD, &speed_upload);
-			curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &total_time);
-
-			fprintf(stderr, "Speed: %.3f bytes/sec during %.3f seconds\n", speed_upload, total_time);
-
-		}
-		/* always cleanup */
-		curl_easy_cleanup(curl);
-	}
+	Online::completions = 10;
+	Online::GetLevelData("TestUser");
 }

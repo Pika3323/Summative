@@ -67,6 +67,30 @@ void World::Tick(float delta){
 
 //Loads a level from a path
 bool World::Load(const char LevelName[64]){
+	FILE *levelList = NULL;
+	std::vector<WorldLevelData> Levels;
+
+	levelList = fopen("Levels.bvla", "rb+");
+	if (!levelList) {
+		fprintf(stderr, "Could not open list of levels.");
+		return false;
+	}
+
+	fseek(levelList, 0L, SEEK_END);
+	int sz = ftell(levelList);
+	fseek(levelList, 0L, SEEK_SET);
+
+	for (int i = 0; i < sz / sizeof(WorldLevelData); i++) {
+		WorldLevelData l;
+		fread(&l, sizeof(WorldLevelData), 1, levelList);
+		Levels.push_back(l);
+	}
+
+	for (int i = 0; i < (int)Levels.size(); i++) {
+		printf("%s\n", Levels[i].Name);
+	}
+
+
 	FILE *fptr = NULL;
 	strcpy(name, LevelName);
 
@@ -107,6 +131,46 @@ bool World::Load(const char LevelName[64]){
 
 //Saves a level 
 bool World::Save(const char LevelName[64]){
+	FILE *levelList = NULL;
+	std::vector<WorldLevelData> Levels;
+	bool bLevelExists = false;
+
+	levelList = fopen("Levels.bvla", "rb+");
+	if (!levelList) {
+		levelList = fopen("Levels.bvla", "wb");
+	}
+
+	fseek(levelList, 0L, SEEK_END);
+	int sz = ftell(levelList);
+	fseek(levelList, 0L, SEEK_SET);
+
+	for (int i = 0; i < sz / sizeof(WorldLevelData); i++) {
+		WorldLevelData l;
+		fread(&l, sizeof(WorldLevelData), 1, levelList);
+		Levels.push_back(l);
+	}
+
+	for (int i = 0; i < (int)Levels.size(); i++) {
+		if (!strcmp(Levels[i].Name, LevelName)) {
+			bLevelExists = true;
+		}
+	}
+
+	fclose(levelList);
+	levelList = fopen("Levels.bvla", "ab+");
+	if (!levelList) {
+		fprintf(stderr, "Could not open list of levels.");
+		return false;
+	}
+
+	if (!bLevelExists) {
+		WorldLevelData NewLevel;
+		strcpy(NewLevel.Name, LevelName);
+		NewLevel.VersionMajor = GEngine->VersionMajor;
+		NewLevel.VersionMinor = GEngine->VersionMinor;
+		fwrite(&NewLevel, sizeof(WorldLevelData), 1, levelList);
+	}
+
 	FILE *fptr = NULL;
 
 	char FileName[64];

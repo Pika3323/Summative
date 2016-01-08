@@ -14,8 +14,10 @@
     <ClInclude Include="Block.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="Button.h" />
+    <ClInclude Include="List.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="EditorState.h" />
+    <ClInclude Include="Online.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Engine.h" />
@@ -42,6 +44,7 @@
     <ClCompile Include="EditorState.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="Online.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="IMath.cpp" />
@@ -103,7 +106,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Libraries\Allegro\lib;$(SolutionDir)Libraries\libcurl\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>allegro_monolith.lib;opengl32.lib;glu32.lib;libcurl.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PreBuildEvent>
       <Command>
@@ -130,7 +132,6 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(SolutionDir)Libraries\Allegro\lib;$(SolutionDir)Libraries\libcurl\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>allegro_monolith.lib;opengl32.lib;glu32.lib;libcurl.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PreBuildEvent>
       <Command>
