@@ -314,20 +314,20 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 
 void PlayState::Tick(float delta){
 	//checking if any new enemies have been added (most likely barrels)
-	if (Enemies.size() != EnemyCheck) {
-		ReregisterEnemies = true;
-		EnemyCheck = Enemies.size();
-	}
+	//if (Enemies.size() != EnemyCheck) {
+	//	ReregisterEnemies = true;
+	//	EnemyCheck = Enemies.size();
+	//}
 
-	//Reregistering enemies in physics if they were just placed before playing
-	if (ReregisterEnemies){
-		CurrentEffects->All.clear();
-		CurrentEffects->Register(TinTin);
-		for (int i = 0; i < (int)Enemies.size(); i++) {
-			CurrentEffects->Register(Enemies[i]);
-		}
-		ReregisterEnemies = false;
-	}
+	////Reregistering enemies in physics if they were just placed before playing
+	//if (ReregisterEnemies){
+	//	CurrentEffects->All.clear();
+	//	CurrentEffects->Register(TinTin);
+	//	for (int i = 0; i < (int)Enemies.size(); i++) {
+	//		CurrentEffects->Register(Enemies[i]);
+	//	}
+	//	ReregisterEnemies = false;
+	//}
 	//Move character if bRunning is true
 	if (TinTin->bRunning && TinTin->direction == ECharacterDirection::R_Right){
 		TinTin->Run(Vector2D(1.f, 0.f));

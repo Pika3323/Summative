@@ -12,7 +12,7 @@ void Physics::Register(Character* registrant){
 void Physics::GravTick(){
 	for (int i = 0; i < (int)All.size(); i++) {		//adding gravity to all characters registered
 		if (!All[i]->bOnGround){
-			All[i]->velocity.y = All[i]->velocity.y + Gravforce.y;	//could theoretically implement an x gravity if ever wanted to
+			All[i]->velocity.y += Gravforce.y;	//could theoretically implement an x gravity if ever wanted to
 		}
 		if (All[i]->velocity.y >= 50) {
 			All[i]->velocity.y = 50;
@@ -22,17 +22,18 @@ void Physics::GravTick(){
 
 int Physics::ColTick(World* Curr){
 	for (int j = 0; j < (int)All.size(); j++) {
+
+		if (!Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + 32) / Curr->gridSize)][(int)((All[j]->GetCharacterWorldPosition().y + All[j]->ActualHeight) / Curr->gridSize)].bSpawned && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + 32) / Curr->gridSize)][(int)((All[j]->GetCharacterWorldPosition().y + All[j]->ActualHeight) / Curr->gridSize)].bCollision) {
+			All[j]->bOnGround = false;
+		}
+
 		//Stop character from falling through a block
-		if (!All[j]->bOnGround && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + (All[j]->ActualWidth / 2)) / Curr->gridSize)][(int)(All[j]->GetCharacterWorldPosition().y + All[j]->ActualHeight) / Curr->gridSize].bSpawned && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + (All[j]->ActualWidth / 2)) / Curr->gridSize)][(int)(All[j]->GetCharacterWorldPosition().y + All[j]->ActualHeight) / Curr->gridSize].bCollision) {
+		if (!All[j]->bOnGround && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + (All[j]->ActualWidth / 2)) / Curr->gridSize)][(int)((All[j]->GetCharacterWorldPosition().y + All[j]->ActualHeight) / Curr->gridSize)].bSpawned && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + (All[j]->ActualWidth / 2)) / Curr->gridSize)][(int)((All[j]->GetCharacterWorldPosition().y + All[j]->ActualHeight) / Curr->gridSize)].bCollision) {
 			All[j]->SetCharacterWorldPosition(Vector2D(All[j]->GetCharacterWorldPosition().x, Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x) / Curr->gridSize)][(int)(All[j]->GetCharacterWorldPosition().y) / Curr->gridSize].position.y));
 			All[j]->bOnGround = true;
 			if (All[j]->velocity.y > 0) {
 				All[j]->velocity.y = 0;
 			}
-		}
-		//Making Characters fall through
-		else if (!Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + (All[j]->ActualWidth / 2)) / Curr->gridSize)][(int)(All[j]->GetCharacterWorldPosition().y + All[j]->ActualHeight) / Curr->gridSize].bSpawned && !Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + (All[j]->ActualWidth / 2)) / Curr->gridSize)][(int)(All[j]->GetCharacterWorldPosition().y + All[j]->ActualHeight) / Curr->gridSize].bCollision) {
-			All[j]->bOnGround = false;
 		}
 
 		if (Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x) / 32)][int((All[j]->GetCharacterWorldPosition().y) / 32)].bSpawned && All[j]->velocity.y < 0 && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x) / 32)][int((All[j]->GetCharacterWorldPosition().y) / 32)].bCollision) {
@@ -40,6 +41,7 @@ int Physics::ColTick(World* Curr){
 			All[j]->SetCharacterWorldPosition(Vector2D(All[j]->GetCharacterWorldPosition().x, ColPos[j].y));
 			All[j]->velocity.y = 0;
 		}
+
 		for (int i = 33; i < 98; i += 32) {
 			//This assumes that the first character is the player (can add a condition that casts it to check)
 			if (!static_cast<bool>(All[0]->GetCharacterDirection()) && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x - 10) / 32)][int((All[0]->GetCharacterWorldPosition().y + i) / 32)].bSpawned && Curr->Blocks[(int)((All[0]->GetCharacterWorldPosition().x - 10) / 32)][int((All[0]->GetCharacterWorldPosition().y + i) / 32)].type == EBlockType::B_FinishFlag) {
