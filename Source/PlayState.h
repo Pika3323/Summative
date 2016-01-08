@@ -25,6 +25,12 @@ public:
 	//Effects (including gravity) for the current world
 	class Physics* CurrentEffects;	
 
+	//Enemy vector size checker
+	int EnemyCheck;
+
+	//Bool for reregistering Enemies in physics vector
+	bool ReregisterEnemies;
+
 	//block buffer for when not playing
 	Buffer notPlayingBuff; 
 
@@ -49,6 +55,13 @@ public:
 	//the block type the user selects
 	EBlockType SelectedBlock = EBlockType::B_Brick;	
 
+	//Character start position
+	Vector2D CharacterStart;
+
+	//bool for if user is changing start postion
+	bool ChangingStart;
+
+	//Enemies in the world
 	std::vector<Enemy*> Enemies;
 
 	//make a vector for each enemy type as they are made

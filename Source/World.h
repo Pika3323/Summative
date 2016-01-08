@@ -26,8 +26,17 @@ public:
 	Buffer Background;
 	Block Blocks[128][64];
 	BlockType Type[15];
+	class Dankey* dCheck;		//dankey pointer checker 
+	Vector2D dTemp;		//temp for pushing back loading vector
+	//Cinas *cCheck;		//Cinas pointer checker			for saving files
+	//Cinas cTemp;
+	//Yash *yCheck;		//Yash pointer checker
+	//Yash yTemp;
 	bool bPlay;
 	bool EnemySelect;
+	int DankeyCounter;
+	int CinasCounter;
+	int YashCounter;
 
 	World(){ bPlay = false; }
 	World(Vector2D s, int gs);
@@ -42,8 +51,8 @@ public:
 
 	void Tick(float delta);
 
-	bool Load(const char LevelName[64]);
-	bool Save(const char LevelName[64]);
+	bool Load(const char LevelName[64], std::vector<Enemy*> *enemies);
+	bool Save(const char LevelName[64], std::vector<Enemy*> enemies);
 
 	void moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, Buffer &block, Buffer &notplay);
 	void SetCameraLocation(Vector2D location, Buffer &grid, Buffer &bg, Buffer &block, Buffer &notplay);

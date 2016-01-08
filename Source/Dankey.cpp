@@ -2,6 +2,7 @@
 
 Dankey::Dankey(Vector2D pos){
 	position = pos;
+	BarrelDelay = 0;
 	ActualHeight = 64;
 	ActualWidth = 64;
 	velocity = Vector2D(0.f, 0.f);
@@ -15,6 +16,7 @@ void Dankey::Tick(float delta){
 		if (Vector2D(dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->TinTin->position - position).Magnitude() <= 320 && dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->bPlay) {
 			attack.GetFrameBitmap(this->texture);
 			attack.PushFrame();
+			BarrelDelay++;
 		}
 		else {
 			still.GetFrameBitmap(this->texture);

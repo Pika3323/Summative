@@ -66,7 +66,7 @@ void World::Tick(float delta){
 }
 
 //Loads a level from a path
-bool World::Load(const char LevelName[64]){
+bool World::Load(const char LevelName[64], std::vector<Enemy*> *enemies){
 	FILE *levelList = NULL;
 	std::vector<WorldLevelData> Levels;
 
@@ -90,9 +90,13 @@ bool World::Load(const char LevelName[64]){
 		printf("%s\n", Levels[i].Name);
 	}
 
-
 	FILE *fptr = NULL;
 	strcpy(name, LevelName);
+
+	DankeyCounter = 0;
+	CinasCounter = 0;
+	YashCounter = 0;
+	dCheck = NULL;
 
 	char FileName[64];
 	strcpy(FileName, LevelName);
@@ -121,6 +125,13 @@ bool World::Load(const char LevelName[64]){
 			}
 		}
 
+		fread(&DankeyCounter, sizeof(int), 1, fptr);
+
+		for (int i = 0; i < DankeyCounter; i++) {
+			fread(&dTemp, sizeof(Vector2D), 1, fptr);
+			enemies->push_back(new Dankey(dTemp));
+		}
+
 		fclose(fptr);
 		return true && bValidLevel;
 	}
@@ -130,7 +141,7 @@ bool World::Load(const char LevelName[64]){
 }
 
 //Saves a level 
-bool World::Save(const char LevelName[64]){
+bool World::Save(const char LevelName[64], std::vector<Enemy*> enemies) {
 	FILE *levelList = NULL;
 	std::vector<WorldLevelData> Levels;
 	bool bLevelExists = false;
@@ -172,6 +183,9 @@ bool World::Save(const char LevelName[64]){
 	}
 
 	FILE *fptr = NULL;
+	DankeyCounter = 0;
+	CinasCounter = 0;
+	YashCounter = 0;
 
 	char FileName[64];
 	strcpy(FileName, LevelName);
@@ -190,6 +204,28 @@ bool World::Save(const char LevelName[64]){
 				fwrite(&Blocks[i][j], sizeof(Block), 1, fptr);
 			}
 		}
+		//count amount of each type of enemy in enemy vector
+		for (int i = 0; i < (int)enemies.size(); i++) {
+			dCheck = dynamic_cast<Dankey*>(enemies[i]);
+			if (!dCheck) {
+			}
+			else {
+				DankeyCounter += 1;
+			}
+			//add more as new enemies are made
+		}
+		fwrite(&DankeyCounter, sizeof(int), 1, fptr);
+		dCheck = NULL;
+		for (int i = 0; i < (int)enemies.size(); i++) {
+			dCheck = dynamic_cast<Dankey*>(enemies[i]);
+			if (!dCheck) {
+			}
+			else {
+				fwrite(&enemies[i]->position, sizeof(Vector2D), 1, fptr);
+			}
+			//add more as new enemies are made
+		}
+
 		fclose(fptr);
 
 		return true;
@@ -239,5 +275,5 @@ void World::moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, Buffer &block, B
 		block.offset.y = dimensions.y * -1 + ScreenHeight;
 		offset.y = dimensions.y * -1 + ScreenHeight;
 	}
-	
+
 }

@@ -14,17 +14,13 @@ Player::Player(int Height, int Width){
 void Player::Run(Vector2D vel){
 	velocity.x += vel.x;
 
-	if (velocity.x > 20){
-		velocity.x = 10;
+	if (velocity.x > 7.f){
+		velocity.x = 7.f;
 	}
 
-	else if (velocity.x < -20){
-		velocity.x = -10;
+	else if (velocity.x < -7.f){
+		velocity.x = -7.f;
 	}
-
-	bRunning = true;
-
-	//this->SetCharacterDirection(static_cast<ECharacterDirection>(velocity.x > 0.f));
 }
 
 //Called when the player jumps
@@ -38,7 +34,6 @@ void Player::Jump(){
 
 //Called when the player dies
 void Player::Die(){
-	this->SetCharacterWorldPosition(Vector2D(0, 0));
 	printf("You died!\n");
 }
 
@@ -60,4 +55,10 @@ void Player::Tick(float delta){
 		fall.PushFrame();
 		position += velocity;
 	}
+}
+
+void Player::Win(Vector2D Start){
+	this->SetCharacterWorldPosition(Start);
+	printf("You Won!\n");
+	//add stuff here later
 }

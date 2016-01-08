@@ -2,10 +2,11 @@
 
 #include "Enemy.h"
 #include "PlayState.h"
+#include "Barrel.h"
 
 class Dankey : public Enemy{
 public:
-	bool Active;
+	int BarrelDelay;
 
 	bool PlayerinSight;
 

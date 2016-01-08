@@ -43,7 +43,7 @@ public:
 	const int FPS = 60;
 
 	int VersionMajor = 1;
-	int VersionMinor = 1;
+	int VersionMinor = 2;
 
 	//Get a reference to the current display
 	ALLEGRO_DISPLAY* GetDisplay();

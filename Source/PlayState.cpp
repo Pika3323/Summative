@@ -42,7 +42,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 			case ALLEGRO_KEY_RIGHT:
 				if (CurrentWorld->bPlay) {
 					TinTin->SetCharacterDirection(ECharacterDirection::R_Right);
-					TinTin->Run(Vector2D(5.f, 0.f));
+					TinTin->bRunning = true;
 				}
 				else{
 					WorldMoveDelta.x = -5.f;
@@ -52,7 +52,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 			case ALLEGRO_KEY_LEFT:
 				if (CurrentWorld->bPlay) {
 					TinTin->SetCharacterDirection(ECharacterDirection::R_Left);
-					TinTin->Run(Vector2D(-5.f, 0.f));
+					TinTin->bRunning = true;
 				}
 				else{
 					WorldMoveDelta.x = 5.f;
@@ -123,16 +123,17 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				GEngine->PrintDebugText(BLUE500, 5.f, "Pressed Space");
 				if (!CurrentWorld->bPlay){
 					CurrentWorld->bPlay = true;
+					TinTin->SetCharacterWorldPosition(CharacterStart);
 				}
 				else {
 					CurrentWorld->bPlay = false;
-					TinTin->SetCharacterWorldPosition(Vector2D(0.f, 0.f));
 				}
-				CurrentEffects->GonOff[TinTin->gravSlot] = true;
+				TinTin->bOnGround = false;
 				TinTin->velocity = Vector2D(0.f, 0.f);
 				for (int i = 0; i < (int) Enemies.size(); i++) {
 					Enemies[i]->Active = true;
 				}
+
 				break;
 			case ALLEGRO_KEY_ESCAPE:
 				GEngine->Quit();
@@ -142,6 +143,10 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 					CurrentWorld->EnemySelect = true;
 				else if (CurrentWorld->EnemySelect)
 					CurrentWorld->EnemySelect = false;
+				break;
+			case ALLEGRO_KEY_H:
+				if (!CurrentWorld->bPlay)
+					ChangingStart = true;
 				break;
 			default:
 				break;
@@ -167,6 +172,9 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 			case ALLEGRO_KEY_M:
 				GEngine->ChangeGameState<MainMenuState>();
 				break;
+			case ALLEGRO_KEY_H:
+				ChangingStart = false;
+				break;
 			default:
 				break;
 			}
@@ -178,8 +186,14 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 			case MOUSE_LB:
 				if (!CurrentWorld->bPlay) {
 					bClicked = true;
+
+					//check if user is changing start position
+					if (ChangingStart) {
+						ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
+						CharacterStart = ClickLocation;
+					}
 					//check if enemy select is true
-					if (CurrentWorld->EnemySelect) {
+					else if (CurrentWorld->EnemySelect) {
 							//get the mouse location
 							ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 
@@ -299,7 +313,44 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 }
 
 void PlayState::Tick(float delta){
+	//checking if any new enemies have been added (most likely barrels)
+	if (Enemies.size() != EnemyCheck) {
+		ReregisterEnemies = true;
+		EnemyCheck = Enemies.size();
+	}
+
+	//Reregistering enemies in physics if they were just placed before playing
+	if (ReregisterEnemies){
+		CurrentEffects->All.clear();
+		CurrentEffects->Register(TinTin);
+		for (int i = 0; i < (int)Enemies.size(); i++) {
+			CurrentEffects->Register(Enemies[i]);
+		}
+		ReregisterEnemies = false;
+	}
+	//Move character if bRunning is true
+	if (TinTin->bRunning && TinTin->direction == ECharacterDirection::R_Right){
+		TinTin->Run(Vector2D(1.f, 0.f));
+	}
+	else if (TinTin->bRunning && TinTin->direction == ECharacterDirection::R_Left){
+		TinTin->Run(Vector2D(-1.f, 0.f));
+	}
 	//Enemy ticks
+	for (int i = 0; i < (int)Enemies.size(); i++) {
+		CurrentWorld->dCheck = dynamic_cast<Dankey*>(Enemies[i]);
+		if (CurrentWorld->dCheck) {
+			if (CurrentWorld->dCheck->BarrelDelay == 40) {
+				if (CurrentWorld->dCheck->direction == ECharacterDirection::R_Left){
+					Enemies.push_back(new Barrel(CurrentWorld->dCheck->direction, Vector2D(CurrentWorld->dCheck->position.x, CurrentWorld->dCheck->position.y + 48)));
+					CurrentWorld->dCheck->BarrelDelay = 0;
+				}
+				else {
+					Enemies.push_back(new Barrel(CurrentWorld->dCheck->direction, Vector2D(CurrentWorld->dCheck->position.x + 64, CurrentWorld->dCheck->position.y + 48)));
+					CurrentWorld->dCheck->BarrelDelay = 0;
+				}
+			}
+		}
+	}
 	for (int i = 0; i < (int) Enemies.size(); i++) {
 		Enemies[i]->Tick(delta);
 	}
@@ -312,47 +363,66 @@ void PlayState::Tick(float delta){
 	if (!Paused) {
 		if (CurrentWorld->bPlay) {
 
-			//Run Gravity and Collision checking code
+			//Run Gravity, Collision checking code, and Friction
 			CurrentEffects->GravTick();
-			CurrentEffects->ColTick(CurrentWorld, TinTin);
+			if (CurrentEffects->ColTick(CurrentWorld)) {
+				TinTin->Win(CharacterStart);
+				CurrentWorld->bPlay = false;
+			}
+			CurrentEffects->FricTick();
 
 			//Kill the Character if he falls out of the world
 			if (TinTin->GetCharacterWorldPosition().y > CurrentWorld->dimensions.x) {
 				TinTin->Die();
-			}
-
-			//Stop character from falling through a block
-			if (!TinTin->bOnGround && CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bSpawned && CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bCollision) {
-				TinTin->SetCharacterWorldPosition(Vector2D(TinTin->GetCharacterWorldPosition().x, CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y) / CurrentWorld->gridSize].position.y));
-				TinTin->bOnGround = true;
-				if (TinTin->velocity.y > 0) {
-					TinTin->velocity.y = 0;
-				}
-				CurrentEffects->GonOff[TinTin->gravSlot] = false;
-			}
-			else if (!CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bSpawned || !CurrentWorld->Blocks[(int)((TinTin->GetCharacterWorldPosition().x + 32) / CurrentWorld->gridSize)][(int)(TinTin->GetCharacterWorldPosition().y + TinTin->ActualHeight) / CurrentWorld->gridSize].bCollision) {
-				TinTin->bOnGround = false;
-				CurrentEffects->GonOff[TinTin->gravSlot] = true;
+				TinTin->SetCharacterWorldPosition(CharacterStart);
+				CurrentWorld->bPlay = false;
 			}
 
 			//Main Character Tick
 			TinTin->Tick(delta);
 
-			Debug = PlayerOldPosition - TinTin->position;
-			Vector2D PlayerScreenPosition = CurrentWorld->offset + TinTin->position;
+			/*if (CurrentWorld->offset.x == 0 || CurrentWorld->offset.y == 0){}
+			else {
+				Debug = PlayerOldPosition - TinTin->position;
+				Vector2D PlayerScreenPosition = CurrentWorld->offset + TinTin->position;
 
-			if (PlayerScreenPosition.x > GEngine->GetDisplayWidth() / 2 || PlayerScreenPosition.y > GEngine->GetDisplayHeight() / 2 && CurrentWorld->offset.x != 0 && CurrentWorld->offset.x != CurrentWorld->dimensions.x * -1 + GEngine->GetDisplayWidth() && CurrentWorld->offset.y != 0 && CurrentWorld->offset.y != CurrentWorld->dimensions.y * -1 + GEngine->GetDisplayHeight()){
-				if (TinTin->velocity != Vector2D(0.f, 0.f)) {
-					WorldMoveDelta = TinTin->velocity * -1;
+				if (PlayerScreenPosition.x > GEngine->GetDisplayWidth() / 2 && (CurrentWorld->offset.x <= 0 && CurrentWorld->offset.x != CurrentWorld->dimensions.x * -1 + GEngine->GetDisplayWidth())){
+					if (TinTin->velocity.x != 0) {
+						WorldMoveDelta.x = TinTin->velocity.x * -1;
+					}
+					else if (CurrentWorld->bPlay) {
+						WorldMoveDelta = Vector2D(0.f, 0.f);
+					}
 				}
-				else if (CurrentWorld->bPlay) {
-					WorldMoveDelta = Vector2D(0.f, 0.f);
+				if (PlayerScreenPosition.x < GEngine->GetDisplayWidth() / 2 && (CurrentWorld->offset.x <= 0 && CurrentWorld->offset.x != CurrentWorld->dimensions.x * -1 + GEngine->GetDisplayWidth())){
+					if (TinTin->velocity.x != 0) {
+						WorldMoveDelta.x = TinTin->velocity.x * -1;
+					}
+					else if (CurrentWorld->bPlay) {
+						WorldMoveDelta = Vector2D(0.f, 0.f);
+					}
 				}
-			}
-			
+				if (PlayerScreenPosition.y > GEngine->GetDisplayHeight() / 2 && (CurrentWorld->offset.y <= 0 && CurrentWorld->offset.y != CurrentWorld->dimensions.y * -1 + GEngine->GetDisplayHeight())){
+					if (TinTin->velocity.y != 0) {
+						WorldMoveDelta.y = TinTin->velocity.y * -1;
+					}
+					else if (CurrentWorld->bPlay) {
+						WorldMoveDelta = Vector2D(0.f, 0.f);
+					}
+				}
+				if (PlayerScreenPosition.y < GEngine->GetDisplayHeight() / 2 && (CurrentWorld->offset.y <= 0 && CurrentWorld->offset.y != CurrentWorld->dimensions.y * -1 + GEngine->GetDisplayHeight())){
+					if (TinTin->velocity.y != 0) {
+						WorldMoveDelta.y = TinTin->velocity.y * -1;
+					}
+					else if (CurrentWorld->bPlay) {
+						WorldMoveDelta = Vector2D(0.f, 0.f);
+					}
+				}
+			}*/
 		}
 		
 		CurrentWorld->moveWorld(WorldMoveDelta, GridBuffer, Background, BlockBuffer, notPlayingBuff);
+		WorldMoveDelta = Vector2D(0.f, 0.f);
 		
 		//Run world tick
 		CurrentWorld->Tick(delta);
@@ -371,12 +441,14 @@ void PlayState::Tick(float delta){
 		//Mouse states
 		switch (GEngine->GetMouseState().buttons){
 		case MOUSE_LB:
-			if (!bBoxSelect && !CurrentWorld->EnemySelect){
-				ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
-				//Get the tile that was clicked
-				clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
-				if (clickedTile) {
-					CurrentWorld->PlaceBlock(clickedTile, SelectedBlock);
+			if (!ChangingStart){
+				if (!bBoxSelect && !CurrentWorld->EnemySelect){
+					ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
+					//Get the tile that was clicked
+					clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
+					if (clickedTile) {
+						CurrentWorld->PlaceBlock(clickedTile, SelectedBlock);
+					}
 				}
 			}
 			break;
@@ -486,8 +558,10 @@ void PlayState::Init(){
 	Background.image = al_create_bitmap(4096, 2048);
 	BlockBuffer.image = al_create_bitmap(4096, 2048);
 
-	TinTin->gravSlot = CurrentEffects->Register(TinTin, TinTinGrav);	//registering main character in gravity queue (is affected at beginning)
+	CurrentEffects->Register(TinTin);	//registering main character in gravity queue (is affected at beginning)
 	TinTin->velocity = Vector2D(0.f, 0.f);		//velocity starts at zero
+	CharacterStart = Vector2D(0.f, 0.f);		//original character start postion is zero
+	ChangingStart = false;				//at beginning, start position is not being changed 
 
 	//Setting Multiple Images to Background Buffer
 	al_set_target_bitmap(Background.image);
@@ -529,13 +603,23 @@ void PlayState::Init(){
 		printf("Enter level name: ");
 		scanf("%s", loadLevel);
 		fflush(stdin);
-		if (CurrentWorld->Load(loadLevel)){
+		if (CurrentWorld->Load(loadLevel, &Enemies)){
 			printf("Loaded %s\n", loadLevel);
 		}
 		else{
 			printf("Could not load %s\n", loadLevel);
 		}
 	}
+	
+	//checking number of initial enemies
+	EnemyCheck = Enemies.size();
+
+	for (int i = 0; i < (int)Enemies.size(); i++){
+		CurrentEffects->Register(Enemies[i]);
+	}
+
+	//Reregister Enemies autoset to false
+	ReregisterEnemies = false;
 }
 
 void PlayState::Pause(){
@@ -557,7 +641,7 @@ void PlayState::Destroy(){
 		char levelName[64];
 		printf("Enter a file name: ");
 		scanf("%s", levelName);
-		if (CurrentWorld->Save(levelName)){
+		if (CurrentWorld->Save(levelName, Enemies)){
 			printf("Saved level as %s\n", levelName);
 		}
 		else{

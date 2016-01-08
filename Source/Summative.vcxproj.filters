@@ -64,6 +64,9 @@
     <ClCompile Include="Online.cpp">
       <Filter>Engine\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Barrel.cpp">
+      <Filter>Game\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Block.h">
@@ -137,6 +140,9 @@
     </ClInclude>
     <ClInclude Include="Online.h">
       <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Barrel.h">
+      <Filter>Game\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
