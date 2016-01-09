@@ -37,27 +37,6 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 	if (!Paused) {
 		if (ev->type == ALLEGRO_EVENT_KEY_DOWN) {
 			switch (ev->keyboard.keycode) {
-				//Close window if escape key is pressed
-			case ALLEGRO_KEY_D:
-			case ALLEGRO_KEY_RIGHT:
-				if (CurrentWorld->bPlay) {
-					TinTin->SetCharacterDirection(ECharacterDirection::R_Right);
-					TinTin->bRunning = true;
-				}
-				else{
-					WorldMoveDelta.x = -5.f;
-				}
-				break;
-			case ALLEGRO_KEY_A:
-			case ALLEGRO_KEY_LEFT:
-				if (CurrentWorld->bPlay) {
-					TinTin->SetCharacterDirection(ECharacterDirection::R_Left);
-					TinTin->bRunning = true;
-				}
-				else{
-					WorldMoveDelta.x = 5.f;
-				}
-				break;
 			case ALLEGRO_KEY_S:
 			case ALLEGRO_KEY_DOWN:
 				if (!CurrentWorld->bPlay){
@@ -151,14 +130,6 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 		//On KeyUp
 		else if (ev->type == ALLEGRO_EVENT_KEY_UP) {
 			switch (ev->keyboard.keycode) {
-			case ALLEGRO_KEY_D:
-			case ALLEGRO_KEY_RIGHT:
-			case ALLEGRO_KEY_A:
-			case ALLEGRO_KEY_LEFT:
-				WorldMoveDelta.x = 0.f;
-				TinTin->bRunning = false;
-				TinTin->velocity.x = 0;
-				break;
 			case ALLEGRO_KEY_S:
 			case ALLEGRO_KEY_DOWN:
 			case ALLEGRO_KEY_W:
@@ -309,6 +280,46 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 }
 
 void PlayState::Tick(float delta){
+	//If both are false, stop moving
+	if ((!(al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_A) || al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_LEFT)) && !(al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_D) || al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_RIGHT))) && CurrentWorld->bPlay){
+		WorldMoveDelta.x = 0.f;
+		TinTin->bRunning = false;
+		TinTin->velocity.x = 0;
+	}
+
+	//Evaluate character directions
+	if ((al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_D) || al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_RIGHT) && CurrentWorld->bPlay)){
+		if (!TinTin->bRunning) {
+			Priority = ECharacterDirection::R_Left;
+			TinTin->SetCharacterDirection(ECharacterDirection::R_Right);
+			TinTin->bRunning = true;
+		}
+	}
+	else if ((al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_D) || al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_RIGHT) && !CurrentWorld->bPlay)){
+		WorldMoveDelta.x = -5.f;
+	}
+	if ((al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_A) || al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_LEFT) && CurrentWorld->bPlay)){
+		if (!TinTin->bRunning) {
+			Priority = ECharacterDirection::R_Right;
+			TinTin->SetCharacterDirection(ECharacterDirection::R_Left);
+			TinTin->bRunning = true;
+		}
+	}
+	else if ((al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_A) || al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_LEFT) && !CurrentWorld->bPlay)){
+		WorldMoveDelta.x = 5.f;
+	}
+
+	if (Priority == ECharacterDirection::R_Right){
+		if ((al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_D) || al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_RIGHT) && CurrentWorld->bPlay)){
+			TinTin->SetCharacterDirection(ECharacterDirection::R_Right);
+		}
+	}
+	if (Priority == ECharacterDirection::R_Left){
+		if ((al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_A) || al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_LEFT) && CurrentWorld->bPlay)){
+			TinTin->SetCharacterDirection(ECharacterDirection::R_Left);
+		}
+	}
+
 	//Move character if bRunning is true
 	if (TinTin->bRunning && TinTin->direction == ECharacterDirection::R_Right){
 		TinTin->Run(Vector2D(1.f, 0.f));
@@ -521,7 +532,7 @@ void PlayState::Init(){
 	CurrCharacters.push_back(TinTin);	//registering main character in Character vector
 	TinTin->velocity = Vector2D(0.f, 0.f);		//velocity starts at zero
 	CharacterStart = Vector2D(0.f, 0.f);		//original character start postion is zero
-	ChangingStart = false;				//at beginning, start position is not being changed 
+	ChangingStart = false;				//at beginning, start position is not being changed
 
 	//Setting Multiple Images to Background Buffer
 	al_set_target_bitmap(Background.image);

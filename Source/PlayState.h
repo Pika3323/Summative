@@ -55,6 +55,9 @@ public:
 	//bool for if user is changing start postion
 	bool ChangingStart;
 
+	//for fixing character movement
+	ECharacterDirection Priority;
+
 	//Characters in the world
 	std::vector<Character*> CurrCharacters;
 
