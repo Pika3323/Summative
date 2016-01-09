@@ -289,7 +289,7 @@ void PlayState::Tick(float delta){
 
 	//Evaluate character directions
 	if ((al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_D) || al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_RIGHT) && CurrentWorld->bPlay)){
-		if (!TinTin->bRunning) {
+		if (!TinTin->bRunning || Priority == ECharacterDirection::R_Left) {
 			Priority = ECharacterDirection::R_Left;
 			TinTin->SetCharacterDirection(ECharacterDirection::R_Right);
 			TinTin->bRunning = true;
@@ -299,7 +299,7 @@ void PlayState::Tick(float delta){
 		WorldMoveDelta.x = -5.f;
 	}
 	if ((al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_A) || al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_LEFT) && CurrentWorld->bPlay)){
-		if (!TinTin->bRunning) {
+		if (!TinTin->bRunning || Priority == ECharacterDirection::R_Right) {
 			Priority = ECharacterDirection::R_Right;
 			TinTin->SetCharacterDirection(ECharacterDirection::R_Left);
 			TinTin->bRunning = true;
@@ -331,6 +331,7 @@ void PlayState::Tick(float delta){
 	for (int i = 0; i < (int) CurrCharacters.size(); i++) {
 		CurrCharacters[i]->Tick(delta, &CurrCharacters);
 	}
+
 	if (InRange(GEngine->GetMouseState().x, PauseButton->position.x, PauseButton->position.x + PauseButton->width) && InRange(GEngine->GetMouseState().y, PauseButton->position.y, PauseButton->position.y + PauseButton->height)){
 		PauseButton->onHoverIn();
 	}
