@@ -344,7 +344,7 @@ WorldLevelData* Online::GetLevelData(const char* username){
 		FILE *tmp = NULL;
 
 		tmp = fopen("temp.temp", "w");
-
+		fflush(stdin);
 		fputs(chunk.memory, tmp);
 
 		//always cleanup
