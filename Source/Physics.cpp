@@ -15,7 +15,7 @@ void Physics::GravTick(std::vector<Character*> All){
 	}
 }
 
-int Physics::ColTick(World* Curr, std::vector<Character*> All){
+int Physics::ColTick(World* Curr, std::vector<Character*> *All){
 	for (int j = 0; j < (int)All.size(); j++) {
 
 		//Stop character from falling through a block
