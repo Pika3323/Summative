@@ -62,9 +62,14 @@ private:
 //Structure containing data about a level
 struct WorldLevelData{
 	int VersionMajor, VersionMinor;
+	int id;
 	char Name[64];
+	char Creator[64];
 	char Date[64];
 	int LevelAttempts;
 	int LevelCompletions;
-	char Creator[64];
+	int upvotes;
+	int downvotes;
+	WorldLevelData(){}
+
 };

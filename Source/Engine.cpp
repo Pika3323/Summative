@@ -171,6 +171,9 @@ void Engine::Cleanup(){
 	al_destroy_event_queue(event_queue);
 	al_shutdown_primitives_addon();
 
+	//remove the temporary info file
+	//remove("temp.temp");
+
 	//Finally, delete the GEngine instance of Engine
 	delete this;
 }
