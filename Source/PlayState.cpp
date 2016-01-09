@@ -130,10 +130,6 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				}
 				TinTin->bOnGround = false;
 				TinTin->velocity = Vector2D(0.f, 0.f);
-				for (int i = 0; i < (int) Enemies.size(); i++) {
-					Enemies[i]->Active = true;
-				}
-
 				break;
 			case ALLEGRO_KEY_ESCAPE:
 				GEngine->Quit();
@@ -201,7 +197,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 							clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
 
 							if (!clickedTile->occupied) {
-								CurrentWorld->PlaceEnemy(clickedTile, SelectedEnemy, &Enemies);
+								CurrentWorld->PlaceEnemy(clickedTile, SelectedEnemy, &CurrCharacters);
 							}
 					}
 					//Check if the box placement mode isn't enabled
@@ -313,21 +309,6 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 }
 
 void PlayState::Tick(float delta){
-	//checking if any new enemies have been added (most likely barrels)
-	//if (Enemies.size() != EnemyCheck) {
-	//	ReregisterEnemies = true;
-	//	EnemyCheck = Enemies.size();
-	//}
-
-	////Reregistering enemies in physics if they were just placed before playing
-	//if (ReregisterEnemies){
-	//	CurrentEffects->All.clear();
-	//	CurrentEffects->Register(TinTin);
-	//	for (int i = 0; i < (int)Enemies.size(); i++) {
-	//		CurrentEffects->Register(Enemies[i]);
-	//	}
-	//	ReregisterEnemies = false;
-	//}
 	//Move character if bRunning is true
 	if (TinTin->bRunning && TinTin->direction == ECharacterDirection::R_Right){
 		TinTin->Run(Vector2D(1.f, 0.f));
@@ -335,24 +316,9 @@ void PlayState::Tick(float delta){
 	else if (TinTin->bRunning && TinTin->direction == ECharacterDirection::R_Left){
 		TinTin->Run(Vector2D(-1.f, 0.f));
 	}
-	//Enemy ticks
-	for (int i = 0; i < (int)Enemies.size(); i++) {
-		CurrentWorld->dCheck = dynamic_cast<Dankey*>(Enemies[i]);
-		if (CurrentWorld->dCheck) {
-			if (CurrentWorld->dCheck->BarrelDelay == 40) {
-				if (CurrentWorld->dCheck->direction == ECharacterDirection::R_Left){
-					Enemies.push_back(new Barrel(CurrentWorld->dCheck->direction, Vector2D(CurrentWorld->dCheck->position.x, CurrentWorld->dCheck->position.y + 48)));
-					CurrentWorld->dCheck->BarrelDelay = 0;
-				}
-				else {
-					Enemies.push_back(new Barrel(CurrentWorld->dCheck->direction, Vector2D(CurrentWorld->dCheck->position.x + 64, CurrentWorld->dCheck->position.y + 48)));
-					CurrentWorld->dCheck->BarrelDelay = 0;
-				}
-			}
-		}
-	}
-	for (int i = 0; i < (int) Enemies.size(); i++) {
-		Enemies[i]->Tick(delta);
+	//Character ticks
+	for (int i = 0; i < (int) CurrCharacters.size(); i++) {
+		CurrCharacters[i]->Tick(delta, &CurrCharacters);
 	}
 	if (InRange(GEngine->GetMouseState().x, PauseButton->position.x, PauseButton->position.x + PauseButton->width) && InRange(GEngine->GetMouseState().y, PauseButton->position.y, PauseButton->position.y + PauseButton->height)){
 		PauseButton->onHoverIn();
@@ -364,12 +330,12 @@ void PlayState::Tick(float delta){
 		if (CurrentWorld->bPlay) {
 
 			//Run Gravity, Collision checking code, and Friction
-			CurrentEffects->GravTick();
-			if (CurrentEffects->ColTick(CurrentWorld)) {
+			CurrentEffects->GravTick(CurrCharacters);
+			if (CurrentEffects->ColTick(CurrentWorld, CurrCharacters)) {
 				TinTin->Win(CharacterStart);
 				CurrentWorld->bPlay = false;
 			}
-			CurrentEffects->FricTick();
+			CurrentEffects->FricTick(CurrCharacters);
 
 			//Kill the Character if he falls out of the world
 			if (TinTin->GetCharacterWorldPosition().y > CurrentWorld->dimensions.x) {
@@ -377,9 +343,6 @@ void PlayState::Tick(float delta){
 				TinTin->SetCharacterWorldPosition(CharacterStart);
 				CurrentWorld->bPlay = false;
 			}
-
-			//Main Character Tick
-			TinTin->Tick(delta);
 
 			/*if (CurrentWorld->offset.x == 0 || CurrentWorld->offset.y == 0){}
 			else {
@@ -478,12 +441,9 @@ void PlayState::Draw(){
 		//If the play mode has been selected, then draw the character
 		al_set_target_bitmap(BlockBuffer.image);
 		al_clear_to_color(al_map_rgba(0, 0, 0, 0));
-		for (int i = 0; i < (int)Enemies.size(); i++) {
-			if (Enemies[i]){
-				Enemies[i]->Draw();
-			}
+		for (int i = 0; i < (int)CurrCharacters.size(); i++) {
+				CurrCharacters[i]->Draw();
 		}
-		TinTin->Draw();
 	}
 	//For-each loop that goes through every block in the array
 	for (auto& sub : CurrentWorld->Blocks){
@@ -558,7 +518,7 @@ void PlayState::Init(){
 	Background.image = al_create_bitmap(4096, 2048);
 	BlockBuffer.image = al_create_bitmap(4096, 2048);
 
-	CurrentEffects->Register(TinTin);	//registering main character in gravity queue (is affected at beginning)
+	CurrCharacters.push_back(TinTin);	//registering main character in Character vector
 	TinTin->velocity = Vector2D(0.f, 0.f);		//velocity starts at zero
 	CharacterStart = Vector2D(0.f, 0.f);		//original character start postion is zero
 	ChangingStart = false;				//at beginning, start position is not being changed 
@@ -603,23 +563,13 @@ void PlayState::Init(){
 		printf("Enter level name: ");
 		scanf("%s", loadLevel);
 		fflush(stdin);
-		if (CurrentWorld->Load(loadLevel, &Enemies)){
+		if (CurrentWorld->Load(loadLevel, &CurrCharacters)){
 			printf("Loaded %s\n", loadLevel);
 		}
 		else{
 			printf("Could not load %s\n", loadLevel);
 		}
 	}
-	
-	//checking number of initial enemies
-	EnemyCheck = Enemies.size();
-
-	for (int i = 0; i < (int)Enemies.size(); i++){
-		CurrentEffects->Register(Enemies[i]);
-	}
-
-	//Reregister Enemies autoset to false
-	ReregisterEnemies = false;
 }
 
 void PlayState::Pause(){
@@ -641,7 +591,7 @@ void PlayState::Destroy(){
 		char levelName[64];
 		printf("Enter a file name: ");
 		scanf("%s", levelName);
-		if (CurrentWorld->Save(levelName, Enemies)){
+		if (CurrentWorld->Save(levelName, CurrCharacters)){
 			printf("Saved level as %s\n", levelName);
 		}
 		else{
@@ -660,11 +610,11 @@ PlayState::~PlayState(){
 	delete CurrentWorld;
 	delete PauseButton;
 
-	//Delete all enemies from memory and clear the vector
-	for (int i = 0; i < (int)Enemies.size(); i++){
-		delete Enemies[i];
+	//Delete all CurrCharacters from memory and clear the vector
+	for (int i = 0; i < (int)CurrCharacters.size(); i++){
+		delete CurrCharacters[i];
 	}
-	Enemies.clear();
+	CurrCharacters.clear();
 }
 
 void PauseButtonDown(){

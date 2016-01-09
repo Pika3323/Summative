@@ -18,6 +18,6 @@ public:
 	
 	void Die();
 
-	void Tick(float delta);
+	void Tick(float delta, std::vector<Character*> *Curr);
 protected:
 };

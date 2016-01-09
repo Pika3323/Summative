@@ -38,7 +38,7 @@ void Player::Die(){
 }
 
 //Called every frame
-void Player::Tick(float delta){
+void Player::Tick(float delta, std::vector<Character*> *Curr){
 	//All of the animation code
 	if (bRunning && bOnGround){
 		run.GetFrameBitmap(this->texture);

@@ -11,9 +11,9 @@ Dankey::Dankey(Vector2D pos){
 	texture = al_create_bitmap(ActualWidth, ActualHeight);
 }
 
-void Dankey::Tick(float delta){
+void Dankey::Tick(float delta, std::vector<Character*> *Curr){
 	if (dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->bPlay) {
-		if (Vector2D(dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->TinTin->position - position).Magnitude() <= 320 && dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->bPlay) {
+		if (Vector2D(dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->TinTin->position - position).Magnitude() <= 500 && dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->bPlay) {
 			attack.GetFrameBitmap(this->texture);
 			attack.PushFrame();
 			BarrelDelay++;
@@ -29,6 +29,17 @@ void Dankey::Tick(float delta){
 	}
 	else{
 		direction = ECharacterDirection::R_Right;
+	}
+
+	if (this->BarrelDelay == 40) {
+		if (this->direction == ECharacterDirection::R_Left){
+			Curr->push_back(new Barrel(this->direction, Vector2D(this->position.x, this->position.y + 48)));
+			this->BarrelDelay = 0;
+		}
+		else {
+			Curr->push_back(new Barrel(this->direction, Vector2D(this->position.x + 64, this->position.y + 48)));
+			this->BarrelDelay = 0;
+		}
 	}
 }
 

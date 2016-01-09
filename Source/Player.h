@@ -10,7 +10,7 @@ public:
 
 	void Jump();
 
-	void Tick(float delta);
+	void Tick(float delta, std::vector<Character*> *Curr);
 
 	void Die();
 

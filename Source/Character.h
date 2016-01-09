@@ -50,7 +50,7 @@ public:
 	virtual void Jump() = 0;
 
 	//Called on every frame
-	virtual void Tick(float delta) = 0;
+	virtual void Tick(float delta, std::vector<Character*> *Curr) = 0;
 
 	//Called when the character dies
 	virtual void Die() = 0;

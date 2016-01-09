@@ -24,7 +24,7 @@ public:
 
 	virtual void Jump() = 0;
 
-	virtual void Tick(float delta) = 0;
+	virtual void Tick(float delta, std::vector<Character*> *Curr) = 0;
 
 	virtual void Die() = 0;
 
