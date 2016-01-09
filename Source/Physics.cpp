@@ -23,7 +23,7 @@ int Physics::ColTick(World* Curr, std::vector<Character*> All){
 			TypeChecker = dynamic_cast<Barrel*>(All[j]);
 			if (!TypeChecker)
 				All[j]->SetCharacterWorldPosition(Vector2D(All[j]->GetCharacterWorldPosition().x, Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x) / Curr->gridSize)][(int)(All[j]->GetCharacterWorldPosition().y) / Curr->gridSize].position.y));
-			else 
+			else
 				All[j]->SetCharacterWorldPosition(Vector2D(All[j]->GetCharacterWorldPosition().x, Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x) / Curr->gridSize)][(int)(All[j]->GetCharacterWorldPosition().y) / Curr->gridSize].position.y + 16));
 			TypeChecker = NULL;
 			ColPos = Vector2D(0.f, 0.f);
@@ -32,12 +32,11 @@ int Physics::ColTick(World* Curr, std::vector<Character*> All){
 				All[j]->velocity.y = 0;
 			}
 		}
-		
-		//makes characters fall if there is no collidable blocks under them
-		else if (!Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + (All[j]->ActualWidth / 2)) / Curr->gridSize)][(int)((All[j]->GetCharacterWorldPosition().y + All[j]->ActualHeight) / Curr->gridSize)].bSpawned && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + (All[j]->ActualWidth / 2)) / Curr->gridSize)][(int)((All[j]->GetCharacterWorldPosition().y + All[j]->ActualHeight) / Curr->gridSize)].bCollision) {
+
+		//makes characters fall if there is no collidable block under them
+		if (Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + (All[j]->ActualWidth / 2)) / Curr->gridSize)][(int)((All[j]->GetCharacterWorldPosition().y + All[j]->ActualHeight) / Curr->gridSize)].bSpawned && !Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + (All[j]->ActualWidth / 2)) / Curr->gridSize)][(int)((All[j]->GetCharacterWorldPosition().y + All[j]->ActualHeight) / Curr->gridSize)].bCollision) {
 			All[j]->bOnGround = false;
 		}
-
 
 		if (Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x) / 32)][int((All[j]->GetCharacterWorldPosition().y) / 32)].bSpawned && All[j]->velocity.y < 0 && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x) / 32)][int((All[j]->GetCharacterWorldPosition().y) / 32)].bCollision) {
 			ColPos = Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x) / 15)][int((All[j]->GetCharacterWorldPosition().y + 5) / 32)].position;
@@ -62,8 +61,14 @@ int Physics::ColTick(World* Curr, std::vector<Character*> All){
 			}
 		}
 
+		else {
+			if ((All[j]->position.x + All[j]->ActualWidth) < Curr->dimensions.x || (All[j]->position.x > Curr->dimensions.x) || ((All[j]->position.y + All[j]->ActualHeight) < Curr->dimensions.y) || (All[j]->position.y < Curr->dimensions.y)) {
+				All[j]->Die();
+				return j + 2;
+			}
+		}
+		return 0;
 	}
-	return 0;
 }
 
 void Physics::FricTick(std::vector<Character*> All){

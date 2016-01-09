@@ -52,5 +52,5 @@ void Dankey::Jump(){
 }
 
 void Dankey::Die(){
-
+	delete this;
 }

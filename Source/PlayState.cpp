@@ -343,9 +343,13 @@ void PlayState::Tick(float delta){
 
 			//Run Gravity, Collision checking code, and Friction
 			CurrentEffects->GravTick(CurrCharacters);
-			if (CurrentEffects->ColTick(CurrentWorld, CurrCharacters)) {
+			ColChecker = CurrentEffects->ColTick(CurrentWorld, CurrCharacters);
+			if (ColChecker) {
 				TinTin->Win(CharacterStart);
 				CurrentWorld->bPlay = false;
+			}
+			else if (ColChecker > 2){
+				CurrCharacters.erase(std::find(CurrCharacters.begin(), CurrCharacters.end(), CurrCharacters[ColChecker - 2]));
 			}
 			CurrentEffects->FricTick(CurrCharacters);
 
@@ -453,9 +457,6 @@ void PlayState::Draw(){
 		//If the play mode has been selected, then draw the character
 		al_set_target_bitmap(BlockBuffer.image);
 		al_clear_to_color(al_map_rgba(0, 0, 0, 0));
-		for (int i = 0; i < (int)CurrCharacters.size(); i++) {
-				CurrCharacters[i]->Draw();
-		}
 	}
 	//For-each loop that goes through every block in the array
 	for (auto& sub : CurrentWorld->Blocks){
@@ -470,6 +471,13 @@ void PlayState::Draw(){
 			}
 		}
 	}
+
+	if (CurrentWorld->bPlay){
+		for (int i = 0; i < (int)CurrCharacters.size(); i++) {
+			CurrCharacters[i]->Draw();
+		}
+	}
+
 	//Draws a transparent blue rectangle over the area selected by the box select
 	if (bBoxSelect && bFirstBoxSelected) {
 		GridTile* newTile = CurrentWorld->GetClickedTile(Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1) + 32, GEngine->GetMouseState().y + (GridBuffer.offset.y * -1) + 32));
@@ -534,6 +542,7 @@ void PlayState::Init(){
 	TinTin->velocity = Vector2D(0.f, 0.f);		//velocity starts at zero
 	CharacterStart = Vector2D(0.f, 0.f);		//original character start postion is zero
 	ChangingStart = false;				//at beginning, start position is not being changed
+	ColChecker = 0;
 
 	//Setting Multiple Images to Background Buffer
 	al_set_target_bitmap(Background.image);

@@ -58,6 +58,9 @@ public:
 	//for fixing character movement
 	ECharacterDirection Priority;
 
+	// for checking what happening in collision phsyics
+	int ColChecker;
+
 	//Characters in the world
 	std::vector<Character*> CurrCharacters;
 
