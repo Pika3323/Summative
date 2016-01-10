@@ -7,6 +7,7 @@
 
 class Player : public Character{
 public:
+	bool ShotAlready;
 
 	bool bShooting;
 

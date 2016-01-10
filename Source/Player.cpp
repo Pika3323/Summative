@@ -41,7 +41,23 @@ void Player::Die(){
 //Called every frame
 void Player::Tick(float delta, std::vector<Character*> *Curr){
 	//All of the animation code
-	if (bRunning && bOnGround){
+	if (shoot.CurrentFrame == 3){
+		ShotAlready = false;
+	}
+	if (bShooting && !bRunning && bOnGround) {
+		shoot.GetFrameBitmap(this->texture);
+		shoot.PushFrame();
+		if (shoot.CurrentFrame == 2 && direction == ECharacterDirection::R_Left && !ShotAlready){
+			ShotAlready = true;
+			Curr->push_back(new Bullet(Vector2D(position.x, position.y + 60), direction));
+		}
+		else if (shoot.CurrentFrame == 2 && direction == ECharacterDirection::R_Right && !ShotAlready){
+			ShotAlready = true;
+			Curr->push_back(new Bullet(Vector2D(position.x + ActualWidth, position.y + 60), direction));
+		}
+		position += velocity;
+	}
+	else if (bRunning && bOnGround){
 		run.GetFrameBitmap(this->texture);
 		run.PushFrame();
 		position += velocity;
@@ -54,17 +70,6 @@ void Player::Tick(float delta, std::vector<Character*> *Curr){
 	else if (!bOnGround){
 		fall.GetFrameBitmap(this->texture);
 		fall.PushFrame();
-		position += velocity;
-	}
-	else if (bShooting && !bRunning && bOnGround) {
-		shoot.GetFrameBitmap(this->texture);
-		shoot.PushFrame();
-		if (shoot.CurrentFrame == 2 && direction == ECharacterDirection::R_Left){
-			Curr->push_back(new Bullet(Vector2D(position.x, position.y + 60)));
-		}
-		else if (shoot.CurrentFrame == 2 && direction == ECharacterDirection::R_Right){
-			Curr->push_back(new Bullet(Vector2D(position.x + ActualWidth, position.y + 60)));
-		}
 		position += velocity;
 	}
 }

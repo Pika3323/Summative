@@ -122,6 +122,11 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				}
 				TinTin->bOnGround = false;
 				TinTin->velocity = Vector2D(0.f, 0.f);
+				for (int i = 0; i < (int)CurrCharacters.size(); i++){
+					TypeChecker = dynamic_cast<Barrel*>(CurrCharacters[i]);
+					if (TypeChecker)
+						DestroyCharacter(CurrCharacters[i]);
+				}
 				break;
 			case ALLEGRO_KEY_ESCAPE:
 				GEngine->Quit();
@@ -180,7 +185,10 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 							//get the tile that was clicked
 							clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
 
-							if (!clickedTile->occupied) {
+							if (SelectedEnemy == EnemyType::E_Dankey && !clickedTile->occupied && !CurrentWorld->Blocks[(int)(clickedTile->location.x / CurrentWorld->gridSize)][(int)(clickedTile->location.y / CurrentWorld->gridSize)].bSpawned && !CurrentWorld->Blocks[(int)(clickedTile->location.x / CurrentWorld->gridSize)][(int)((clickedTile->location.y + 32) / CurrentWorld->gridSize)].bSpawned){
+								CurrentWorld->PlaceEnemy(clickedTile, SelectedEnemy, &CurrCharacters);
+							}
+							if (SelectedEnemy == EnemyType::E_Cinas && !clickedTile->occupied && !CurrentWorld->Blocks[(int)(clickedTile->location.x / CurrentWorld->gridSize)][(int)(clickedTile->location.y / CurrentWorld->gridSize)].bSpawned){
 								CurrentWorld->PlaceEnemy(clickedTile, SelectedEnemy, &CurrCharacters);
 							}
 					}
@@ -492,7 +500,7 @@ void PlayState::Draw(){
 
 	if (CurrentWorld->bPlay){
 		for (int i = 0; i < (int)CurrCharacters.size(); i++) {
-			CurrCharacters[i]->Draw();
+		CurrCharacters[i]->Draw();
 		}
 	}
 

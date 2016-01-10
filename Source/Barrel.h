@@ -6,7 +6,6 @@
 
 class Barrel : public Enemy{
 public:
-	ECharacterDirection RollDirection;
 
 	void Run(Vector2D velocity);
 

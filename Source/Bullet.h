@@ -15,7 +15,7 @@ public:
 
 	void Jump();
 
-	Bullet(Vector2D pos);
+	Bullet(Vector2D pos, ECharacterDirection d);
 
 private:
 	SpriteSheet bullet;

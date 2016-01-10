@@ -12,7 +12,12 @@ class Physics{
 public:
 	Vector2D Gravforce;	//actual force exerted (dy)
 	Vector2D ColPos;
-	Character* TypeChecker;
+	Character* BulletCheck;
+	Character* PlayerCheck;
+	Character* DankeyCheck;
+	Character* BarrelCheck;
+	Character* CinasCheck;
+
 
 	Physics();
 	Physics(Vector2D f);	//setting the gravity first

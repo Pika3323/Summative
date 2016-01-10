@@ -40,6 +40,9 @@ public:
 	//The location of a click
 	Vector2D ClickLocation;	
 
+	//character type checker
+	Character* TypeChecker;
+
 	//The clicked tile from the world grid
 	struct GridTile* clickedTile;	
 
