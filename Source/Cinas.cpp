@@ -17,28 +17,29 @@ void Cinas::Tick(float delta, std::vector<Character*> *C){
 
 	float DistanceToC = Vector2D(position - dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->TinTin->position).Magnitude();
 	GridTile* T;
+	T = W->GetClickedTile(position); //autoset to where cinas is
 	
-	if (position.x - dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->TinTin->position.x > 0){
+	if ((position.x - dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->TinTin->position.x) > 0 && bCharacterLocked){
 		direction = ECharacterDirection::R_Left;
 		velocity.x = -5.f;
 		T = W->GetClickedTile(position + Vector2D(-32.f, 0.f));
 	}
-	else{
+	else if ((position.x - dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->TinTin->position.x) < 0 && bCharacterLocked) {
 		direction = ECharacterDirection::R_Right;
 		velocity.x = 5.f;
 		T = W->GetClickedTile(position + Vector2D(32.f, 0.f));
 	}
 
-	if (W->Blocks[T->x][T->y].bCollision && W->Blocks[T->x][T->y].bSpawned){
+	if (bCharacterLocked && W->Blocks[T->x][T->y].bCollision && W->Blocks[T->x][T->y].bSpawned){
 		this->Jump();
 	}
 
-	if (DistanceToC > 400 && !bCharacterLocked) {
+	if (DistanceToC > 400 && !bCharacterLocked && W->bPlay) {
 		still.GetFrameBitmap(texture);
 		still.PushFrame();
-		bCharacterLocked = true;
 	}
-	else {
+	else if (DistanceToC < 400 && W->bPlay) {
+		bCharacterLocked = true;
 		run.GetFrameBitmap(texture);
 		run.PushFrame();
 	}
