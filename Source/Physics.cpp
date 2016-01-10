@@ -71,6 +71,12 @@ int Physics::ColTick(World* Curr, std::vector<Character*> All){
 				}
 			}
 		}
+		else {
+			if ((All[j]->position.x + All[j]->ActualWidth) < 0|| (All[j]->position.x > Curr->dimensions.x) || (All[j]->position.y > Curr->dimensions.y) || ((All[j]->position.y + All[j]->ActualHeight) < 0)){
+				dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->DestroyCharacter(All[j]);
+			}
+			
+		}
 	}
 	return 0;
 }

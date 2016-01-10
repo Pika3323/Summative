@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "Dankey.h"
 #include "Bullet.h"
+#include "BulletEx.h"
 
 class Physics{
 public:

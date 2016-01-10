@@ -2,7 +2,7 @@
 
 #include "Engine.h"
 #include "Character.h"
-#include "PlayState.h"
+#include "SpriteSheet.h"
 
 class Bullet : public Character {
 public:
@@ -18,7 +18,5 @@ public:
 	Bullet(Vector2D pos);
 
 private:
-	int Damage;
 	SpriteSheet bullet;
-	SpriteSheet explode;
 };
