@@ -1,6 +1,7 @@
 #include "Barrel.h"
 
 Barrel::Barrel(ECharacterDirection d, Vector2D pos){
+	bOnGround = true;
 	ActualWidth = 16;
 	ActualHeight = 16;
 	position = pos;
@@ -13,7 +14,7 @@ Barrel::Barrel(ECharacterDirection d, Vector2D pos){
 		velocity = Vector2D(5.f, 0.f);
 }
 
-void Barrel::Tick(float delta){
+void Barrel::Tick(float delta, std::vector<Character*> *Curr){
 	if (dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->bPlay) {
 		Roll.GetFrameBitmap(this->texture);
 		Roll.PushFrame();

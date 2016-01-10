@@ -47,12 +47,12 @@ public:
 
 	void DestroyBlock(GridTile* Target);
 
-	void PlaceEnemy(GridTile* Target, EnemyType Type, std::vector<Enemy*> *All);	//add each enemy vector in as it is made
+	void PlaceEnemy(GridTile* Target, EnemyType Type, std::vector<Character*> *All);	//add each enemy vector in as it is made
 
 	void Tick(float delta);
 
-	bool Load(const char LevelName[64], std::vector<Enemy*> *enemies);
-	bool Save(const char LevelName[64], std::vector<Enemy*> enemies);
+	bool Load(const char LevelName[64], std::vector<Character*> *enemies);
+	bool Save(const char LevelName[64], std::vector<Character*> enemies);
 
 	void moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, Buffer &block, Buffer &notplay);
 	void SetCameraLocation(Vector2D location, Buffer &grid, Buffer &bg, Buffer &block, Buffer &notplay);

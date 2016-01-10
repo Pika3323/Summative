@@ -48,7 +48,7 @@ void World::DestroyBlock(GridTile* Target){
 	Target->occupied = false;
 }
 
-void World::PlaceEnemy(GridTile* Target, EnemyType Type, std::vector<Enemy*> *All){
+void World::PlaceEnemy(GridTile* Target, EnemyType Type, std::vector<Character*> *All){
 	//if (Type == EnemyType::E_Cinas) {
 	//	All->pushback(Cinas(Vector2D(Target->location.x, Target->location.y)));
 	//}
@@ -66,7 +66,7 @@ void World::Tick(float delta){
 }
 
 //Loads a level from a path
-bool World::Load(const char LevelName[64], std::vector<Enemy*> *enemies){
+bool World::Load(const char LevelName[64], std::vector<Character*> *enemies){
 	FILE *levelList = NULL;
 	std::vector<WorldLevelData> Levels;
 
@@ -80,7 +80,7 @@ bool World::Load(const char LevelName[64], std::vector<Enemy*> *enemies){
 	int sz = ftell(levelList);
 	fseek(levelList, 0L, SEEK_SET);
 
-	for (int i = 0; i < sz / sizeof(WorldLevelData); i++) {
+	for (int i = 0; i < sz / (int)sizeof(WorldLevelData); i++) {
 		WorldLevelData l;
 		fread(&l, sizeof(WorldLevelData), 1, levelList);
 		Levels.push_back(l);
@@ -141,7 +141,7 @@ bool World::Load(const char LevelName[64], std::vector<Enemy*> *enemies){
 }
 
 //Saves a level 
-bool World::Save(const char LevelName[64], std::vector<Enemy*> enemies) {
+bool World::Save(const char LevelName[64], std::vector<Character*> enemies) {
 	FILE *levelList = NULL;
 	std::vector<WorldLevelData> Levels;
 	bool bLevelExists = false;
@@ -155,7 +155,7 @@ bool World::Save(const char LevelName[64], std::vector<Enemy*> enemies) {
 	int sz = ftell(levelList);
 	fseek(levelList, 0L, SEEK_SET);
 
-	for (int i = 0; i < sz / sizeof(WorldLevelData); i++) {
+	for (int i = 0; i < sz / (int)sizeof(WorldLevelData); i++) {
 		WorldLevelData l;
 		fread(&l, sizeof(WorldLevelData), 1, levelList);
 		Levels.push_back(l);

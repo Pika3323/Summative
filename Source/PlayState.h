@@ -25,12 +25,6 @@ public:
 	//Effects (including gravity) for the current world
 	class Physics* CurrentEffects;	
 
-	//Enemy vector size checker
-	int EnemyCheck;
-
-	//Bool for reregistering Enemies in physics vector
-	bool ReregisterEnemies;
-
 	//block buffer for when not playing
 	Buffer notPlayingBuff; 
 
@@ -61,8 +55,14 @@ public:
 	//bool for if user is changing start postion
 	bool ChangingStart;
 
-	//Enemies in the world
-	std::vector<Enemy*> Enemies;
+	//for fixing character movement
+	ECharacterDirection Priority;
+
+	// for checking what happening in collision phsyics
+	int ColChecker;
+
+	//Characters in the world
+	std::vector<Character*> CurrCharacters;
 
 	//make a vector for each enemy type as they are made
 	
