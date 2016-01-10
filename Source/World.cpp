@@ -49,14 +49,14 @@ void World::DestroyBlock(GridTile* Target){
 }
 
 void World::PlaceEnemy(GridTile* Target, EnemyType Type, std::vector<Character*> *All){
-	//if (Type == EnemyType::E_Cinas) {
-	//	All->pushback(Cinas(Vector2D(Target->location.x, Target->location.y)));
-	//}
+	if (Type == EnemyType::E_Cinas) {
+		All->push_back(new Cinas(Vector2D(Target->location.x, Target->location.y)));
+	}
 	if (Type == EnemyType::E_Dankey) {
 		All->push_back(new Dankey(Vector2D(Target->location.x, Target->location.y)));
 	}
 	//if (Type == EnemyType::E_Yash) {
-	//	All->pushback(Yash(Vector2D(Target->location.x, Target->location.y)));
+	//	All->push_back(new Yash(Vector2D(Target->location.x, Target->location.y)));
 	//}
 }
 

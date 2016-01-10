@@ -4,6 +4,7 @@
 #include "Engine.h"
 #include "Enemy.h"
 #include "Dankey.h"
+#include "Cinas.h"
 
 //A struct containing info on a tile in the world
 struct GridTile{
