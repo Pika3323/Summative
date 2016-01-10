@@ -28,9 +28,6 @@
     <ClCompile Include="GameState.cpp">
       <Filter>Engine\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MainMenuState.cpp">
-      <Filter>Game\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PlayState.cpp">
       <Filter>Game\Source Files</Filter>
     </ClCompile>
@@ -67,6 +64,15 @@
     <ClCompile Include="Barrel.cpp">
       <Filter>Game\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MainMenuState.cpp">
+      <Filter>Game\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="List.cpp">
+      <Filter>Game\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelSelectState.cpp">
+      <Filter>Game\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Block.h">
@@ -91,9 +97,6 @@
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Button.h">
-      <Filter>Engine\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameState.h">
@@ -135,13 +138,16 @@
     <ClInclude Include="Physics.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="List.h">
-      <Filter>Engine\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Online.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Barrel.h">
+      <Filter>Game\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelSelectState.h">
+      <Filter>Game\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="List.h">
       <Filter>Game\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

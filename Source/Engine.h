@@ -20,6 +20,8 @@
 #define BLUE800 al_map_rgb(21, 101, 192)
 #define BLUE900 al_map_rgb(13, 71, 161)
 
+#define WHITE al_map_rgb(255, 255, 255)
+
 //The core headers of the Engine
 #include "Core.h"
 #include "version.h"

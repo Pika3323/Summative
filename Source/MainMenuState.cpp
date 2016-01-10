@@ -1,5 +1,6 @@
 #include "MainMenuState.h"
 #include "PlayState.h"
+#include "LevelSelectState.h"
 
 MainMenuState::MainMenuState(){
 	AllUIComponents[0] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 150, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 - 90), 0, "PLAY GAME", &MainMenu::PlayGame);
@@ -120,6 +121,5 @@ void MainMenu::ToggleFullscreen(){
 }
 
 void PushLevel(){
-	Online::completions = 10;
-	Online::GetLevelData("TestUser");
+	GEngine->ChangeGameState<LevelSelectState>();
 }

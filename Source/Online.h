@@ -9,6 +9,7 @@ struct MemoryStruct {
 };
 
 static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp);
+static size_t write_save(void *ptr, size_t size, size_t nmemb, FILE *stream);
 
 enum LevelData{
 	File,
@@ -41,7 +42,7 @@ public:
 	static void DeleteLevel(int id);
 
 	//Gets all levels belonging to a user
-	static WorldLevelData* GetLevelData(const char* username);
+	static void GetLevelData(const char* username, std::vector<WorldLevelData> &V);
 
 	//Get data from a level on the server
 	static WorldLevelData GetLevelData(int id);

@@ -66,10 +66,10 @@ struct WorldLevelData{
 	char Name[64];
 	char Creator[64];
 	char Date[64];
-	int LevelAttempts;
-	int LevelCompletions;
-	int upvotes;
-	int downvotes;
+	int Attempts;
+	int Completions;
+	int Upvotes;
+	int Downvotes;
 	WorldLevelData(){}
 
 };

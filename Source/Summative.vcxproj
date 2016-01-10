@@ -15,6 +15,7 @@
     <ClInclude Include="Block.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="Button.h" />
+    <ClInclude Include="LevelSelectState.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="EditorState.h" />
@@ -31,7 +32,6 @@
     <ClInclude Include="PlayState.h" />
     <ClInclude Include="SpriteSheet.h" />
     <ClInclude Include="TextBox.h" />
-    <ClInclude Include="UI.h" />
     <ClInclude Include="UIComponent.h" />
     <ClInclude Include="Vector2D.h" />
     <ClInclude Include="version.h" />
@@ -46,11 +46,13 @@
     <ClCompile Include="EditorState.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="LevelSelectState.cpp" />
+    <ClCompile Include="List.cpp" />
+    <ClCompile Include="MainMenuState.cpp" />
     <ClCompile Include="Online.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="IMath.cpp" />
-    <ClCompile Include="MainMenuState.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayState.cpp" />

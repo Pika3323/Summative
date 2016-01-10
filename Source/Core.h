@@ -29,6 +29,7 @@
 #include <time.h>
 #include <ctype.h>
 #include <math.h>
+#include <string.h>
 #include <vector>
 
 //Core Engine components
