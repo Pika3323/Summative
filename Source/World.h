@@ -71,5 +71,9 @@ struct WorldLevelData{
 	int Upvotes;
 	int Downvotes;
 	WorldLevelData(){}
-
+	WorldLevelData(int LevelID, const char* LevelName, const char* LevelCreator, const char* LevelCreation, int LevelAttempts, int LevelCompletions, int LevelUpvotes, int LevelDownvotes): id(LevelID), Attempts(LevelAttempts), Completions(LevelCompletions), Upvotes(LevelUpvotes), Downvotes(LevelDownvotes){
+		strcpy(Name, LevelName);
+		strcpy(Creator, LevelCreator);
+		strcpy(Date, LevelCreation);
+	}
 };
