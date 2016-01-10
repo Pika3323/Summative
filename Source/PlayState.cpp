@@ -25,6 +25,12 @@ PlayState::PlayState(){
 	PauseButton = new Button(al_map_rgb(255, 255, 255), BLUE500, 32, 32, Vector2D(0.f, 0.f), 2, "||", &PauseButtonDown);
 }
 
+void PlayState::DestroyCharacter(Character* C){
+	std::find(CurrCharacters.begin(), CurrCharacters.end(), C);
+
+	delete C;
+}
+
 void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 	if (ev->keyboard.keycode == ALLEGRO_KEY_P && ev->type == ALLEGRO_EVENT_KEY_DOWN) {
 		if (!Paused){

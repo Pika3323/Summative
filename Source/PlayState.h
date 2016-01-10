@@ -100,6 +100,8 @@ public:
 	double delta;
 	Vector2D DragVelocity = Vector2D(-1.f, -1.f);
 
+	void DestroyCharacter(Character* C);
+
 	void Init();
 
 	void Pause();

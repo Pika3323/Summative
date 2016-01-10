@@ -31,6 +31,7 @@
 #include <math.h>
 #include <string.h>
 #include <vector>
+#include <algorithm>
 
 //Core Engine components
 #include "Vector2D.h"		//Vector header, including some vector math
