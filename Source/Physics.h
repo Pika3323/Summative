@@ -18,6 +18,6 @@ public:
 
 	void GravTick(std::vector<Character*> All);	//applying force
 	void FricTick(std::vector<Character*> All);	//Constant friction on any block at the moment
-	int ColTick(class World* Curr, std::vector<Character*> *All);		//collision conditions
+	int ColTick(class World* Curr, std::vector<Character*> All);		//collision conditions
 private:
 };

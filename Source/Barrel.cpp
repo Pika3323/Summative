@@ -1,6 +1,7 @@
 #include "Barrel.h"
 
 Barrel::Barrel(ECharacterDirection d, Vector2D pos){
+	bOnGround = true;
 	ActualWidth = 16;
 	ActualHeight = 16;
 	position = pos;

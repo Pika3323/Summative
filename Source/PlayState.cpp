@@ -344,13 +344,13 @@ void PlayState::Tick(float delta){
 			//Run Gravity, Collision checking code, and Friction
 			CurrentEffects->GravTick(CurrCharacters);
 			ColChecker = CurrentEffects->ColTick(CurrentWorld, CurrCharacters);
-			if (ColChecker) {
+			if (ColChecker == 1) {
 				TinTin->Win(CharacterStart);
 				CurrentWorld->bPlay = false;
 			}
-			else if (ColChecker > 2){
+			/*else if (ColChecker >= 2){
 				CurrCharacters.erase(std::find(CurrCharacters.begin(), CurrCharacters.end(), CurrCharacters[ColChecker - 2]));
-			}
+			}*/
 			CurrentEffects->FricTick(CurrCharacters);
 
 			//Kill the Character if he falls out of the world
