@@ -10,6 +10,7 @@ PlayState::PlayState(){
 	BlockBuffer = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f));	//play buffer for blocks
 	GridBuffer = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f));	//buffer for grid
 	Background = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(2.5f, 2.5f));	//buffer for background
+
 	CurrentWorld->bPlay = false;
 	PlayerOldPosition = Vector2D(0.f, 0.f);
 
@@ -146,21 +147,24 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				break;
 			}
 		}
-
 		//On mouse click
 		else if (ev->type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
 			switch (ev->mouse.button){
 			case MOUSE_LB:
-				if (!CurrentWorld->bPlay) {
-					bClicked = true;
+				if (!CurrentWorld->bPlay && ev->mouse.y < 100){
+					SelectedBlock = static_cast<EBlockType>((ev->mouse.x + (ev->mouse.z * -25)) / 100 - 1);
+				}
+				else {
+					if (!CurrentWorld->bPlay) {
+						bClicked = true;
 
-					//check if user is changing start position
-					if (ChangingStart) {
-						ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
-						CharacterStart = ClickLocation;
-					}
-					//check if enemy select is true
-					else if (CurrentWorld->EnemySelect) {
+						//check if user is changing start position
+						if (ChangingStart) {
+							ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
+							CharacterStart = ClickLocation;
+						}
+						//check if enemy select is true
+						else if (CurrentWorld->EnemySelect) {
 							//get the mouse location
 							ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 
@@ -170,45 +174,46 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 							if (!clickedTile->occupied) {
 								CurrentWorld->PlaceEnemy(clickedTile, SelectedEnemy, &CurrCharacters);
 							}
-					}
-					//Check if the box placement mode isn't enabled
-					else if (!bBoxSelect && !CurrentWorld->EnemySelect) {
-						//Get the mouse's location
-						ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
-
-						//Get the tile that was clicked
-						clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
-
-						if (!clickedTile->occupied){
-							//Place a new block if there isn't already a block in that location
-							CurrentWorld->PlaceBlock(clickedTile, SelectedBlock);
 						}
-					}
-					else if (bBoxSelect && !CurrentWorld->EnemySelect) {
-						//If a start location of the rectangle select has been set
-						if (bFirstBoxSelected){
-							Vector2D NewMouseLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1) + 64, GEngine->GetMouseState().y + (GridBuffer.offset.y * -1) + 32);
-							Vector2D BoxVector;
+						//Check if the box placement mode isn't enabled
+						else if (!bBoxSelect && !CurrentWorld->EnemySelect) {
+							//Get the mouse's location
+							ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 
-							//Handle different directions in which the box extends
-							if (NewMouseLocation > ClickLocation) {
-								BoxVector = ClickLocation;
-							}
-							else{
-								BoxVector = NewMouseLocation;
-							}
+							//Get the tile that was clicked
+							clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
 
-							//Place multiple boxes
-							for (int i = 0; i < abs((int)(NewMouseLocation.x - ClickLocation.x) / 32); i++) {
-								for (int j = 0; j < abs((int)(NewMouseLocation.y - ClickLocation.y) / 32); j++) {
-									CurrentWorld->PlaceBlock(CurrentWorld->GetClickedTile(BoxVector + Vector2D(i * 32, j * 32)), SelectedBlock);
+							if (!clickedTile->occupied){
+								//Place a new block if there isn't already a block in that location
+								CurrentWorld->PlaceBlock(clickedTile, SelectedBlock);
+							}
+						}
+						else if (bBoxSelect && !CurrentWorld->EnemySelect) {
+							//If a start location of the rectangle select has been set
+							if (bFirstBoxSelected){
+								Vector2D NewMouseLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1) + 64, GEngine->GetMouseState().y + (GridBuffer.offset.y * -1) + 32);
+								Vector2D BoxVector;
+
+								//Handle different directions in which the box extends
+								if (NewMouseLocation > ClickLocation) {
+									BoxVector = ClickLocation;
+								}
+								else{
+									BoxVector = NewMouseLocation;
+								}
+
+								//Place multiple boxes
+								for (int i = 0; i < abs((int)(NewMouseLocation.x - ClickLocation.x) / 32); i++) {
+									for (int j = 0; j < abs((int)(NewMouseLocation.y - ClickLocation.y) / 32); j++) {
+										CurrentWorld->PlaceBlock(CurrentWorld->GetClickedTile(BoxVector + Vector2D(i * 32, j * 32)), SelectedBlock);
+									}
 								}
 							}
-						}
 
-						bFirstBoxSelected = !bFirstBoxSelected;
-						ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
-						FirstTile = CurrentWorld->GetClickedTile(ClickLocation);
+							bFirstBoxSelected = !bFirstBoxSelected;
+							ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
+							FirstTile = CurrentWorld->GetClickedTile(ClickLocation);
+						}
 					}
 				}
 				break;
@@ -348,9 +353,7 @@ void PlayState::Tick(float delta){
 				TinTin->Win(CharacterStart);
 				CurrentWorld->bPlay = false;
 			}
-			/*else if (ColChecker >= 2){
-				CurrCharacters.erase(std::find(CurrCharacters.begin(), CurrCharacters.end(), CurrCharacters[ColChecker - 2]));
-			}*/
+
 			CurrentEffects->FricTick(CurrCharacters);
 
 			//Kill the Character if he falls out of the world
@@ -359,45 +362,6 @@ void PlayState::Tick(float delta){
 				TinTin->SetCharacterWorldPosition(CharacterStart);
 				CurrentWorld->bPlay = false;
 			}
-
-			/*if (CurrentWorld->offset.x == 0 || CurrentWorld->offset.y == 0){}
-			else {
-				Debug = PlayerOldPosition - TinTin->position;
-				Vector2D PlayerScreenPosition = CurrentWorld->offset + TinTin->position;
-
-				if (PlayerScreenPosition.x > GEngine->GetDisplayWidth() / 2 && (CurrentWorld->offset.x <= 0 && CurrentWorld->offset.x != CurrentWorld->dimensions.x * -1 + GEngine->GetDisplayWidth())){
-					if (TinTin->velocity.x != 0) {
-						WorldMoveDelta.x = TinTin->velocity.x * -1;
-					}
-					else if (CurrentWorld->bPlay) {
-						WorldMoveDelta = Vector2D(0.f, 0.f);
-					}
-				}
-				if (PlayerScreenPosition.x < GEngine->GetDisplayWidth() / 2 && (CurrentWorld->offset.x <= 0 && CurrentWorld->offset.x != CurrentWorld->dimensions.x * -1 + GEngine->GetDisplayWidth())){
-					if (TinTin->velocity.x != 0) {
-						WorldMoveDelta.x = TinTin->velocity.x * -1;
-					}
-					else if (CurrentWorld->bPlay) {
-						WorldMoveDelta = Vector2D(0.f, 0.f);
-					}
-				}
-				if (PlayerScreenPosition.y > GEngine->GetDisplayHeight() / 2 && (CurrentWorld->offset.y <= 0 && CurrentWorld->offset.y != CurrentWorld->dimensions.y * -1 + GEngine->GetDisplayHeight())){
-					if (TinTin->velocity.y != 0) {
-						WorldMoveDelta.y = TinTin->velocity.y * -1;
-					}
-					else if (CurrentWorld->bPlay) {
-						WorldMoveDelta = Vector2D(0.f, 0.f);
-					}
-				}
-				if (PlayerScreenPosition.y < GEngine->GetDisplayHeight() / 2 && (CurrentWorld->offset.y <= 0 && CurrentWorld->offset.y != CurrentWorld->dimensions.y * -1 + GEngine->GetDisplayHeight())){
-					if (TinTin->velocity.y != 0) {
-						WorldMoveDelta.y = TinTin->velocity.y * -1;
-					}
-					else if (CurrentWorld->bPlay) {
-						WorldMoveDelta = Vector2D(0.f, 0.f);
-					}
-				}
-			}*/
 		}
 		
 		CurrentWorld->moveWorld(WorldMoveDelta, GridBuffer, Background, BlockBuffer, notPlayingBuff);
@@ -449,6 +413,12 @@ void PlayState::Tick(float delta){
 }
 
 void PlayState::Draw(){
+	al_set_target_bitmap(UI.image);
+	al_clear_to_color(al_map_rgba(0, 0, 0, 0));
+	for (int i = 0; i < 9; i++){
+		al_draw_bitmap(SelectBlock[i].image, SelectBlock[i].offset.x + GEngine->GetMouseState().z * -25, SelectBlock[i].offset.y, ALLEGRO_VIDEO_BITMAP);
+	}
+
 	if (!CurrentWorld->bPlay){
 		al_set_target_bitmap(notPlayingBuff.image);
 		al_clear_to_color(al_map_rgba(0, 0, 0, 0));
@@ -499,6 +469,10 @@ void PlayState::Draw(){
 		al_draw_bitmap_region(BlockBuffer.image, BlockBuffer.offset.x *-1, BlockBuffer.offset.y * -1, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()), 0, 0, 0);
 	}
 
+	if (!CurrentWorld->bPlay){
+		al_draw_bitmap(UI.image, 0, 0, 0);
+	}
+
 	//DEBUG OUTPUTS
 	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 50, ALLEGRO_ALIGN_RIGHT, "World X: %.0f", CurrentWorld->offset.x);
 	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 66, ALLEGRO_ALIGN_RIGHT, "World Y: %.0f", CurrentWorld->offset.y);
@@ -516,8 +490,6 @@ void PlayState::Draw(){
 	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 129, ALLEGRO_ALIGN_RIGHT, "World Delta X, Y: %.0f, %0.f", WorldMoveDelta.x, WorldMoveDelta.y);
 	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(255, 255, 0), GEngine->GetDisplayWidth() - 6, 128, ALLEGRO_ALIGN_RIGHT, "World Delta X, Y: %.0f, %0.f", WorldMoveDelta.x, WorldMoveDelta.y);
 	
-	//Draw the pause button
-	//PauseButton->Draw();
 }
 
 void PlayState::Init(){
@@ -532,15 +504,27 @@ void PlayState::Init(){
 	CurrentWorld->Type[7] = BlockType("Background Brick", al_load_bitmap("Textures/Objects/Background_Brick.png"), false);
 	CurrentWorld->Type[8] = BlockType("Finish Flag", al_load_bitmap("Textures/Objects/FinishFlag.png"), false);
 
+	for (int i = 0; i < 9; i++) {
+		SelectBlock[i] = Buffer(NULL, Vector2D(100.f * (i + 1), 0.f), Vector2D(0.f, 0.f));
+		SelectBlock[i].image = al_create_bitmap(100, 100);
+		al_set_target_bitmap(SelectBlock[i].image);
+		al_clear_to_color(BLUE500);
+		al_draw_bitmap(CurrentWorld->Type[i].texture, 34, 8, 0);
+		al_draw_textf(GEngine->GetDebugFont(), WHITE, 50, 80, ALLEGRO_ALIGN_CENTER, "%s", CurrentWorld->Type[i].name);
+	}
+
+	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
+
 	//Create buffers used for rendering
 	GridBuffer.image = al_create_bitmap(4096, 2048);
 	notPlayingBuff.image = al_create_bitmap(4096, 2048);
 	Background.image = al_create_bitmap(4096, 2048);
 	BlockBuffer.image = al_create_bitmap(4096, 2048);
+	UI.image = al_create_bitmap(GEngine->GetDisplayWidth(), 100);
 
 	CurrCharacters.push_back(TinTin);	//registering main character in Character vector
 	TinTin->velocity = Vector2D(0.f, 0.f);		//velocity starts at zero
-	CharacterStart = Vector2D(0.f, 0.f);		//original character start postion is zero
+	CharacterStart = Vector2D(0.f, 0.f);		//original character start position is zero
 	ChangingStart = false;				//at beginning, start position is not being changed
 	ColChecker = 0;
 
