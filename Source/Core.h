@@ -29,6 +29,7 @@
 #include <time.h>
 #include <ctype.h>
 #include <math.h>
+#include <string.h>
 #include <vector>
 
 //Core Engine components
@@ -36,7 +37,7 @@
 #include "IMath.h"			//Isaac's math header
 #include "GameState.h"		//Game states
 #include "UIComponent.h"	//UI
-#include "Online.h"
+#include "Share.h"
 
 static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 {

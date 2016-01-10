@@ -20,4 +20,7 @@ public:
 	virtual void Draw() = 0;
 protected:
 	ALLEGRO_BITMAP* tex;
+	ALLEGRO_FONT* RobotoSmall;
+	ALLEGRO_FONT* RobotoMedium;
+	ALLEGRO_FONT* RobotoLarge;
 };

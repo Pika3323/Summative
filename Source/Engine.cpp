@@ -56,7 +56,7 @@ void Engine::DrawFPS(double delta){
 
 void Engine::Init(){
 	//Version info
-	printf("Summative version %d.%d.%d\n", MAJORVERSION, MINORVERSION, BUILDNUMBER);
+	printf("Summative version %d.%d\n", VersionMajor, VersionMinor);
 	
 	//Allegro
 	if (!al_init()) {
@@ -170,6 +170,9 @@ void Engine::Cleanup(){
 	al_destroy_timer(timer);
 	al_destroy_event_queue(event_queue);
 	al_shutdown_primitives_addon();
+
+	//remove the temporary info file
+	//remove("temp.temp");
 
 	//Finally, delete the GEngine instance of Engine
 	delete this;
