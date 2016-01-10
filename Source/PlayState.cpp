@@ -26,8 +26,15 @@ PlayState::PlayState(){
 }
 
 void PlayState::DestroyCharacter(Character* C){
-	std::find(CurrCharacters.begin(), CurrCharacters.end(), C);
+	std::vector<Character*>::iterator it;
 
+	//Finds the character in the character vector
+	it = std::find(CurrCharacters.begin(), CurrCharacters.end(), C);
+
+	//Removes the character
+	CurrCharacters.erase(it);
+
+	//Deletes character from memory
 	delete C;
 }
 
