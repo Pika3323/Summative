@@ -52,7 +52,7 @@ void SpriteSheet::PushFrame(EADirection Direction){
 void SpriteSheet::GetFrameBitmap(ALLEGRO_BITMAP* Target){
 	if (Target){
 		al_set_target_bitmap(Target);
-		al_clear_to_color(al_map_rgba(0, 0, 0, 0));
+		al_clear_to_color(al_map_rgba(255, 0, 255, 255));
 		al_draw_bitmap_region(Sheet, FrameWidth * CurrentFrame, 0, FrameWidth, FrameHeight, 0, 0, 0);
 
 		//al_clear_to_color(al_map_rgb(255, 0, 255));

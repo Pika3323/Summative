@@ -8,14 +8,14 @@ void LevelSelectState::Init(){
 	Online::GetLevelData(Username, Levels);
 
 	for (int i = 0; i < (int)Levels.size(); i++){
-		Tiles.push_back(new List(Vector2D(GEngine->GetDisplayWidth() / 2 - 250, i * 150 + 3), Levels[i]));
+		OnlineTiles.push_back(new List(Vector2D(GEngine->GetDisplayWidth() / 2 - 250, i * 152 + 3), Levels[i]));
 	}
 }
 
 void LevelSelectState::Draw(){
 	al_clear_to_color(WHITE);
-	for (int i = 0; i < (int)Tiles.size(); i++){
-		Tiles[i]->Draw();
+	for (int i = 0; i < (int)OnlineTiles.size(); i++){
+		OnlineTiles[i]->Draw();
 	}
 }
 

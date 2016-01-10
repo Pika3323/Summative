@@ -152,7 +152,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 			switch (ev->mouse.button){
 			case MOUSE_LB:
 				if (!CurrentWorld->bPlay && ev->mouse.y < 100){
-					SelectedBlock = static_cast<EBlockType>((ev->mouse.x + (ev->mouse.z * -25)) / 100 - 1);
+					SelectedBlock = static_cast<EBlockType>((ev->mouse.x - (ev->mouse.z * -25)) / 100 - 1);
 				}
 				else {
 					if (!CurrentWorld->bPlay) {

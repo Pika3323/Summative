@@ -10,7 +10,11 @@ public:
 	char Username[64];
 	
 	std::vector<WorldLevelData> Levels;
-	std::vector<List*> Tiles;
+	std::vector<List*> OnlineTiles;
+	std::vector<WorldLevelData> LocalLevels;
+	std::vector<List*> LocalTiles;
+
+	std::vector<UIComponent*> Components;
 
 	void Init();
 
