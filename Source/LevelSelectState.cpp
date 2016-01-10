@@ -5,6 +5,19 @@ LevelSelectState::LevelSelectState(){
 }
 
 void LevelSelectState::Init(){
+	FILE* L = fopen("Levels/Levels.bvla", "rb");
+
+	fseek(L, 0L, SEEK_END);
+	int sz = ftell(L);
+	fseek(L, 0L, SEEK_SET);
+
+	for (int i = 0; i < sz / (int)sizeof(WorldLevelData); i++) {
+		WorldLevelData l;
+		fread(&l, sizeof(WorldLevelData), 1, L);
+		LocalLevels.push_back(l);
+	}
+
+
 	Online::GetLevelData(Username, Levels);
 
 	for (int i = 0; i < (int)Levels.size(); i++){
