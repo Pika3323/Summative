@@ -126,6 +126,8 @@ public:
 	double delta;
 	static bool bExit;
 
+	Share SharedVar;
+
 	Engine();
 	
 private:

@@ -30,6 +30,7 @@
     <ClInclude Include="MainMenuState.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayState.h" />
+    <ClInclude Include="Share.h" />
     <ClInclude Include="SpriteSheet.h" />
     <ClInclude Include="TextBox.h" />
     <ClInclude Include="UIComponent.h" />
