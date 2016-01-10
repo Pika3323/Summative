@@ -6,6 +6,7 @@
 #include "Player.h"
 #include <vector>
 #include "Dankey.h"
+#include "Bullet.h"
 
 class Physics{
 public:

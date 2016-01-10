@@ -6,7 +6,7 @@ Physics::Physics(Vector2D f){
 
 void Physics::GravTick(std::vector<Character*> All){
 	for (int i = 0; i < (int)All.size(); i++) {		//adding gravity to all characters registered
-		if (!All[i]->bOnGround){
+		if (!All[i]->bOnGround && !dynamic_cast<Bullet*>(All[i])){
 			All[i]->velocity.y += Gravforce.y;	//could theoretically implement an x gravity if ever wanted to
 		}
 		if (All[i]->velocity.y >= 50) {

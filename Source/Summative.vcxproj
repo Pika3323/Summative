@@ -15,6 +15,7 @@
     <ClInclude Include="Block.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="Button.h" />
+    <ClInclude Include="Bullet.h" />
     <ClInclude Include="LevelSelectState.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="Core.h" />
@@ -42,6 +43,7 @@
     <ClCompile Include="Barrel.cpp" />
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="Buffer.cpp" />
+    <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="EditorState.cpp" />

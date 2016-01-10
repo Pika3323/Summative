@@ -13,6 +13,9 @@ public:
 	void PushFrame();
 	void PushFrame(EADirection Direction);
 
+	//in public for evaluating purposes
+	int CurrentFrame;
+
 	//Draws the current frame of the spritesheet to the Target bitmap
 	void GetFrameBitmap(ALLEGRO_BITMAP* Target);
 
@@ -24,7 +27,6 @@ public:
 protected:
 	int FrameHeight;
 	int FrameWidth;
-	int CurrentFrame;
 	int TotFrameCount;
 	int Delay;
 	int FramesInAnimation;

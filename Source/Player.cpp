@@ -4,6 +4,7 @@ Player::Player(int Height, int Width){
 	run = SpriteSheet(al_load_bitmap("Textures/Characters/running_e.png"), 64, 128, 11);
 	fall = SpriteSheet(al_load_bitmap("Textures/Characters/fall_e.png"), 64, 128, 3);
 	still = SpriteSheet(al_load_bitmap("Textures/Characters/idle_e.png"), 64, 128, 6);
+	shoot = SpriteSheet(al_load_bitmap("Textures/Characters/shoot_e.png"), 64, 128, 4);
 	ActualHeight = Height;
 	ActualWidth = Width;
 	texture = al_create_bitmap(Width, Height);
@@ -53,6 +54,17 @@ void Player::Tick(float delta, std::vector<Character*> *Curr){
 	else if (!bOnGround){
 		fall.GetFrameBitmap(this->texture);
 		fall.PushFrame();
+		position += velocity;
+	}
+	else if (bShooting && !bRunning && bOnGround) {
+		shoot.GetFrameBitmap(this->texture);
+		shoot.PushFrame();
+		if (shoot.CurrentFrame == 2 && direction == ECharacterDirection::R_Left){
+			Curr->push_back(new Bullet(Vector2D(position.x, position.y + 60)));
+		}
+		else if (shoot.CurrentFrame == 2 && direction == ECharacterDirection::R_Right){
+			Curr->push_back(new Bullet(Vector2D(position.x + ActualWidth, position.y + 60)));
+		}
 		position += velocity;
 	}
 }

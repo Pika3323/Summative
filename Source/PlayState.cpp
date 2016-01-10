@@ -211,6 +211,9 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 						FirstTile = CurrentWorld->GetClickedTile(ClickLocation);
 					}
 				}
+				else {
+					TinTin->bShooting = true;
+				}
 				break;
 			case MOUSE_RB:
 				//Check if the box placement mode isn't enabled
@@ -264,7 +267,9 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 		}
 		//On MouseUp
 		else if (ev->type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
-
+			if (CurrentWorld->bPlay){
+				TinTin->bShooting = false;
+			}
 			bClicked = false;
 
 			switch (ev->mouse.button) {
@@ -420,7 +425,7 @@ void PlayState::Tick(float delta){
 		//Mouse states
 		switch (GEngine->GetMouseState().buttons){
 		case MOUSE_LB:
-			if (!ChangingStart){
+			if (!ChangingStart && !CurrentWorld->bPlay){
 				if (!bBoxSelect && !CurrentWorld->EnemySelect){
 					ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 					//Get the tile that was clicked

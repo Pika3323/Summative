@@ -73,6 +73,9 @@
     <ClCompile Include="LevelSelectState.cpp">
       <Filter>Game\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>Game\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Block.h">
@@ -152,6 +155,9 @@
     </ClInclude>
     <ClInclude Include="Share.h">
       <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>Game\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

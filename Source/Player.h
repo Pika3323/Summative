@@ -3,9 +3,13 @@
 #include "Engine.h"
 #include "Character.h"
 #include "SpriteSheet.h"
+#include "Bullet.h"
 
 class Player : public Character{
 public:
+
+	bool bShooting;
+
 	void Run(Vector2D velocity);
 
 	void Jump();
@@ -21,5 +25,6 @@ protected:
 	SpriteSheet run;
 	SpriteSheet fall;
 	SpriteSheet still;
+	SpriteSheet shoot;
 	int Health;
 };
