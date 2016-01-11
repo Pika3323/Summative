@@ -569,7 +569,7 @@ void PlayState::Init(){
 	//Load the background image
 	for (int i = 0; i < 2; i++) {
 		for (int y = 0; y < 3; y++) {
-			ALLEGRO_BITMAP* BackgroundTexture = al_load_bitmap("Textures/Scenes/Background_Original.png");
+			ALLEGRO_BITMAP* BackgroundTexture = al_load_bitmap("Textures/Scenes/Background_Gauss.png");
 			if (BackgroundTexture) {
 				al_draw_bitmap(BackgroundTexture, (y * 1024), (i * 1024), 0);
 			}
@@ -594,20 +594,25 @@ void PlayState::Init(){
 	//Sets the target bitmap back to the default buffer
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 
-	printf("Read saved level? (y/n): ");
-	char cRead;
-	scanf("%c", &cRead);
-	if (tolower(cRead) == 'y'){
-		fflush(stdin);
-		char loadLevel[64];
-		printf("Enter level name: ");
-		scanf("%s", loadLevel);
-		fflush(stdin);
-		if (CurrentWorld->Load(loadLevel, &CurrCharacters)){
-			printf("Loaded %s\n", loadLevel);
-		}
-		else{
-			printf("Could not load %s\n", loadLevel);
+	if (GEngine->SharedVar.bLoadingLevel){
+		CurrentWorld->Load(GEngine->SharedVar.LoadLevelName, &CurrCharacters);
+	}
+	else {
+		printf("Read saved level? (y/n): ");
+		char cRead;
+		scanf("%c", &cRead);
+		if (tolower(cRead) == 'y'){
+			fflush(stdin);
+			char loadLevel[64];
+			printf("Enter level name: ");
+			scanf("%s", loadLevel);
+			fflush(stdin);
+			if (CurrentWorld->Load(loadLevel, &CurrCharacters)){
+				printf("Loaded %s\n", loadLevel);
+			}
+			else{
+				printf("Could not load %s\n", loadLevel);
+			}
 		}
 	}
 }
@@ -633,6 +638,7 @@ void PlayState::Destroy(){
 		scanf("%s", levelName);
 		if (CurrentWorld->Save(levelName, CurrCharacters)){
 			printf("Saved level as %s\n", levelName);
+			Online::PostLevel(levelName);
 		}
 		else{
 			printf("Could not save level as %s\n", levelName);

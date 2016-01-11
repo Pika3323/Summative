@@ -30,6 +30,9 @@ public:
 
 	LevelSelectState();
 	~LevelSelectState();
+	ALLEGRO_MOUSE_STATE mstate;
+	ALLEGRO_FONT* LargeRoboto;
 };
 
-void ToggleList();
+void ViewOnline();
+void ViewLocal();

@@ -98,8 +98,8 @@ bool World::Load(const char LevelName[64], std::vector<Character*> *enemies){
 	YashCounter = 0;
 	dCheck = NULL;
 
-	char FileName[64];
-	strcpy(FileName, LevelName);
+	char FileName[64] = "Levels/";
+	strcat(FileName, LevelName);
 	strcat(FileName, ".bvl");
 
 	fptr = fopen(FileName, "rb");

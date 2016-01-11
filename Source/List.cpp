@@ -7,7 +7,7 @@ List::List(){
 	RobotoSmall = al_load_ttf_font("Roboto-Regular.ttf", 10, 0);
 	RobotoMedium = al_load_ttf_font("Roboto-Regular.ttf", 16, 0);
 	RobotoLarge = al_load_ttf_font("Roboto-Regular.ttf", 24, 0);
-	Play = Button(WHITE, BLUE500, 100, 32, Vector2D(6.f, 64.f), 0, "PLAY", &PlayGame);
+	Play = Button(WHITE, BLUE500, 100, 36, Vector2D(6.f, 64.f), 0, "PLAY", &PlayGame);
 }
 
 List::List(Vector2D pos, WorldLevelData l){
@@ -17,7 +17,7 @@ List::List(Vector2D pos, WorldLevelData l){
 	RobotoSmall = al_load_ttf_font("Roboto-Regular.ttf", 10, 0);
 	RobotoMedium = al_load_ttf_font("Roboto-Regular.ttf", 16, 0);
 	RobotoLarge = al_load_ttf_font("Roboto-Regular.ttf", 24, 0);
-	Play = Button(WHITE, BLUE500, 100, 32, Vector2D(6.f, 64.f), 0, "PLAY", &PlayGame);
+	Play = Button(WHITE, BLUE500, 100, 36, Vector2D(6.f, 64.f), 0, "PLAY", &PlayGame);
 	Level = l;
 	position = pos;
 	al_set_target_bitmap(tex);
@@ -31,7 +31,7 @@ List::List(Vector2D pos, WorldLevelData l){
 		al_draw_textf(RobotoMedium, WHITE, 6, height - 24, 0, "Completion rate: %s%%", "NaN");
 	}
 	
-
+	Play.Draw();
 	al_draw_textf(RobotoMedium, WHITE, width - 64, 64, ALLEGRO_ALIGN_CENTER, "Up: %d", Level.Upvotes);
 	al_draw_textf(RobotoMedium, WHITE, width - 64, 76, ALLEGRO_ALIGN_CENTER, "Down: %d", Level.Downvotes);
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
@@ -50,7 +50,14 @@ void List::onHoverOut(){
 }
 
 void List::onMouseDown(){
-
+	ALLEGRO_MOUSE_STATE mstate = GEngine->GetMouseState();
+	Vector2D Relative = Vector2D(mstate.x, mstate.y) - position;
+	if (InRange(Relative.x, Play.position.x, Play.position.x + Play.width) && InRange(Relative.y, Play.position.y, Play.position.y + Play.height)) {
+		Online::GetLevel(Level.id);
+		GEngine->SharedVar.bLoadingLevel = true;
+		strcpy(GEngine->SharedVar.LoadLevelName, Level.Name);
+		Play.onDown();
+	}
 }
 
 void List::onMouseUp(){
@@ -63,9 +70,4 @@ void List::Draw(){
 
 void PlayGame(){
 	GEngine->ChangeGameState<PlayState>();
-	PlayState *NewState = dynamic_cast<PlayState *>(GEngine->GetCurrentGameState());
-	if (NULL != NewState)
-	{
-		printf("Uhh, the game state");
-	}
 }
