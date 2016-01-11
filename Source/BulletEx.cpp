@@ -1,6 +1,7 @@
 #include "BulletEx.h"
 
-BulletEx::BulletEx(Vector2D pos){
+BulletEx::BulletEx(Vector2D pos, ECharacterDirection d){
+	direction = d;
 	position = pos;
 	explode = SpriteSheet(al_load_bitmap("Textures/Objects/bulletex.png"), 16, 16, 3);
 	ActualWidth = 16;
@@ -13,6 +14,12 @@ void BulletEx::Tick(float delta, std::vector<Character*> *Curr){
 	explode.PushFrame();
 }
 
-void BulletEx::Jump(){}
-void BulletEx::Run(Vector2D velocity){}
-void BulletEx::Die(){}
+void BulletEx::Jump(){
+
+}
+void BulletEx::Run(Vector2D velocity){
+
+}
+void BulletEx::Die(){
+
+}

@@ -6,18 +6,15 @@
 
 class BulletEx : public Character{
 public:
-	void Run(Vector2D velocity) = 0;
+	void Run(Vector2D velocity);
 
-	//Called when the character jumps
-	 void Jump() = 0;
+	void Jump();
 
-	//Called on every frame
-	void Tick(float delta, std::vector<Character*> *Curr) = 0;
+	void Tick(float delta, std::vector<Character*> *Curr);
 
-	//Called when the character dies
-	void Die() = 0;
+	void Die();
 
-	BulletEx(Vector2D pos);
+	BulletEx(Vector2D pos, ECharacterDirection d);
 	
 	//in public soley for deleting purposes and frame management
 	SpriteSheet explode;

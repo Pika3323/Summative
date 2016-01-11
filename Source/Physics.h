@@ -17,6 +17,7 @@ public:
 	Character* DankeyCheck;
 	Character* BarrelCheck;
 	Character* CinasCheck;
+	Character* BulletExCheck;
 
 
 	Physics();
