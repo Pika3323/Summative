@@ -45,7 +45,7 @@ public:
 	int DankeyCounter;
 	int CinasCounter;
 	int YashCounter;
-	std::vector<EnemyData*> EnemiesStored;
+	std::vector<EnemyData> EnemiesStored;
 	EnemyData Temp;
 	
 

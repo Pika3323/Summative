@@ -116,18 +116,20 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				GEngine->PrintDebugText(BLUE500, 5.f, "Pressed Space");
 				if (!CurrentWorld->bPlay){
 					CurrentWorld->bPlay = true;
+					for (int i = 0; i < (int)CurrentWorld->EnemiesStored.size(); i++){
+						if (CurrentWorld->EnemiesStored[i].Type == EnemyType::E_Cinas){
+							CurrCharacters.push_back(new Cinas(CurrentWorld->EnemiesStored[i].position));
+						}
+						else if (CurrentWorld->EnemiesStored[i].Type == EnemyType::E_Dankey){
+							CurrCharacters.push_back(new Dankey(CurrentWorld->EnemiesStored[i].position));
+						}
+					}
 					TinTin->SetCharacterWorldPosition(CharacterStart);
 				}
 				else {
 					CurrentWorld->bPlay = false;
-					for (int i = 0; i < (int)CurrCharacters.size(); i++){
-						TypeChecker = dynamic_cast<Barrel*>(CurrCharacters[i]);
-						if (TypeChecker)
-							DestroyCharacter(CurrCharacters[i]);
-						TypeChecker = dynamic_cast<Cinas*>(CurrCharacters[i]);
-						if (TypeChecker)
-							CurrCharacters[i]->position = dynamic_cast<Cinas*>(CurrCharacters[i])->StartPosition;
-					}
+					CurrCharacters.clear();
+					CurrCharacters.push_back(TinTin);
 				}
 				TinTin->bOnGround = false;
 				TinTin->velocity = Vector2D(0.f, 0.f);
@@ -196,10 +198,10 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 							clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
 
 							if (SelectedEnemy == EnemyType::E_Dankey && !clickedTile->occupied && !CurrentWorld->Blocks[(int)(clickedTile->location.x / CurrentWorld->gridSize)][(int)(clickedTile->location.y / CurrentWorld->gridSize)].bSpawned && !CurrentWorld->Blocks[(int)(clickedTile->location.x / CurrentWorld->gridSize)][(int)((clickedTile->location.y + 32) / CurrentWorld->gridSize)].bSpawned){
-								CurrentWorld->PlaceEnemy(clickedTile, SelectedEnemy, &CurrCharacters);
+								CurrentWorld->PlaceEnemy(clickedTile, SelectedEnemy);
 							}
 							if (SelectedEnemy == EnemyType::E_Cinas && !clickedTile->occupied && !CurrentWorld->Blocks[(int)(clickedTile->location.x / CurrentWorld->gridSize)][(int)(clickedTile->location.y / CurrentWorld->gridSize)].bSpawned){
-								CurrentWorld->PlaceEnemy(clickedTile, SelectedEnemy, &CurrCharacters);
+								CurrentWorld->PlaceEnemy(clickedTile, SelectedEnemy);
 							}
 						}
 						//Check if the box placement mode isn't enabled
@@ -399,6 +401,7 @@ void PlayState::Tick(float delta){
 				TinTin->Die();
 				TinTin->SetCharacterWorldPosition(CharacterStart);
 				CurrentWorld->bPlay = false;
+				TinTin->Health = 100;
 			}
 		}
 		

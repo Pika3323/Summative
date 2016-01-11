@@ -50,16 +50,8 @@ void World::DestroyBlock(GridTile* Target){
 }
 
 void World::PlaceEnemy(GridTile* Target, EnemyType Type){
-	if (Type == EnemyType::E_Cinas) {
-		Temp = { Target->location, Type };
-		EnemyData->push_back(Temp);
-	}
-	if (Type == EnemyType::E_Dankey) {
-		All->push_back(new Dankey(Vector2D(Target->location.x, Target->location.y)));
-	}
-	//if (Type == EnemyType::E_Yash) {
-	//	All->push_back(new Yash(Vector2D(Target->location.x, Target->location.y)));
-	//}
+	Temp = { Target->location, Type };
+	EnemiesStored.push_back(Temp);
 }
 
 //Called on every frame For Logic Updates.
