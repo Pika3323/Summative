@@ -79,6 +79,9 @@
     <ClCompile Include="BulletEx.cpp">
       <Filter>Game\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Cinas.cpp">
+      <Filter>Game\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Block.h">
@@ -163,6 +166,9 @@
       <Filter>Game\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BulletEx.h">
+      <Filter>Game\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cinas.h">
       <Filter>Game\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

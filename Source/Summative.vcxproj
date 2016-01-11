@@ -17,6 +17,7 @@
     <ClInclude Include="BulletEx.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="Bullet.h" />
+    <ClInclude Include="Cinas.h" />
     <ClInclude Include="LevelSelectState.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="Core.h" />
@@ -48,6 +49,7 @@
     <ClCompile Include="BulletEx.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Character.cpp" />
+    <ClCompile Include="Cinas.cpp" />
     <ClCompile Include="EditorState.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Engine.cpp" />

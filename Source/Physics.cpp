@@ -16,7 +16,6 @@ void Physics::GravTick(std::vector<Character*> All){
 }
 
 int Physics::ColTick(World* Curr, std::vector<Character*> &All){
-	printf("%d", All.size());
 	for (int j = 0; j < (int)All.size(); j++) {
 		BulletCheck = dynamic_cast<Bullet*>(All[j]);
 		PlayerCheck = dynamic_cast<Player*>(All[j]);

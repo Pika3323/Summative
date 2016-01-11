@@ -4,6 +4,7 @@
 #include "Engine.h"
 #include "Enemy.h"
 #include "Dankey.h"
+#include "Cinas.h"
 
 //A struct containing info on a tile in the world
 struct GridTile{
@@ -28,10 +29,13 @@ public:
 	BlockType Type[15];
 	class Dankey* dCheck;		//dankey pointer checker 
 	Vector2D dTemp;		//temp for pushing back loading vector
-	//Cinas *cCheck;		//Cinas pointer checker			for saving files
-	//Cinas cTemp;
+	char DankeyPres;		//if dankeys are present print y
+	class Cinas *cCheck;		//Cinas pointer checker			for saving files
+	Vector2D cTemp;
+	char CinasPres;
 	//Yash *yCheck;		//Yash pointer checker
 	//Yash yTemp;
+	//char YasPres;
 	bool bPlay;
 	bool EnemySelect;
 	int DankeyCounter;

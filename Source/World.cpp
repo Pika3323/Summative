@@ -49,14 +49,14 @@ void World::DestroyBlock(GridTile* Target){
 }
 
 void World::PlaceEnemy(GridTile* Target, EnemyType Type, std::vector<Character*> *All){
-	//if (Type == EnemyType::E_Cinas) {
-	//	All->pushback(Cinas(Vector2D(Target->location.x, Target->location.y)));
-	//}
+	if (Type == EnemyType::E_Cinas) {
+		All->push_back(new Cinas(Vector2D(Target->location.x, Target->location.y)));
+	}
 	if (Type == EnemyType::E_Dankey) {
 		All->push_back(new Dankey(Vector2D(Target->location.x, Target->location.y)));
 	}
 	//if (Type == EnemyType::E_Yash) {
-	//	All->pushback(Yash(Vector2D(Target->location.x, Target->location.y)));
+	//	All->push_back(new Yash(Vector2D(Target->location.x, Target->location.y)));
 	//}
 }
 
@@ -124,12 +124,25 @@ bool World::Load(const char LevelName[64], std::vector<Character*> *enemies){
 				}
 			}
 		}
+		fread(&DankeyPres, sizeof(char), 1, fptr);
+		if (DankeyPres == 'y')
+			fread(&DankeyCounter, sizeof(int), 1, fptr);
 
-		fread(&DankeyCounter, sizeof(int), 1, fptr);
+		fread(&CinasPres, sizeof(char), 1, fptr);
+		if (CinasPres == 'y')
+			fread(&CinasCounter, sizeof(int), 1, fptr);
 
-		for (int i = 0; i < DankeyCounter; i++) {
-			fread(&dTemp, sizeof(Vector2D), 1, fptr);
-			enemies->push_back(new Dankey(dTemp));
+		if (DankeyPres == 'y'){
+			for (int i = 0; i < DankeyCounter; i++) {
+				fread(&dTemp, sizeof(Vector2D), 1, fptr);
+				enemies->push_back(new Dankey(dTemp));
+			}
+		}
+		if (CinasPres == 'y'){
+			for (int i = 0; i < CinasCounter; i++) {
+				fread(&cTemp, sizeof(Vector2D), 1, fptr);
+				enemies->push_back(new Cinas(cTemp));
+			}
 		}
 
 		fclose(fptr);
@@ -212,10 +225,35 @@ bool World::Save(const char LevelName[64], std::vector<Character*> enemies) {
 			else {
 				DankeyCounter += 1;
 			}
-			//add more as new enemies are made
 		}
-		fwrite(&DankeyCounter, sizeof(int), 1, fptr);
+		for (int i = 0; i < (int)enemies.size(); i++) {
+			cCheck = dynamic_cast<Cinas*>(enemies[i]);
+			if (!cCheck) {
+			}
+			else {
+				CinasCounter += 1;
+			}
+		}
+		if (DankeyCounter >= 1){
+			DankeyPres = 'y';
+			fwrite(&DankeyPres, sizeof(char), 1, fptr);
+			fwrite(&DankeyCounter, sizeof(int), 1, fptr);
+		}
+		else {
+			DankeyPres = 'n';
+			fwrite(&DankeyPres, sizeof(char), 1, fptr);
+		}
+		if (CinasCounter >= 1){
+			CinasPres = 'y';
+			fwrite(&CinasPres, sizeof(char), 1, fptr);
+			fwrite(&CinasCounter, sizeof(int), 1, fptr);
+		}
+		else {
+			CinasPres = 'n';
+			fwrite(&CinasPres, sizeof(char), 1, fptr);
+		}
 		dCheck = NULL;
+		cCheck = NULL;
 		for (int i = 0; i < (int)enemies.size(); i++) {
 			dCheck = dynamic_cast<Dankey*>(enemies[i]);
 			if (!dCheck) {
@@ -223,7 +261,14 @@ bool World::Save(const char LevelName[64], std::vector<Character*> enemies) {
 			else {
 				fwrite(&enemies[i]->position, sizeof(Vector2D), 1, fptr);
 			}
-			//add more as new enemies are made
+		}
+		for (int i = 0; i < (int)enemies.size(); i++) {
+			cCheck = dynamic_cast<Cinas*>(enemies[i]);
+			if (!cCheck) {
+			}
+			else {
+				fwrite(&enemies[i]->position, sizeof(Vector2D), 1, fptr);
+			}
 		}
 
 		fclose(fptr);

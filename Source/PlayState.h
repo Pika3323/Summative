@@ -37,6 +37,13 @@ public:
 	//buffer for background
 	Buffer Background;	
 
+	//A buffer for the UI
+	Buffer UI;
+
+	Buffer SelectBlock[15];
+
+	int UIOffset;
+
 	//The location of a click
 	Vector2D ClickLocation;	
 
@@ -55,13 +62,13 @@ public:
 	//Character start position
 	Vector2D CharacterStart;
 
-	//bool for if user is changing start postion
+	//bool for if user is changing start position
 	bool ChangingStart;
 
 	//for fixing character movement
 	ECharacterDirection Priority;
 
-	// for checking what happening in collision phsyics
+	// for checking what happening in collision physics
 	int ColChecker;
 
 	//Characters in the world
