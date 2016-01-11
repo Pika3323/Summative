@@ -1,9 +1,11 @@
 #include "Player.h"
 
 Player::Player(int Height, int Width){
+	Deleted = false;
 	run = SpriteSheet(al_load_bitmap("Textures/Characters/running_e.png"), 64, 128, 11);
 	fall = SpriteSheet(al_load_bitmap("Textures/Characters/fall_e.png"), 64, 128, 3);
 	still = SpriteSheet(al_load_bitmap("Textures/Characters/idle_e.png"), 64, 128, 6);
+	shoot = SpriteSheet(al_load_bitmap("Textures/Characters/shoot_e.png"), 64, 128, 4);
 	ActualHeight = Height;
 	ActualWidth = Width;
 	texture = al_create_bitmap(Width, Height);
@@ -40,7 +42,23 @@ void Player::Die(){
 //Called every frame
 void Player::Tick(float delta, std::vector<Character*> *Curr){
 	//All of the animation code
-	if (bRunning && bOnGround){
+	if (shoot.CurrentFrame == 3){
+		ShotAlready = false;
+	}
+	if (bShooting && !bRunning && bOnGround) {
+		shoot.GetFrameBitmap(this->texture);
+		shoot.PushFrame();
+		if (shoot.CurrentFrame == 2 && direction == ECharacterDirection::R_Left && !ShotAlready){
+			ShotAlready = true;
+			Curr->push_back(new Bullet(Vector2D(position.x, position.y + 60), direction));
+		}
+		else if (shoot.CurrentFrame == 2 && direction == ECharacterDirection::R_Right && !ShotAlready){
+			ShotAlready = true;
+			Curr->push_back(new Bullet(Vector2D(position.x + ActualWidth, position.y + 60), direction));
+		}
+		position += velocity;
+	}
+	else if (bRunning && bOnGround){
 		run.GetFrameBitmap(this->texture);
 		run.PushFrame();
 		position += velocity;

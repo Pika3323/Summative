@@ -25,6 +25,19 @@ PlayState::PlayState(){
 	PauseButton = new Button(al_map_rgb(255, 255, 255), BLUE500, 32, 32, Vector2D(0.f, 0.f), 2, "||", &PauseButtonDown);
 }
 
+void PlayState::DestroyCharacter(Character* C){
+	std::vector<Character*>::iterator it;
+
+	//Finds the character in the character vector
+	it = std::find(CurrCharacters.begin(), CurrCharacters.end(), C);
+
+	//Removes the character
+	CurrCharacters.erase(it);
+
+	//Deletes character from memory
+	delete C;
+}
+
 void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 	if (ev->keyboard.keycode == ALLEGRO_KEY_P && ev->type == ALLEGRO_EVENT_KEY_DOWN) {
 		if (!Paused){
@@ -109,6 +122,11 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				}
 				TinTin->bOnGround = false;
 				TinTin->velocity = Vector2D(0.f, 0.f);
+				for (int i = 0; i < (int)CurrCharacters.size(); i++){
+					TypeChecker = dynamic_cast<Barrel*>(CurrCharacters[i]);
+					if (TypeChecker)
+						DestroyCharacter(CurrCharacters[i]);
+				}
 				break;
 			case ALLEGRO_KEY_ESCAPE:
 				GEngine->Quit();
@@ -167,7 +185,10 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 							//get the tile that was clicked
 							clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
 
-							if (!clickedTile->occupied) {
+							if (SelectedEnemy == EnemyType::E_Dankey && !clickedTile->occupied && !CurrentWorld->Blocks[(int)(clickedTile->location.x / CurrentWorld->gridSize)][(int)(clickedTile->location.y / CurrentWorld->gridSize)].bSpawned && !CurrentWorld->Blocks[(int)(clickedTile->location.x / CurrentWorld->gridSize)][(int)((clickedTile->location.y + 32) / CurrentWorld->gridSize)].bSpawned){
+								CurrentWorld->PlaceEnemy(clickedTile, SelectedEnemy, &CurrCharacters);
+							}
+							if (SelectedEnemy == EnemyType::E_Cinas && !clickedTile->occupied && !CurrentWorld->Blocks[(int)(clickedTile->location.x / CurrentWorld->gridSize)][(int)(clickedTile->location.y / CurrentWorld->gridSize)].bSpawned){
 								CurrentWorld->PlaceEnemy(clickedTile, SelectedEnemy, &CurrCharacters);
 							}
 					}
@@ -210,6 +231,9 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 						ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 						FirstTile = CurrentWorld->GetClickedTile(ClickLocation);
 					}
+				}
+				else {
+					TinTin->bShooting = true;
 				}
 				break;
 			case MOUSE_RB:
@@ -264,7 +288,9 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 		}
 		//On MouseUp
 		else if (ev->type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
-
+			if (CurrentWorld->bPlay){
+				TinTin->bShooting = false;
+			}
 			bClicked = false;
 
 			switch (ev->mouse.button) {
@@ -348,9 +374,16 @@ void PlayState::Tick(float delta){
 				TinTin->Win(CharacterStart);
 				CurrentWorld->bPlay = false;
 			}
-			/*else if (ColChecker >= 2){
-				CurrCharacters.erase(std::find(CurrCharacters.begin(), CurrCharacters.end(), CurrCharacters[ColChecker - 2]));
-			}*/
+			if (ColChecker > 2){
+				TypeChecker = dynamic_cast<Bullet*>(CurrCharacters[ColChecker - 2]);
+				if (TypeChecker){
+					CurrCharacters.push_back(new BulletEx(CurrCharacters[ColChecker - 2]->position, CurrCharacters[ColChecker - 2]->direction));
+					DestroyCharacter(CurrCharacters[ColChecker - 2]);
+				}
+				else{
+					DestroyCharacter(CurrCharacters[ColChecker - 2]);
+				}
+			}
 			CurrentEffects->FricTick(CurrCharacters);
 
 			//Kill the Character if he falls out of the world
@@ -420,7 +453,7 @@ void PlayState::Tick(float delta){
 		//Mouse states
 		switch (GEngine->GetMouseState().buttons){
 		case MOUSE_LB:
-			if (!ChangingStart){
+			if (!ChangingStart && !CurrentWorld->bPlay){
 				if (!bBoxSelect && !CurrentWorld->EnemySelect){
 					ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 					//Get the tile that was clicked
@@ -474,7 +507,7 @@ void PlayState::Draw(){
 
 	if (CurrentWorld->bPlay){
 		for (int i = 0; i < (int)CurrCharacters.size(); i++) {
-			CurrCharacters[i]->Draw();
+		CurrCharacters[i]->Draw();
 		}
 	}
 

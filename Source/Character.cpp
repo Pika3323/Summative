@@ -7,9 +7,6 @@ Character::Character(Vector2D xy, int width, int height){
 	bRunning = false;
 	bOnGround = false;
 	bFlipped = false;
-
-	//Set the character's default direction to the right
-	direction = ECharacterDirection::R_Right;
 }
 
 Character::~Character(){

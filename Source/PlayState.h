@@ -40,6 +40,9 @@ public:
 	//The location of a click
 	Vector2D ClickLocation;	
 
+	//character type checker
+	Character* TypeChecker;
+
 	//The clicked tile from the world grid
 	struct GridTile* clickedTile;	
 
@@ -99,6 +102,8 @@ public:
 	float DragTime = 0.f;
 	double delta;
 	Vector2D DragVelocity = Vector2D(-1.f, -1.f);
+
+	void DestroyCharacter(Character* C);
 
 	void Init();
 
