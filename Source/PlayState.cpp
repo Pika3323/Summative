@@ -397,7 +397,9 @@ void PlayState::Tick(float delta){
 			CurrentEffects->FricTick(CurrCharacters);
 
 			//Kill the Character if he falls out of the world
-			if (TinTin->GetCharacterWorldPosition().y > CurrentWorld->dimensions.x || TinTin->Health <= 0) {
+			if (TinTin->position.x > CurrentWorld->dimensions.x || (TinTin->position.x + TinTin->ActualWidth) < 0 || TinTin->position.y > CurrentWorld->dimensions.y || (TinTin->position.y + TinTin->ActualHeight) < 0 || TinTin->Health <= 0) {
+				CurrCharacters.clear();
+				CurrCharacters.push_back(TinTin);
 				TinTin->Die();
 				TinTin->SetCharacterWorldPosition(CharacterStart);
 				CurrentWorld->bPlay = false;
@@ -496,6 +498,12 @@ void PlayState::Draw(){
 		al_draw_filled_rectangle(FirstTile->location.x, FirstTile->location.y, newTile->location.x, newTile->location.y, al_map_rgba(6, 27, 73, 25));
 	}
 
+	if (CurrentWorld->bPlay){
+		if (TinTin->Health)
+		al_set_target_bitmap(HealthBar);
+		al_draw_rectangle
+		
+	}
 	//Reset the target bitmap to the backbuffer
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 
@@ -563,6 +571,7 @@ void PlayState::Init(){
 	Background.image = al_create_bitmap(4096, 2048);
 	BlockBuffer.image = al_create_bitmap(4096, 2048);
 	UI.image = al_create_bitmap(GEngine->GetDisplayWidth(), 100);
+	HealthBar = al_create_bitmap(500, 32);
 
 	CurrCharacters.push_back(TinTin);	//registering main character in Character vector
 	TinTin->velocity = Vector2D(0.f, 0.f);		//velocity starts at zero

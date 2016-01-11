@@ -1,7 +1,7 @@
 #include "Player.h"
 
 Player::Player(int Height, int Width){
-	Health = 100;
+	Health = 100.f;
 	Deleted = false;
 	run = SpriteSheet(al_load_bitmap("Textures/Characters/running_e.png"), 64, 128, 11);
 	fall = SpriteSheet(al_load_bitmap("Textures/Characters/fall_e.png"), 64, 128, 3);
@@ -15,7 +15,6 @@ Player::Player(int Height, int Width){
 }
 
 void Player::Run(Vector2D vel){
-	Health = 100;
 
 	velocity.x += vel.x;
 
