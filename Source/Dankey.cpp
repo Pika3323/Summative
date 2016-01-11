@@ -1,6 +1,7 @@
 #include "Dankey.h"
 
 Dankey::Dankey(Vector2D pos){
+	Deleted = false;
 	position = pos;
 	BarrelDelay = 0;
 	ActualHeight = 64;

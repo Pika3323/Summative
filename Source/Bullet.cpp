@@ -1,6 +1,7 @@
 #include "Bullet.h"
 
 Bullet::Bullet(Vector2D pos, ECharacterDirection d){
+	Deleted = false;
 	direction = d;
 	position = pos;
 	bullet = SpriteSheet(al_load_bitmap("Textures/Objects/bullet.png"), 16, 16, 4);

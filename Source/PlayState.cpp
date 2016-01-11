@@ -374,9 +374,16 @@ void PlayState::Tick(float delta){
 				TinTin->Win(CharacterStart);
 				CurrentWorld->bPlay = false;
 			}
-			/*else if (ColChecker >= 2){
-				CurrCharacters.erase(std::find(CurrCharacters.begin(), CurrCharacters.end(), CurrCharacters[ColChecker - 2]));
-			}*/
+			if (ColChecker > 2){
+				TypeChecker = dynamic_cast<Bullet*>(CurrCharacters[ColChecker - 2]);
+				if (TypeChecker){
+					CurrCharacters.push_back(new BulletEx(CurrCharacters[ColChecker - 2]->position, CurrCharacters[ColChecker - 2]->direction));
+					DestroyCharacter(CurrCharacters[ColChecker - 2]);
+				}
+				else{
+					DestroyCharacter(CurrCharacters[ColChecker - 2]);
+				}
+			}
 			CurrentEffects->FricTick(CurrCharacters);
 
 			//Kill the Character if he falls out of the world

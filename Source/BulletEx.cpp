@@ -1,6 +1,7 @@
 #include "BulletEx.h"
 
 BulletEx::BulletEx(Vector2D pos, ECharacterDirection d){
+	Deleted = false;
 	direction = d;
 	position = pos;
 	explode = SpriteSheet(al_load_bitmap("Textures/Objects/bulletex.png"), 16, 16, 3);

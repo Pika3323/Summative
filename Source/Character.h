@@ -25,6 +25,9 @@ public:
 	//Whether the character is running
 	bool bRunning;
 
+	//for physics deleting
+	bool Deleted;
+
 	//Whether the character has been flipped
 	bool bFlipped;
 
