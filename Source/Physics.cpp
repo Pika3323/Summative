@@ -74,27 +74,29 @@ int Physics::ColTick(World* Curr, std::vector<Character*> &All){
 		//add all collisions for each character here
 		if (BulletCheck){
 			if (!static_cast<bool>(All[j]->GetCharacterDirection()) && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + All[j]->ActualWidth) / 32)][int((All[j]->GetCharacterWorldPosition().y + 8) / 32)].bSpawned && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + All[j]->ActualWidth) / 32)][int((All[j]->GetCharacterWorldPosition().y + 8) / 32)].bCollision) {
-				return j + 2;
+				dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrCharacters.push_back(new BulletEx(All[j]->position, All[j]->direction));
+				dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->DestroyCharacter(All[j]);
 			}
 			else if (static_cast<bool>(All[j]->GetCharacterDirection()) && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x) / 32)][int((All[j]->GetCharacterWorldPosition().y + 8) / 32)].bSpawned && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x) / 32)][int((All[j]->GetCharacterWorldPosition().y + 8) / 32)].bCollision) {
-				return j + 2;
+				dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrCharacters.push_back(new BulletEx(All[j]->position, All[j]->direction));
+				dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->DestroyCharacter(All[j]);
 			}
 		}
 		if (BulletExCheck){
-			if (dynamic_cast<BulletEx*>(All[j])->explode.CurrentFrame == 3){
-				return j + 2;
+			if (dynamic_cast<BulletEx*>(All[j])->explode.CurrentFrame == 2){
+				dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->DestroyCharacter(All[j]);
 			}
 		}
 		if (BarrelCheck){
 			if (!static_cast<bool>(All[j]->GetCharacterDirection()) && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + All[j]->ActualWidth) / 32)][int((All[j]->GetCharacterWorldPosition().y + 8) / 32)].bSpawned && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + All[j]->ActualWidth) / 32)][int((All[j]->GetCharacterWorldPosition().y + 8) / 32)].bCollision) {
-				return j + 2;
+				dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->DestroyCharacter(All[j]);
 			}
 			else if (static_cast<bool>(All[j]->GetCharacterDirection()) && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x) / 32)][int((All[j]->GetCharacterWorldPosition().y + 8) / 32)].bSpawned && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x) / 32)][int((All[j]->GetCharacterWorldPosition().y + 8) / 32)].bCollision) {
-				return j + 2;
+				dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->DestroyCharacter(All[j]);
 			}
 		}
-		if (!PlayerCheck && !All[j]->Deleted) {
-			if ((All[j]->position.x + All[j]->ActualWidth) < 0|| (All[j]->position.x > Curr->dimensions.x) || (All[j]->position.y > Curr->dimensions.y) || ((All[j]->position.y + All[j]->ActualHeight) < 0)){
+		if (!PlayerCheck && j < (int)All.size()) {
+			if ((All[j]->position.x + All[j]->ActualWidth) < 0 || (All[j]->position.x > Curr->dimensions.x) || (All[j]->position.y > Curr->dimensions.y) || ((All[j]->position.y + All[j]->ActualHeight) < 0)){
 				dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->DestroyCharacter(All[j]);
 			}
 		}
