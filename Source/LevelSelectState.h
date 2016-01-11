@@ -8,7 +8,8 @@
 class LevelSelectState : public GameState{
 public:
 	char Username[64];
-	
+	static bool bLocalMenu;
+
 	std::vector<WorldLevelData> Levels;
 	std::vector<List*> OnlineTiles;
 	std::vector<WorldLevelData> LocalLevels;
@@ -30,3 +31,5 @@ public:
 	LevelSelectState();
 	~LevelSelectState();
 };
+
+void ToggleList();

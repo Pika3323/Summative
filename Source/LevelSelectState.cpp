@@ -1,7 +1,10 @@
 #include "LevelSelectState.h"
+bool LevelSelectState::bLocalMenu = true;
 
 LevelSelectState::LevelSelectState(){
 	strcpy(Username, "TestUser");
+	Components.push_back(new Button(WHITE, BLUE500, 250, 32, GEngine->GetDisplayWidth() / 2 - 250, 0, "Local Levels", ));
+	Components.push_back(new Button(WHITE, BLUE500, 250, 32, GEngine->GetDisplayWidth() / 2 - 250, 0, "Online Levels", ));
 }
 
 void LevelSelectState::Init(){
@@ -51,4 +54,8 @@ void LevelSelectState::Destroy(){
 }
 LevelSelectState::~LevelSelectState(){
 
+}
+
+void ToggleList(){
+	LevelSelectState::bLocalMenu = !LevelSelectState::bLocalMenu;
 }
