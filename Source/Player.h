@@ -7,6 +7,7 @@
 
 class Player : public Character{
 public:
+
 	bool ShotAlready;
 
 	bool bShooting;
@@ -27,5 +28,4 @@ protected:
 	SpriteSheet fall;
 	SpriteSheet still;
 	SpriteSheet shoot;
-	int Health;
 };

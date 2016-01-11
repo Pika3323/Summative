@@ -1,6 +1,8 @@
 #include "Cinas.h"
 
 Cinas::Cinas(Vector2D pos){
+	StartPosition = pos;
+	Damage = 0.1;
 	position = pos;
 	ActualHeight = 32;
 	ActualWidth = 32;
@@ -17,7 +19,8 @@ void Cinas::Tick(float delta, std::vector<Character*> *C){
 
 	float DistanceToC = Vector2D(position - dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->TinTin->position).Magnitude();
 	GridTile* T;
-	T = W->GetClickedTile(position); //autoset to where cinas is
+	T = W->GetClickedTile(position); //autoset to where cinas is checking
+
 	
 	if ((position.x - dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->TinTin->position.x) > 0 && bCharacterLocked){
 		direction = ECharacterDirection::R_Left;

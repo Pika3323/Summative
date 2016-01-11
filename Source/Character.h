@@ -10,6 +10,12 @@ enum class ECharacterDirection{
 
 class Character{
 public:
+	//Damage
+	float Damage;
+
+	//Health for all characters
+	float Health;
+
 	//The direction that the character is facing
 	ECharacterDirection direction;
 

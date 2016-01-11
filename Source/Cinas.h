@@ -6,6 +6,9 @@
 
 class Cinas : public Enemy{
 public:
+
+	Vector2D StartPosition;
+
 	Cinas(Vector2D pos);
 
 	void Run(Vector2D velocity);

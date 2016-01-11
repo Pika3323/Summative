@@ -120,14 +120,17 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				}
 				else {
 					CurrentWorld->bPlay = false;
+					for (int i = 0; i < (int)CurrCharacters.size(); i++){
+						TypeChecker = dynamic_cast<Barrel*>(CurrCharacters[i]);
+						if (TypeChecker)
+							DestroyCharacter(CurrCharacters[i]);
+						TypeChecker = dynamic_cast<Cinas*>(CurrCharacters[i]);
+						if (TypeChecker)
+							CurrCharacters[i]->position = dynamic_cast<Cinas*>(CurrCharacters[i])->StartPosition;
+					}
 				}
 				TinTin->bOnGround = false;
 				TinTin->velocity = Vector2D(0.f, 0.f);
-				for (int i = 0; i < (int)CurrCharacters.size(); i++){
-					TypeChecker = dynamic_cast<Barrel*>(CurrCharacters[i]);
-					if (TypeChecker)
-						DestroyCharacter(CurrCharacters[i]);
-				}
 				break;
 			case ALLEGRO_KEY_ESCAPE:
 				GEngine->Quit();
@@ -359,7 +362,7 @@ void PlayState::Tick(float delta){
 		TinTin->Run(Vector2D(-1.f, 0.f));
 	}
 	//Character ticks
-	for (int i = 0; i < (int) CurrCharacters.size(); i++) {
+	for (int i = 0; i < (int) CurrCharacters.size(); i++ && CurrentWorld->bPlay) {
 		CurrCharacters[i]->Tick(delta, &CurrCharacters);
 	}
 
@@ -392,7 +395,7 @@ void PlayState::Tick(float delta){
 			CurrentEffects->FricTick(CurrCharacters);
 
 			//Kill the Character if he falls out of the world
-			if (TinTin->GetCharacterWorldPosition().y > CurrentWorld->dimensions.x) {
+			if (TinTin->GetCharacterWorldPosition().y > CurrentWorld->dimensions.x || TinTin->Health <= 0) {
 				TinTin->Die();
 				TinTin->SetCharacterWorldPosition(CharacterStart);
 				CurrentWorld->bPlay = false;
@@ -482,6 +485,7 @@ void PlayState::Draw(){
 		CurrCharacters[i]->Draw();
 		}
 	}
+
 
 	//Draws a transparent blue rectangle over the area selected by the box select
 	if (bBoxSelect && bFirstBoxSelected) {
