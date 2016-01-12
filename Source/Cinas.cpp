@@ -33,8 +33,10 @@ void Cinas::Tick(float delta, std::vector<Character*> *C){
 		T = W->GetClickedTile(position + Vector2D(32.f, 0.f));
 	}
 
-	if (bCharacterLocked && W->Blocks[T->x][T->y].bCollision && W->Blocks[T->x][T->y].bSpawned){
-		this->Jump();
+	if (T){
+		if (bCharacterLocked && W->Blocks[T->x][T->y].bCollision && W->Blocks[T->x][T->y].bSpawned){
+			this->Jump();
+		}
 	}
 
 	if (DistanceToC > 400 && !bCharacterLocked && W->bPlay) {
