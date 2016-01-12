@@ -51,6 +51,18 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 	if (!Paused) {
 		if (ev->type == ALLEGRO_EVENT_KEY_DOWN) {
 			switch (ev->keyboard.keycode) {
+			case ALLEGRO_KEY_D:
+			case ALLEGRO_KEY_RIGHT:
+				if (!CurrentWorld->bPlay){
+					WorldMoveDelta.x = -5.f;
+				}
+				break;
+			case ALLEGRO_KEY_A:
+			case ALLEGRO_KEY_LEFT:
+				if (!CurrentWorld->bPlay){
+					WorldMoveDelta.x = 5.f;
+				}
+				break;
 			case ALLEGRO_KEY_S:
 			case ALLEGRO_KEY_DOWN:
 				if (!CurrentWorld->bPlay){
@@ -313,7 +325,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 void PlayState::Tick(float delta){
 	//If both are false, stop moving
 	if ((!(al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_A) || al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_LEFT)) && !(al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_D) || al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_RIGHT))) && CurrentWorld->bPlay){
-		WorldMoveDelta.x = 0.f;
+		//WorldMoveDelta.x = 0.f;
 		TinTin->bRunning = false;
 		TinTin->velocity.x = 0;
 	}
@@ -400,7 +412,6 @@ void PlayState::Tick(float delta){
 		}
 		
 		CurrentWorld->moveWorld(WorldMoveDelta, GridBuffer, Background, BlockBuffer, notPlayingBuff);
-		WorldMoveDelta = Vector2D(0.f, 0.f);
 		
 		//Run world tick
 		CurrentWorld->Tick(delta);

@@ -172,7 +172,7 @@ void Engine::Cleanup(){
 	al_shutdown_primitives_addon();
 
 	//remove the temporary info file
-	//remove("temp.temp");
+	remove("temp.temp");
 
 	//Finally, delete the GEngine instance of Engine
 	delete this;
@@ -257,4 +257,3 @@ GameState* Engine::GetCurrentGameState(){
 void Engine::PrintDebugText(ALLEGRO_COLOR c, float duration, const char* text){
 	DebugStrings.push_back(DebugOutput(c, text, duration));
 }
-
