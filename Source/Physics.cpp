@@ -106,7 +106,7 @@ int Physics::ColTick(World* Curr, std::vector<Character*> &All){
 			if (!static_cast<bool>(All[0]->GetCharacterDirection()) && ((All[j]->position.x + 16) <= (All[0]->position.x + (All[0]->ActualWidth / 2 + 10)) && (All[j]->position.x + 16) >= (All[0]->position.x + (All[0]->ActualWidth / 2 - 10))) && (All[j]->position.y > All[0]->position.y && All[j]->position.y < (All[0]->position.y + All[0]->ActualHeight))) {
 				All[0]->Health -= All[j]->Damage;
 			}
-			else if (static_cast<bool>(All[0]->GetCharacterDirection()) && ((All[j]->position.x + 16) <= (All[0]->position.x + (All[0]->ActualWidth / 2 + 10)) && (All[j]->position.x + 16) >= (All[0]->position.x + (All[0]->ActualWidth / 2 - 10))) && All[j]->position.y > (All[0]->position.y && All[j]->position.y < (All[0]->position.y + All[0]->ActualHeight))) {
+			else if (static_cast<bool>(All[0]->GetCharacterDirection()) && All[j]->position.x + 16 <= All[0]->position.x + All[0]->ActualWidth / 2 + 10 && All[j]->position.x + 16 >= (All[0]->position.x + (All[0]->ActualWidth / 2 - 10)) && All[j]->position.y > All[0]->position.y && All[j]->position.y < (All[0]->position.y + All[0]->ActualHeight)) {
 				All[0]->Health -= All[j]->Damage;
 			}
 			

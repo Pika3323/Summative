@@ -501,7 +501,8 @@ void PlayState::Draw(){
 	if (CurrentWorld->bPlay){
 		if (TinTin->Health)
 		al_set_target_bitmap(HealthBar);
-		al_draw_rectangle
+		//al_draw_rectangle
+		al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 		
 	}
 	//Reset the target bitmap to the backbuffer
