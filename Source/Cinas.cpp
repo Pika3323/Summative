@@ -1,6 +1,8 @@
 #include "Cinas.h"
 
 Cinas::Cinas(Vector2D pos){
+	StartPosition = pos;
+	Damage = 0.1f;
 	position = pos;
 	ActualHeight = 32;
 	ActualWidth = 32;
@@ -15,16 +17,17 @@ Cinas::Cinas(Vector2D pos){
 void Cinas::Tick(float delta, std::vector<Character*> *C){
 	World* W = dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld;
 
-	float DistanceToC = Vector2D(position - dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->TinTin->position).Magnitude();
+	float DistanceToC = Vector2D(position.x - dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->TinTin->position.x + 32, position.y - dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->TinTin->position.y).Magnitude();
 	GridTile* T;
-	T = W->GetClickedTile(position); //autoset to where cinas is
+	T = W->GetClickedTile(position); //autoset to where cinas is checking
+
 	
-	if ((position.x - dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->TinTin->position.x) > 0 && bCharacterLocked){
+	if ((position.x - (dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->TinTin->position.x + 16)) > 0 && bCharacterLocked){
 		direction = ECharacterDirection::R_Left;
 		velocity.x = -5.f;
 		T = W->GetClickedTile(position + Vector2D(-32.f, 0.f));
 	}
-	else if ((position.x - dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->TinTin->position.x) < 0 && bCharacterLocked) {
+	else if ((position.x - (dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->TinTin->position.x + 16)) < 0 && bCharacterLocked){
 		direction = ECharacterDirection::R_Right;
 		velocity.x = 5.f;
 		T = W->GetClickedTile(position + Vector2D(32.f, 0.f));

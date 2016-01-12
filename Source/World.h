@@ -6,6 +6,10 @@
 #include "Dankey.h"
 #include "Cinas.h"
 
+struct EnemyData{
+	Vector2D position;
+	EnemyType Type;
+};
 //A struct containing info on a tile in the world
 struct GridTile{
 	Vector2D location;
@@ -41,17 +45,21 @@ public:
 	int DankeyCounter;
 	int CinasCounter;
 	int YashCounter;
+	std::vector<EnemyData> EnemiesStored;
+	EnemyData Temp;
+	
 
 	World(){ bPlay = false; }
 	World(Vector2D s, int gs);
 
+	//Returns which tile was clicked based on the location of the click. Returns NULL if inLoc was invalid
 	GridTile* GetClickedTile(Vector2D inLoc);
 
 	void PlaceBlock(GridTile* Target, EBlockType Type);
 
 	void DestroyBlock(GridTile* Target);
 
-	void PlaceEnemy(GridTile* Target, EnemyType Type, std::vector<Character*> *All);	//add each enemy vector in as it is made
+	void PlaceEnemy(GridTile* Target, EnemyType Type);	//add each enemy vector in as it is made
 
 	void Tick(float delta);
 

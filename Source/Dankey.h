@@ -6,6 +6,7 @@
 
 class Dankey : public Enemy{
 public:
+
 	int BarrelDelay;
 
 	bool PlayerinSight;

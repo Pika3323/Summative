@@ -28,6 +28,7 @@ World::World(Vector2D s, int gs){
 //Returns which tile was clicked based on the location of the click. Returns NULL if inLoc was invalid
 GridTile* World::GetClickedTile(Vector2D inLoc){
 	if (inLoc.x < 0 || inLoc.y < 0){
+
 		return NULL;
 	}
 	else{
@@ -48,16 +49,9 @@ void World::DestroyBlock(GridTile* Target){
 	Target->occupied = false;
 }
 
-void World::PlaceEnemy(GridTile* Target, EnemyType Type, std::vector<Character*> *All){
-	if (Type == EnemyType::E_Cinas) {
-		All->push_back(new Cinas(Vector2D(Target->location.x, Target->location.y)));
-	}
-	if (Type == EnemyType::E_Dankey) {
-		All->push_back(new Dankey(Vector2D(Target->location.x, Target->location.y)));
-	}
-	//if (Type == EnemyType::E_Yash) {
-	//	All->push_back(new Yash(Vector2D(Target->location.x, Target->location.y)));
-	//}
+void World::PlaceEnemy(GridTile* Target, EnemyType Type){
+	Temp = { Target->location, Type };
+	EnemiesStored.push_back(Temp);
 }
 
 //Called on every frame For Logic Updates.
