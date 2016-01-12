@@ -87,6 +87,10 @@ public:
 	ALLEGRO_BITMAP* BoxSelectCursor;
 
 	ALLEGRO_BITMAP* HealthBar;
+
+	ALLEGRO_BITMAP* DankeyTemp;
+	
+	ALLEGRO_BITMAP* CinasTemp;
 	
 	ALLEGRO_COLOR HealthBarColour;
 	
