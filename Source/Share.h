@@ -4,6 +4,7 @@
 
 //Put all declarations for shared variables here!
 struct Share{
-	int PersistentData;
+	bool bLoadingLevel;
+	char LoadLevelName[64];
 
 };

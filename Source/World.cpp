@@ -98,14 +98,14 @@ bool World::Load(const char LevelName[64], std::vector<Character*> *enemies){
 	YashCounter = 0;
 	dCheck = NULL;
 
-	char FileName[64];
-	strcpy(FileName, LevelName);
+	char FileName[64] = "Levels/";
+	strcat(FileName, LevelName);
 	strcat(FileName, ".bvl");
 
 	fptr = fopen(FileName, "rb");
 	bool bValidLevel = true;
 
-	if (fptr){
+	if (fptr) {
 		//Read version info
 		int Major, Minor;
 		fread(&Major, sizeof(int), 1, fptr);
@@ -159,9 +159,9 @@ bool World::Save(const char LevelName[64], std::vector<Character*> enemies) {
 	std::vector<WorldLevelData> Levels;
 	bool bLevelExists = false;
 
-	levelList = fopen("Levels.bvla", "rb+");
+	levelList = fopen("Levels/Levels.bvla", "rb+");
 	if (!levelList) {
-		levelList = fopen("Levels.bvla", "wb");
+		levelList = fopen("Levels/Levels.bvla", "wb");
 	}
 
 	fseek(levelList, 0L, SEEK_END);

@@ -3,6 +3,7 @@
 #include "Engine.h"
 #include "World.h"
 #include "Button.h"
+#include "Online.h"
 
 class List : public UIComponent{
 public:
