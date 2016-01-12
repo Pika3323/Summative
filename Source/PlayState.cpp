@@ -105,6 +105,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 					CurrCharacters.clear();
 					CurrCharacters.push_back(TinTin);
 					TinTin->Health = 100.f;
+					WorldMoveDelta = Vector2D(0, 0);
 				}
 				TinTin->bOnGround = false;
 				TinTin->velocity = Vector2D(0.f, 0.f);
@@ -133,7 +134,11 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 			case ALLEGRO_KEY_DOWN:
 			case ALLEGRO_KEY_W:
 			case ALLEGRO_KEY_UP:
-				WorldMoveDelta.y = 0.f;
+			case ALLEGRO_KEY_A:
+			case ALLEGRO_KEY_LEFT:
+			case ALLEGRO_KEY_D:
+			case ALLEGRO_KEY_RIGHT:
+				WorldMoveDelta = Vector2D(0.f, 0.f);
 				break;
 			case ALLEGRO_KEY_M:
 				GEngine->ChangeGameState<MainMenuState>();
@@ -164,7 +169,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 					}
 				}
 				else if(CurrentWorld->bPlay) {
-					TinTin->bShooting = true;
+					//TinTin->bShooting = true;
 				}
 				else {
 					if (!CurrentWorld->bPlay) {
@@ -383,7 +388,7 @@ void PlayState::Tick(float delta){
 			CurrentEffects->FricTick(CurrCharacters);
 
 			//Kill the Character if he falls out of the world
-			if (TinTin->position.x > CurrentWorld->dimensions.x || (TinTin->position.x + TinTin->ActualWidth) < 0 || TinTin->position.y > CurrentWorld->dimensions.y || (TinTin->position.y + TinTin->ActualHeight) < 0 || TinTin->Health <= 0) {
+			if (TinTin->position.x > CurrentWorld->dimensions.x || (TinTin->position.x + TinTin->ActualWidth) < 0 || (TinTin->position.y + TinTin->ActualHeight) < 0 || TinTin->Health <= 0) {
 				CurrCharacters.clear();
 				CurrCharacters.push_back(TinTin);
 				TinTin->Die();
@@ -631,16 +636,11 @@ void PlayState::Resume(){
 }
 
 void PlayState::Destroy(){
-	fflush(stdin);
-
-	printf("Save level? (y/n): ");
-	char cSave;
-	scanf("%c", &cSave);
-	fflush(stdin);
+	char cSave = 'y';
 	if (tolower(cSave) == 'y'){
 		char levelName[64];
-		printf("Enter a file name: ");
-		scanf("%s", levelName);
+
+		_itoa(rand(), levelName, 10);
 		if (CurrentWorld->Save(levelName, CurrCharacters)){
 			printf("Saved level as %s\n", levelName);
 			Online::PostLevel(levelName);

@@ -422,9 +422,9 @@ void Online::GetLevelData(const char* username, std::vector<WorldLevelData> &V){
 
 WorldLevelData Online::GetLevelData(int LevelID){
 	int id;
-	char * Name;
-	char * User;
-	char * Date;
+	char * Name = 0;
+	char * User = 0;
+	char * Date = 0;
 	int Attempts, Completions, Upvotes, Downvotes;
 	char line[256];
 	char * sTemp;
