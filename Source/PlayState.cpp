@@ -142,6 +142,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 					CurrentWorld->bPlay = false;
 					CurrCharacters.clear();
 					CurrCharacters.push_back(TinTin);
+					TinTin->Health = 100.f;
 				}
 				TinTin->bOnGround = false;
 				TinTin->velocity = Vector2D(0.f, 0.f);
@@ -415,7 +416,7 @@ void PlayState::Tick(float delta){
 				TinTin->Die();
 				TinTin->SetCharacterWorldPosition(CharacterStart);
 				CurrentWorld->bPlay = false;
-				TinTin->Health = 100;
+				TinTin->Health = 100.f;
 			}
 		}
 		
@@ -496,36 +497,59 @@ void PlayState::Draw(){
 		}
 	}
 
-	if (CurrentWorld->bPlay){
+	//draws characters if not playing
+	if (CurrentWorld->bPlay) {
 		for (int i = 0; i < (int)CurrCharacters.size(); i++) {
-		CurrCharacters[i]->Draw();
+			CurrCharacters[i]->Draw();
 		}
 	}
-
-
+	
 	//Draws a transparent blue rectangle over the area selected by the box select
 	if (bBoxSelect && bFirstBoxSelected) {
 		GridTile* newTile = CurrentWorld->GetClickedTile(Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1) + 32, GEngine->GetMouseState().y + (GridBuffer.offset.y * -1) + 32));
 		al_draw_filled_rectangle(FirstTile->location.x, FirstTile->location.y, newTile->location.x, newTile->location.y, al_map_rgba(6, 27, 73, 25));
 	}
 
+	//Draws Health bar
 	if (CurrentWorld->bPlay){
-		if (TinTin->Health)
+		if (TinTin->Health >= 50){
+			HealthBarColour = al_map_rgb(118, 255, 3);
+		}
+		else if (TinTin->Health < 50 && TinTin->Health >= 15){
+			HealthBarColour = al_map_rgb(255, 255, 0);
+		}
+		else if (TinTin->Health < 15){
+			HealthBarColour = al_map_rgb(213, 0, 0);
+		}
 		al_set_target_bitmap(HealthBar);
-		//al_draw_rectangle
-		al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
-		
+		al_clear_to_color(al_map_rgba(0, 0, 0, 0));
+		al_draw_filled_rectangle(0, 0, (int)TinTin->Health, 32, HealthBarColour);
+		al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), (int)TinTin->Health + 1, 10, 0, "%.1f / 100.0", TinTin->Health);
 	}
+
 	//Reset the target bitmap to the backbuffer
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 
 	//Draw the background image
 	al_draw_bitmap_region(Background.image, Background.offset.x * -1, Background.offset.y * -1, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()), 0, 0, 0);
 
+
+
 	//Draw the grid overlay if editor mode is enabled
 	if (!CurrentWorld->bPlay) {
 		al_draw_bitmap_region(GridBuffer.image, GridBuffer.offset.x * -1, GridBuffer.offset.y * -1, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()), 0, 0, 0);
+		if (!CurrentWorld->bPlay){
+			al_set_target_bitmap(notPlayingBuff.image);
+			for (int i = 0; i < (int)CurrentWorld->EnemiesStored.size(); i++) {
+				if (CurrentWorld->EnemiesStored[i].Type == EnemyType::E_Dankey)
+					al_draw_bitmap(DankeyTemp, CurrentWorld->EnemiesStored[i].position.x, CurrentWorld->EnemiesStored[i].position.y, 0);
+				else if (CurrentWorld->EnemiesStored[i].Type == EnemyType::E_Cinas)
+					al_draw_bitmap(CinasTemp, CurrentWorld->EnemiesStored[i].position.x, CurrentWorld->EnemiesStored[i].position.y, 0);
+			}
+			al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
+		}
 		al_draw_bitmap_region(notPlayingBuff.image, notPlayingBuff.offset.x * -1, notPlayingBuff.offset.y * -1, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()), 0, 0, 0);
+		//Draw Enemy Previews if not playing
 	}
 	else {
 		al_draw_bitmap_region(BlockBuffer.image, BlockBuffer.offset.x *-1, BlockBuffer.offset.y * -1, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()), 0, 0, 0);
@@ -535,6 +559,9 @@ void PlayState::Draw(){
 		al_draw_bitmap(UI.image, 0, 0, 0);
 	}
 
+	if (CurrentWorld->bPlay){
+		al_draw_bitmap(HealthBar, 0, al_get_display_height(GEngine->GetDisplay()) - 42, 0);
+	}
 	//DEBUG OUTPUTS
 	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 50, ALLEGRO_ALIGN_RIGHT, "World X: %.0f", CurrentWorld->offset.x);
 	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 66, ALLEGRO_ALIGN_RIGHT, "World Y: %.0f", CurrentWorld->offset.y);
@@ -584,6 +611,8 @@ void PlayState::Init(){
 	BlockBuffer.image = al_create_bitmap(4096, 2048);
 	UI.image = al_create_bitmap(GEngine->GetDisplayWidth(), 100);
 	HealthBar = al_create_bitmap(500, 32);
+	DankeyTemp = al_load_bitmap("Textures/Characters/DankeyTemp.png");
+	CinasTemp = al_load_bitmap("Textures/Characters/CinasTemp.png");
 
 	CurrCharacters.push_back(TinTin);	//registering main character in Character vector
 	TinTin->velocity = Vector2D(0.f, 0.f);		//velocity starts at zero
@@ -674,6 +703,8 @@ void PlayState::Destroy(){
 	}
 
 	delete TinTin;
+	al_destroy_bitmap(DankeyTemp);
+	al_destroy_bitmap(CinasTemp);
 	al_destroy_bitmap(BlockBuffer.image);
 	al_destroy_bitmap(GridBuffer.image);
 	al_destroy_mouse_cursor(CircleSelect);
