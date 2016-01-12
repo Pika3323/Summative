@@ -14,8 +14,6 @@ enum class EnemyType{
 
 class Enemy : public Character{
 public:
-	int Damage;
-
 	EnemyType Type; //type of monster it is
 
 	bool Active;

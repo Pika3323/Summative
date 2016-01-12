@@ -85,8 +85,13 @@ public:
 	ALLEGRO_BITMAP* output;
 	
 	ALLEGRO_BITMAP* BoxSelectCursor;
+
+	ALLEGRO_BITMAP* HealthBar;
+	
+	ALLEGRO_COLOR* HealthBarColour;
 	
 	ALLEGRO_MOUSE_CURSOR* CircleSelect;
+
 
 	bool bBoxSelect = false;
 	

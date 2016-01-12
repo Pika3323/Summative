@@ -22,7 +22,7 @@ int Physics::ColTick(World* Curr, std::vector<Character*> &All){
 		DankeyCheck = dynamic_cast<Dankey*>(All[j]);
 		BarrelCheck = dynamic_cast<Barrel*>(All[j]);
 		BulletExCheck = dynamic_cast<BulletEx*>(All[j]);
-		//CinasCheck = dynamic_cast<Cinas*>(All[j]);
+		CinasCheck = dynamic_cast<Cinas*>(All[j]);
 
 		//Stop character from falling through a block
 		if (!All[j]->bOnGround && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + (All[j]->ActualWidth / 2)) / Curr->gridSize)][(int)((All[j]->GetCharacterWorldPosition().y + All[j]->ActualHeight) / Curr->gridSize)].bSpawned && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + (All[j]->ActualWidth / 2)) / Curr->gridSize)][(int)((All[j]->GetCharacterWorldPosition().y + All[j]->ActualHeight) / Curr->gridSize)].bCollision) {
@@ -87,11 +87,36 @@ int Physics::ColTick(World* Curr, std::vector<Character*> &All){
 			}
 		}
 		if (BarrelCheck){
-			if (!static_cast<bool>(All[j]->GetCharacterDirection()) && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + All[j]->ActualWidth) / 32)][int((All[j]->GetCharacterWorldPosition().y + 8) / 32)].bSpawned && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + All[j]->ActualWidth) / 32)][int((All[j]->GetCharacterWorldPosition().y + 8) / 32)].bCollision) {
+			if (!static_cast<bool>(All[0]->GetCharacterDirection()) && (All[j]->position.x <= (All[0]->position.x + (All[0]->ActualWidth / 2 + 10)) && All[j]->position.x >= (All[0]->position.x + (All[0]->ActualWidth / 2 - 10))) && (All[j]->position.y > (All[0]->position.y + 65) && All[j]->position.y < (All[0]->position.y + All[0]->ActualHeight))) {
+				All[0]->Health -= All[j]->Damage;
+				dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->DestroyCharacter(All[j]);
+			}
+			else if (static_cast<bool>(All[0]->GetCharacterDirection()) && (All[j]->position.x <= (All[0]->position.x + (All[0]->ActualWidth / 2 + 10)) && All[j]->position.x >= (All[0]->position.x + (All[0]->ActualWidth / 2 - 10))) && (All[j]->position.y >(All[0]->position.y + 65) && All[j]->position.y < (All[0]->position.y + All[0]->ActualHeight))) {
+				All[0]->Health -= All[j]->Damage;
+				dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->DestroyCharacter(All[j]);
+			}
+			else if (!static_cast<bool>(All[j]->GetCharacterDirection()) && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + All[j]->ActualWidth) / 32)][int((All[j]->GetCharacterWorldPosition().y + 8) / 32)].bSpawned && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x + All[j]->ActualWidth) / 32)][int((All[j]->GetCharacterWorldPosition().y + 8) / 32)].bCollision) {
 				dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->DestroyCharacter(All[j]);
 			}
 			else if (static_cast<bool>(All[j]->GetCharacterDirection()) && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x) / 32)][int((All[j]->GetCharacterWorldPosition().y + 8) / 32)].bSpawned && Curr->Blocks[(int)((All[j]->GetCharacterWorldPosition().x) / 32)][int((All[j]->GetCharacterWorldPosition().y + 8) / 32)].bCollision) {
 				dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->DestroyCharacter(All[j]);
+			}
+		}
+		if (CinasCheck){
+			if (!static_cast<bool>(All[0]->GetCharacterDirection()) && ((All[j]->position.x + 16) <= (All[0]->position.x + (All[0]->ActualWidth / 2 + 10)) && (All[j]->position.x + 16) >= (All[0]->position.x + (All[0]->ActualWidth / 2 - 10))) && (All[j]->position.y > All[0]->position.y && All[j]->position.y < (All[0]->position.y + All[0]->ActualHeight))) {
+				All[0]->Health -= All[j]->Damage;
+			}
+			else if (static_cast<bool>(All[0]->GetCharacterDirection()) && All[j]->position.x + 16 <= All[0]->position.x + All[0]->ActualWidth / 2 + 10 && All[j]->position.x + 16 >= (All[0]->position.x + (All[0]->ActualWidth / 2 - 10)) && All[j]->position.y > All[0]->position.y && All[j]->position.y < (All[0]->position.y + All[0]->ActualHeight)) {
+				All[0]->Health -= All[j]->Damage;
+			}
+			
+		}
+		if (DankeyCheck){
+			if (!static_cast<bool>(All[0]->GetCharacterDirection()) && ((All[j]->position.x + 32) <= (All[0]->position.x + (All[0]->ActualWidth / 2 + 10)) && (All[j]->position.x + 32) >= (All[0]->position.x + (All[0]->ActualWidth / 2 - 10))) && InRange(All[j]->position.y, All[0]->position.y + 10, All[0]->position.y + 100)) {
+				All[0]->Health -= All[j]->Damage;
+			}
+			else if (static_cast<bool>(All[0]->GetCharacterDirection()) && ((All[j]->position.x + 32) <= (All[0]->position.x + (All[0]->ActualWidth / 2 + 10)) && (All[j]->position.x + 32) >= (All[0]->position.x + (All[0]->ActualWidth / 2 - 10))) && InRange(All[j]->position.y, All[0]->position.y + 10, All[0]->position.y + 100)) {
+				All[0]->Health -= All[j]->Damage;
 			}
 		}
 		if (!PlayerCheck && j < (int)All.size()) {

@@ -116,18 +116,23 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				GEngine->PrintDebugText(BLUE500, 5.f, "Pressed Space");
 				if (!CurrentWorld->bPlay){
 					CurrentWorld->bPlay = true;
+					for (int i = 0; i < (int)CurrentWorld->EnemiesStored.size(); i++){
+						if (CurrentWorld->EnemiesStored[i].Type == EnemyType::E_Cinas){
+							CurrCharacters.push_back(new Cinas(CurrentWorld->EnemiesStored[i].position));
+						}
+						else if (CurrentWorld->EnemiesStored[i].Type == EnemyType::E_Dankey){
+							CurrCharacters.push_back(new Dankey(CurrentWorld->EnemiesStored[i].position));
+						}
+					}
 					TinTin->SetCharacterWorldPosition(CharacterStart);
 				}
 				else {
 					CurrentWorld->bPlay = false;
+					CurrCharacters.clear();
+					CurrCharacters.push_back(TinTin);
 				}
 				TinTin->bOnGround = false;
 				TinTin->velocity = Vector2D(0.f, 0.f);
-				for (int i = 0; i < (int)CurrCharacters.size(); i++){
-					TypeChecker = dynamic_cast<Barrel*>(CurrCharacters[i]);
-					if (TypeChecker)
-						DestroyCharacter(CurrCharacters[i]);
-				}
 				break;
 			case ALLEGRO_KEY_ESCAPE:
 				GEngine->Quit();
@@ -193,10 +198,10 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 							clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
 
 							if (SelectedEnemy == EnemyType::E_Dankey && !clickedTile->occupied && !CurrentWorld->Blocks[(int)(clickedTile->location.x / CurrentWorld->gridSize)][(int)(clickedTile->location.y / CurrentWorld->gridSize)].bSpawned && !CurrentWorld->Blocks[(int)(clickedTile->location.x / CurrentWorld->gridSize)][(int)((clickedTile->location.y + 32) / CurrentWorld->gridSize)].bSpawned){
-								CurrentWorld->PlaceEnemy(clickedTile, SelectedEnemy, &CurrCharacters);
+								CurrentWorld->PlaceEnemy(clickedTile, SelectedEnemy);
 							}
 							if (SelectedEnemy == EnemyType::E_Cinas && !clickedTile->occupied && !CurrentWorld->Blocks[(int)(clickedTile->location.x / CurrentWorld->gridSize)][(int)(clickedTile->location.y / CurrentWorld->gridSize)].bSpawned){
-								CurrentWorld->PlaceEnemy(clickedTile, SelectedEnemy, &CurrCharacters);
+								CurrentWorld->PlaceEnemy(clickedTile, SelectedEnemy);
 							}
 						}
 						//Check if the box placement mode isn't enabled
@@ -359,7 +364,7 @@ void PlayState::Tick(float delta){
 		TinTin->Run(Vector2D(-1.f, 0.f));
 	}
 	//Character ticks
-	for (int i = 0; i < (int) CurrCharacters.size(); i++) {
+	for (int i = 0; i < (int) CurrCharacters.size(); i++ && CurrentWorld->bPlay) {
 		CurrCharacters[i]->Tick(delta, &CurrCharacters);
 	}
 
@@ -392,10 +397,13 @@ void PlayState::Tick(float delta){
 			CurrentEffects->FricTick(CurrCharacters);
 
 			//Kill the Character if he falls out of the world
-			if (TinTin->GetCharacterWorldPosition().y > CurrentWorld->dimensions.x) {
+			if (TinTin->position.x > CurrentWorld->dimensions.x || (TinTin->position.x + TinTin->ActualWidth) < 0 || TinTin->position.y > CurrentWorld->dimensions.y || (TinTin->position.y + TinTin->ActualHeight) < 0 || TinTin->Health <= 0) {
+				CurrCharacters.clear();
+				CurrCharacters.push_back(TinTin);
 				TinTin->Die();
 				TinTin->SetCharacterWorldPosition(CharacterStart);
 				CurrentWorld->bPlay = false;
+				TinTin->Health = 100;
 			}
 		}
 		
@@ -483,12 +491,20 @@ void PlayState::Draw(){
 		}
 	}
 
+
 	//Draws a transparent blue rectangle over the area selected by the box select
 	if (bBoxSelect && bFirstBoxSelected) {
 		GridTile* newTile = CurrentWorld->GetClickedTile(Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1) + 32, GEngine->GetMouseState().y + (GridBuffer.offset.y * -1) + 32));
 		al_draw_filled_rectangle(FirstTile->location.x, FirstTile->location.y, newTile->location.x, newTile->location.y, al_map_rgba(6, 27, 73, 25));
 	}
 
+	if (CurrentWorld->bPlay){
+		if (TinTin->Health)
+		al_set_target_bitmap(HealthBar);
+		//al_draw_rectangle
+		al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
+		
+	}
 	//Reset the target bitmap to the backbuffer
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 
@@ -556,6 +572,7 @@ void PlayState::Init(){
 	Background.image = al_create_bitmap(4096, 2048);
 	BlockBuffer.image = al_create_bitmap(4096, 2048);
 	UI.image = al_create_bitmap(GEngine->GetDisplayWidth(), 100);
+	HealthBar = al_create_bitmap(500, 32);
 
 	CurrCharacters.push_back(TinTin);	//registering main character in Character vector
 	TinTin->velocity = Vector2D(0.f, 0.f);		//velocity starts at zero
