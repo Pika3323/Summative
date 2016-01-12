@@ -55,6 +55,8 @@ void Engine::DrawFPS(double delta){
 }
 
 void Engine::Init(){
+	srand(time(0));
+
 	//Version info
 	printf("Summative version %d.%d\n", VersionMajor, VersionMinor);
 	
@@ -218,7 +220,7 @@ void Engine::Tick(float delta){
 void Engine::Draw(){
 	Active->Draw();
 	bRedraw = false;
-	DrawFPS(delta);
+	//DrawFPS(delta);
 
 	//Draws debug outputs onto the screen
 	for (int i = 0; i < (int)DebugStrings.size(); i++){

@@ -24,12 +24,12 @@ void Cinas::Tick(float delta, std::vector<Character*> *C){
 	
 	if ((position.x - (dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->TinTin->position.x + 16)) > 0 && bCharacterLocked){
 		direction = ECharacterDirection::R_Left;
-		velocity.x = -5.f;
+		velocity.x = (rand() % (8 + 1 - 2) + 2) * -1;
 		T = W->GetClickedTile(position + Vector2D(-32.f, 0.f));
 	}
 	else if ((position.x - (dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->TinTin->position.x + 16)) < 0 && bCharacterLocked){
 		direction = ECharacterDirection::R_Right;
-		velocity.x = 5.f;
+		velocity.x = (rand() % (8 + 1 - 2) + 2);
 		T = W->GetClickedTile(position + Vector2D(32.f, 0.f));
 	}
 
@@ -55,7 +55,7 @@ void Cinas::Run(Vector2D velocity){
 
 void Cinas::Jump(){
 	if (bOnGround) {
-		velocity.y = -20.f;
+		velocity.y = (rand() % (25 + 1 - 15) + 15) * -1;
 
 		bOnGround = false;
 	}

@@ -1,6 +1,7 @@
 #include "Dankey.h"
 
 Dankey::Dankey(Vector2D pos){
+	bOnGround = false;
 	Damage = 15.f;
 	Deleted = false;
 	position = pos;
@@ -43,6 +44,7 @@ void Dankey::Tick(float delta, std::vector<Character*> *Curr){
 			this->BarrelDelay = 0;
 		}
 	}
+	position += velocity;
 }
 
 void Dankey::Run(Vector2D velocity){

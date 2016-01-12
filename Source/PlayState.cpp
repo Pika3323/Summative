@@ -79,7 +79,6 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				}
 				break;
 			case ALLEGRO_KEY_C:
-				GEngine->PrintDebugText(al_map_rgb(255, 255, 0), 5.f, "Box Select");
 				bBoxSelect = !bBoxSelect;
 				if (bBoxSelect){
 					al_set_mouse_cursor(GEngine->GetDisplay(), CircleSelect);
@@ -88,44 +87,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 					al_set_system_mouse_cursor(GEngine->GetDisplay(), ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
 				}
 				break;
-			case ALLEGRO_KEY_1:
-				if (!CurrentWorld->EnemySelect)
-					SelectedBlock = EBlockType::B_Rainbow;
-				else if (CurrentWorld->EnemySelect)
-					SelectedEnemy = EnemyType::E_Cinas;
-				break;
-			case ALLEGRO_KEY_2:
-				if (!CurrentWorld->EnemySelect)
-					SelectedBlock = EBlockType::B_Brick;
-				else if (CurrentWorld->EnemySelect)
-					SelectedEnemy = EnemyType::E_Dankey;
-				break;
-			case ALLEGRO_KEY_3:
-				if (!CurrentWorld->EnemySelect)
-					SelectedBlock = EBlockType::B_Grass;
-				else if (CurrentWorld->EnemySelect)
-					SelectedEnemy = EnemyType::E_Yash;
-				break;
-			case ALLEGRO_KEY_4:
-				SelectedBlock = EBlockType::B_Dirt;
-				break;
-			case ALLEGRO_KEY_5:
-				SelectedBlock = EBlockType::B_Stone;
-				break;
-			case ALLEGRO_KEY_6:
-				SelectedBlock = EBlockType::B_Fancy;
-				break;
-			case ALLEGRO_KEY_7:
-				SelectedBlock = EBlockType::B_Mossy;
-				break;
-			case ALLEGRO_KEY_8:
-				SelectedBlock = EBlockType::B_BackgroundBrick;
-				break;
-			case ALLEGRO_KEY_9:
-				SelectedBlock = EBlockType::B_FinishFlag;
-				break;
 			case ALLEGRO_KEY_SPACE:
-				GEngine->PrintDebugText(BLUE500, 5.f, "Pressed Space");
 				if (!CurrentWorld->bPlay){
 					CurrentWorld->bPlay = true;
 					for (int i = 0; i < (int)CurrentWorld->EnemiesStored.size(); i++){
@@ -187,7 +149,18 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 			switch (ev->mouse.button){
 			case MOUSE_LB:
 				if (!CurrentWorld->bPlay && ev->mouse.y < 100) {
-					SelectedBlock = static_cast<EBlockType>((ev->mouse.x - (ev->mouse.z * -25)) / 100 - 1);
+					if (ev->mouse.x < 900){
+						CurrentWorld->EnemySelect = false;
+						SelectedBlock = static_cast<EBlockType>(ev->mouse.x / 100);
+					}
+					else if (InRange(ev->mouse.x, 900, 1000)){
+						CurrentWorld->EnemySelect = true;
+						SelectedEnemy = EnemyType::E_Dankey;
+					}
+					else if (InRange(ev->mouse.x, 1000, 1100)){
+						CurrentWorld->EnemySelect = true;
+						SelectedEnemy = EnemyType::E_Cinas;
+					}
 				}
 				else if(CurrentWorld->bPlay) {
 					TinTin->bShooting = true;
@@ -469,8 +442,9 @@ void PlayState::Tick(float delta){
 void PlayState::Draw(){
 	al_set_target_bitmap(UI.image);
 	al_clear_to_color(al_map_rgba(0, 0, 0, 0));
-	for (int i = 0; i < 9; i++){
-		al_draw_bitmap(SelectBlock[i].image, SelectBlock[i].offset.x + GEngine->GetMouseState().z * -25, SelectBlock[i].offset.y, ALLEGRO_VIDEO_BITMAP);
+	al_draw_filled_rectangle(0, 0, GEngine->GetDisplayWidth(), 100, BLUE500);
+	for (int i = 0; i < (int)SelectBlock.size(); i++){
+		al_draw_bitmap(SelectBlock[i].image, SelectBlock[i].offset.x, SelectBlock[i].offset.y, ALLEGRO_VIDEO_BITMAP);
 	}
 
 	if (!CurrentWorld->bPlay){
@@ -534,23 +508,6 @@ void PlayState::Draw(){
 	if (!CurrentWorld->bPlay){
 		al_draw_bitmap(UI.image, 0, 0, 0);
 	}
-
-	//DEBUG OUTPUTS
-	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 50, ALLEGRO_ALIGN_RIGHT, "World X: %.0f", CurrentWorld->offset.x);
-	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 66, ALLEGRO_ALIGN_RIGHT, "World Y: %.0f", CurrentWorld->offset.y);
-	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 255, 255), GEngine->GetDisplayWidth() - 6, 49, ALLEGRO_ALIGN_RIGHT, "World X: %.0f", CurrentWorld->offset.x);
-	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 255, 255), GEngine->GetDisplayWidth() - 6, 65, ALLEGRO_ALIGN_RIGHT, "World Y: %.0f", CurrentWorld->offset.y);
-
-	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 82, ALLEGRO_ALIGN_RIGHT, "Character X: %.0f", TinTin->position.x);
-	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 98, ALLEGRO_ALIGN_RIGHT, "Character Y: %.0f", TinTin->position.y);
-	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(255, 255, 0), GEngine->GetDisplayWidth() - 6, 81, ALLEGRO_ALIGN_RIGHT, "Character X: %.0f", TinTin->position.x);
-	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(255, 255, 0), GEngine->GetDisplayWidth() - 6, 97, ALLEGRO_ALIGN_RIGHT, "Character Y: %.0f", TinTin->position.y);
-
-	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 113, ALLEGRO_ALIGN_RIGHT, "Character Delta X, Y: %.0f, %0.f", Debug.x, Debug.y);
-	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(255, 255, 0), GEngine->GetDisplayWidth() - 6, 112, ALLEGRO_ALIGN_RIGHT, "Character Delta X, Y: %.0f, %0.f", Debug.x, Debug.y);
-
-	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 129, ALLEGRO_ALIGN_RIGHT, "World Delta X, Y: %.0f, %0.f", WorldMoveDelta.x, WorldMoveDelta.y);
-	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(255, 255, 0), GEngine->GetDisplayWidth() - 6, 128, ALLEGRO_ALIGN_RIGHT, "World Delta X, Y: %.0f, %0.f", WorldMoveDelta.x, WorldMoveDelta.y);
 	
 }
 
@@ -567,13 +524,23 @@ void PlayState::Init(){
 	CurrentWorld->Type[8] = BlockType("Finish Flag", al_load_bitmap("Textures/Objects/FinishFlag.png"), false);
 
 	for (int i = 0; i < 9; i++) {
-		SelectBlock[i] = Buffer(NULL, Vector2D(100.f * (i + 1), 0.f), Vector2D(0.f, 0.f));
-		SelectBlock[i].image = al_create_bitmap(100, 100);
+		SelectBlock.push_back(Buffer(al_create_bitmap(100, 100), Vector2D(100.f * i, 0.f), Vector2D(0.f, 0.f)));
 		al_set_target_bitmap(SelectBlock[i].image);
 		al_clear_to_color(BLUE500);
 		al_draw_bitmap(CurrentWorld->Type[i].texture, 34, 8, 0);
 		al_draw_textf(GEngine->GetDebugFont(), WHITE, 50, 80, ALLEGRO_ALIGN_CENTER, "%s", CurrentWorld->Type[i].name);
 	}
+	SelectBlock.push_back(Buffer(al_create_bitmap(100, 100), Vector2D(900.f, 0.f), Vector2D(0.f, 0.f)));
+	al_set_target_bitmap(SelectBlock[9].image);
+	al_clear_to_color(BLUE500);
+	al_draw_bitmap_region(al_load_bitmap("Textures/Characters/Dankeyidle_e.png"), 0, 0, 64, 64, 18, 8, 0);
+	al_draw_textf(GEngine->GetDebugFont(), WHITE, 50, 80, ALLEGRO_ALIGN_CENTER, "%s", "Dankey");
+
+	SelectBlock.push_back(Buffer(al_create_bitmap(100, 100), Vector2D(1000.f, 0.f), Vector2D(0.f, 0.f)));
+	al_set_target_bitmap(SelectBlock[10].image);
+	al_clear_to_color(BLUE500);
+	al_draw_bitmap_region(al_load_bitmap("Textures/Characters/Cinasidle_e.png"), 0, 0, 32, 32, 18, 8, 0);
+	al_draw_textf(GEngine->GetDebugFont(), WHITE, 34, 80, ALLEGRO_ALIGN_CENTER, "%s", "Cinas");
 
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 
@@ -624,24 +591,6 @@ void PlayState::Init(){
 
 	if (GEngine->SharedVar.bLoadingLevel){
 		CurrentWorld->Load(GEngine->SharedVar.LoadLevelName, &CurrCharacters);
-	}
-	else {
-		printf("Read saved level? (y/n): ");
-		char cRead;
-		scanf("%c", &cRead);
-		if (tolower(cRead) == 'y'){
-			fflush(stdin);
-			char loadLevel[64];
-			printf("Enter level name: ");
-			scanf("%s", loadLevel);
-			fflush(stdin);
-			if (CurrentWorld->Load(loadLevel, &CurrCharacters)){
-				printf("Loaded %s\n", loadLevel);
-			}
-			else{
-				printf("Could not load %s\n", loadLevel);
-			}
-		}
 	}
 }
 
