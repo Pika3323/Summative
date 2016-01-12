@@ -40,7 +40,7 @@ public:
 	//A buffer for the UI
 	Buffer UI;
 
-	Buffer SelectBlock[15];
+	std::vector<Buffer> SelectBlock;
 
 	int UIOffset;
 

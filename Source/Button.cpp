@@ -12,7 +12,7 @@ Button::Button(ALLEGRO_COLOR bg, ALLEGRO_COLOR tx, int w, int h, Vector2D pos, i
 	strcpy(text, t);
 	roboto = al_load_font("Roboto-Medium.ttf", 14, 0);
 	al_set_target_bitmap(tex);
-	al_draw_filled_rounded_rectangle(0, 0, w, h, 2, 2, bg);
+	al_draw_filled_rectangle(0, 0, w, h, bg);
 	al_draw_textf(roboto, tx, w / 2, h / 2, ALLEGRO_ALIGN_CENTER, "%s", t);
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 	onDown = down;
@@ -21,20 +21,20 @@ Button::Button(ALLEGRO_COLOR bg, ALLEGRO_COLOR tx, int w, int h, Vector2D pos, i
 void Button::onHoverIn(){
 	al_set_target_bitmap(tex);
 	al_clear_to_color(al_map_rgba(0, 0, 0, 0));
-	al_draw_filled_rounded_rectangle(0, 0, width, height, 2, 2, al_map_rgb(221, 221, 221));
+	al_draw_filled_rectangle(0, 0, width, height, al_map_rgb(221, 221, 221));
 	al_draw_textf(roboto, textColor, width / 2, height / 2 - 7, ALLEGRO_ALIGN_CENTER, "%s", text);
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 }
 void Button::onHoverOut(){
 	al_set_target_bitmap(tex);
 	al_clear_to_color(al_map_rgba(0, 0, 0, 0));
-	al_draw_filled_rounded_rectangle(0, 0, width, height, 2, 2, bgColor);
+	al_draw_filled_rectangle(0, 0, width, height, bgColor);
 	al_draw_textf(roboto, textColor, width / 2, height / 2 - 7, ALLEGRO_ALIGN_CENTER, "%s", text);
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 }
 void Button::onMouseDown(){
 	al_set_target_bitmap(tex);
-	al_draw_filled_rounded_rectangle(0, 0, width, height, 2, 2, bgColor);
+	al_draw_filled_rectangle(0, 0, width, height, bgColor);
 	al_draw_textf(roboto, textColor, width / 2, width / 2, ALLEGRO_ALIGN_CENTER, "%s", text);
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 	onDown();
@@ -42,7 +42,7 @@ void Button::onMouseDown(){
 
 void Button::onMouseUp(){
 	al_set_target_bitmap(tex);
-	al_draw_filled_rounded_rectangle(0, 0, width, height, 2, 2, bgColor);
+	al_draw_filled_rectangle(0, 0, width, height, bgColor);
 	al_draw_textf(roboto, textColor, width / 2, width / 2, ALLEGRO_ALIGN_CENTER, "%s", text);
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 }

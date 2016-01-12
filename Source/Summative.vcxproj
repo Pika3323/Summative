@@ -18,6 +18,7 @@
     <ClInclude Include="Button.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="Cinas.h" />
+    <ClInclude Include="LevelSaveState.h" />
     <ClInclude Include="LevelSelectState.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="Core.h" />
@@ -53,6 +54,7 @@
     <ClCompile Include="EditorState.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="LevelSaveState.cpp" />
     <ClCompile Include="LevelSelectState.cpp" />
     <ClCompile Include="List.cpp" />
     <ClCompile Include="MainMenuState.cpp" />

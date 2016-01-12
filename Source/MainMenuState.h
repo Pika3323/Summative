@@ -20,6 +20,11 @@ public:
 
 	UIComponent* AllUIComponents[10];
 
+	ALLEGRO_FONT* LargeRoboto;
+
+	Buffer Background[3];
+	
+
 	void Init();
 
 	void Pause();
