@@ -105,6 +105,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 					CurrCharacters.clear();
 					CurrCharacters.push_back(TinTin);
 					TinTin->Health = 100.f;
+					WorldMoveDelta = Vector2D(0.f, 0.f);
 				}
 				TinTin->bOnGround = false;
 				TinTin->velocity = Vector2D(0.f, 0.f);
@@ -133,7 +134,11 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 			case ALLEGRO_KEY_DOWN:
 			case ALLEGRO_KEY_W:
 			case ALLEGRO_KEY_UP:
-				WorldMoveDelta.y = 0.f;
+			case ALLEGRO_KEY_A:
+			case ALLEGRO_KEY_LEFT:
+			case ALLEGRO_KEY_D:
+			case ALLEGRO_KEY_RIGHT:
+				WorldMoveDelta = Vector2D(0.f, 0.f);
 				break;
 			case ALLEGRO_KEY_M:
 				GEngine->ChangeGameState<MainMenuState>();
@@ -164,7 +169,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 					}
 				}
 				else if(CurrentWorld->bPlay) {
-					TinTin->bShooting = true;
+					//TinTin->bShooting = true;
 				}
 				else {
 					if (!CurrentWorld->bPlay) {
@@ -368,6 +373,10 @@ void PlayState::Tick(float delta){
 			ColChecker = CurrentEffects->ColTick(CurrentWorld, CurrCharacters);
 			if (ColChecker == 1) {
 				TinTin->Win(CharacterStart);
+				Online::attempts = 1;
+				Online::completions = 1;
+				Online::UpdateLevel(CurrentWorld->name, GEngine->SharedVar.id, Completions);
+				Online::UpdateLevel(CurrentWorld->name, GEngine->SharedVar.id, Tries);
 				CurrentWorld->bPlay = false;
 			}
 			if (ColChecker > 2){
@@ -387,6 +396,8 @@ void PlayState::Tick(float delta){
 				CurrCharacters.clear();
 				CurrCharacters.push_back(TinTin);
 				TinTin->Die();
+				Online::attempts = 1;
+				Online::UpdateLevel(CurrentWorld->name, GEngine->SharedVar.id, Completions);
 				TinTin->SetCharacterWorldPosition(CharacterStart);
 				CurrentWorld->bPlay = false;
 				TinTin->Health = 100.f;
