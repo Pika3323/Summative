@@ -88,7 +88,7 @@ public:
 
 	ALLEGRO_BITMAP* HealthBar;
 	
-	ALLEGRO_COLOR* HealthBarColour;
+	ALLEGRO_COLOR HealthBarColour;
 	
 	ALLEGRO_MOUSE_CURSOR* CircleSelect;
 

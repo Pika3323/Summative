@@ -142,6 +142,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 					CurrentWorld->bPlay = false;
 					CurrCharacters.clear();
 					CurrCharacters.push_back(TinTin);
+					TinTin->Health = 100.f;
 				}
 				TinTin->bOnGround = false;
 				TinTin->velocity = Vector2D(0.f, 0.f);
@@ -415,7 +416,7 @@ void PlayState::Tick(float delta){
 				TinTin->Die();
 				TinTin->SetCharacterWorldPosition(CharacterStart);
 				CurrentWorld->bPlay = false;
-				TinTin->Health = 100;
+				TinTin->Health = 100.f;
 			}
 		}
 		
@@ -516,6 +517,24 @@ void PlayState::Draw(){
 		al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 		
 	}
+
+	//Draws Health bar
+	if (CurrentWorld->bPlay){
+		if (TinTin->Health >= 50){
+			HealthBarColour = al_map_rgb(118, 255, 3);
+		}
+		else if (TinTin->Health < 50 && TinTin->Health >= 15){
+			HealthBarColour = al_map_rgb(255, 255, 0);
+		}
+		else if (TinTin->Health < 15){
+			HealthBarColour = al_map_rgb(213, 0, 0);
+		}
+		al_set_target_bitmap(HealthBar);
+		al_clear_to_color(al_map_rgba(0, 0, 0, 0));
+		al_draw_filled_rectangle(0, 0, (int)TinTin->Health, 32, HealthBarColour);
+		al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), (int)TinTin->Health + 1, 10, 0, "%.1f / 100.0", TinTin->Health);
+	}
+
 	//Reset the target bitmap to the backbuffer
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 
@@ -535,6 +554,9 @@ void PlayState::Draw(){
 		al_draw_bitmap(UI.image, 0, 0, 0);
 	}
 
+	if (CurrentWorld->bPlay){
+		al_draw_bitmap(HealthBar, 0, al_get_display_height(GEngine->GetDisplay()) - 42, 0);
+	}
 	//DEBUG OUTPUTS
 	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 50, ALLEGRO_ALIGN_RIGHT, "World X: %.0f", CurrentWorld->offset.x);
 	al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), GEngine->GetDisplayWidth() - 5, 66, ALLEGRO_ALIGN_RIGHT, "World Y: %.0f", CurrentWorld->offset.y);
