@@ -92,6 +92,13 @@ void LevelSelectState::HandleEvents(ALLEGRO_EVENT *ev){
 			}
 		}
 	}
+	else if (ev->type == ALLEGRO_EVENT_KEY_DOWN){
+		switch (ev->keyboard.keycode){
+		case ALLEGRO_KEY_ESCAPE:
+			GEngine->ChangeGameState<MainMenuState>();
+			break;
+		}
+	}
 }
 void LevelSelectState::Tick(float delta){
 	ALLEGRO_MOUSE_STATE newState = GEngine->GetMouseState();

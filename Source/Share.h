@@ -7,4 +7,5 @@ struct Share{
 	bool bLoadingLevel;
 	char LoadLevelName[64];
 	char SaveLevelName[64];
+	int id;
 };

@@ -56,6 +56,7 @@ void List::onMouseDown(){
 		Online::GetLevel(Level.id);
 		GEngine->SharedVar.bLoadingLevel = true;
 		strcpy(GEngine->SharedVar.LoadLevelName, Level.Name);
+		GEngine->SharedVar.id = Level.id;
 		Play.onDown();
 	}
 }

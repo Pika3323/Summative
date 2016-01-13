@@ -47,7 +47,7 @@ public:
 	int YashCounter;
 	std::vector<EnemyData> EnemiesStored;
 	EnemyData Temp;
-	
+	int id;
 
 	World(){ bPlay = false; }
 	World(Vector2D s, int gs);
