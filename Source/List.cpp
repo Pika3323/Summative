@@ -25,15 +25,15 @@ List::List(Vector2D pos, WorldLevelData l){
 	al_draw_textf(RobotoLarge, WHITE, 6, 6, 0, "%s", Level.Name);
 	al_draw_textf(RobotoSmall, WHITE, 6, 32, 0, "%s", Level.Creator);
 	if (Level.Completions && Level.Attempts){
-		al_draw_textf(RobotoMedium, WHITE, 6, height - 24, 0, "Completion rate: %d%%", Level.Completions / Level.Attempts);
+		al_draw_textf(RobotoMedium, WHITE, 6, height - 24, 0, "Completion rate: %.2f%%", ((float)Level.Completions / (float)Level.Attempts) * 100);
 	}
 	else {
 		al_draw_textf(RobotoMedium, WHITE, 6, height - 24, 0, "Completion rate: %s%%", "NaN");
 	}
 	
 	Play.Draw();
-	al_draw_textf(RobotoMedium, WHITE, width - 64, 64, ALLEGRO_ALIGN_CENTER, "Up: %d", Level.Upvotes);
-	al_draw_textf(RobotoMedium, WHITE, width - 64, 76, ALLEGRO_ALIGN_CENTER, "Down: %d", Level.Downvotes);
+	al_draw_textf(RobotoMedium, WHITE, width - 64, 64, ALLEGRO_ALIGN_CENTER, "Completions: %d", Level.Completions);
+	al_draw_textf(RobotoMedium, WHITE, width - 64, 76, ALLEGRO_ALIGN_CENTER, "Attempts: %d", Level.Attempts);
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 }
 
