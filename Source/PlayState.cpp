@@ -404,7 +404,12 @@ void PlayState::Tick(float delta){
 			}
 		}
 		
-		CurrentWorld->moveWorld(WorldMoveDelta, GridBuffer, Background, BlockBuffer, notPlayingBuff);
+		if (!CurrentWorld->bPlay){
+			CurrentWorld->MoveWorld(WorldMoveDelta, GridBuffer, Background, BlockBuffer, notPlayingBuff);
+		}
+		else{
+			CurrentWorld->FollowCharacter(TinTin, GridBuffer, Background, BlockBuffer, notPlayingBuff);
+		}
 		
 		//Run world tick
 		CurrentWorld->Tick(delta);
@@ -413,7 +418,7 @@ void PlayState::Tick(float delta){
 		Vector2D DragDelta;
 		if (bMouseDrag){
 			DragDelta = DragStart - Vector2D(GEngine->GetMouseState().x, GEngine->GetMouseState().y);
-			CurrentWorld->moveWorld(DragDelta * -1, GridBuffer, Background, BlockBuffer, notPlayingBuff);
+			CurrentWorld->MoveWorld(DragDelta * -1, GridBuffer, Background, BlockBuffer, notPlayingBuff);
 			DragStart = Vector2D(GEngine->GetMouseState().x, GEngine->GetMouseState().y);
 			DragTime += delta;
 		}
