@@ -229,14 +229,15 @@ void Engine::Tick(float delta){
 void Engine::Draw(){
 	Active->Draw();
 	bRedraw = false;
-	//DrawFPS(delta);
+#ifdef _DEBUG
+	DrawFPS(delta);
 
 	//Draws debug outputs onto the screen
 	for (int i = 0; i < (int)DebugStrings.size(); i++){
 		al_draw_textf(debug_font, al_map_rgb(0, 0, 0), 6, i * 16 + 50, ALLEGRO_ALIGN_LEFT, "%s", DebugStrings[i].output);
 		al_draw_textf(debug_font, DebugStrings[i].color, 5, i * 16 + 49, ALLEGRO_ALIGN_LEFT, "%s", DebugStrings[i].output);
 	}
-
+#endif
 	al_flip_display();
 	al_clear_to_color(al_map_rgb(0, 0, 0));
 }
@@ -267,4 +268,7 @@ GameState* Engine::GetCurrentGameState(){
 
 void Engine::PrintDebugText(ALLEGRO_COLOR c, float duration, const char* text){
 	DebugStrings.push_back(DebugOutput(c, text, duration));
+}
+void Engine::PrintDebugText(ALLEGRO_COLOR c, float duration, ALLEGRO_USTR* text){
+	DebugStrings.push_back(DebugOutput(c, al_cstr(text), duration));
 }
