@@ -8,6 +8,14 @@ enum class ECharacterDirection{
 	R_Left
 };
 
+struct BoundingBox{
+	//Bounding box's position RELATIVE TO THE CHARACTER
+	Vector2D position;
+
+	//Size of the bounding box
+	Vector2D size;
+};
+
 class Character{
 public:
 	//Damage
@@ -18,6 +26,9 @@ public:
 
 	//The direction that the character is facing
 	ECharacterDirection direction;
+
+
+	BoundingBox CollisionBounds;
 
 	//Bounding box vectors
 	Vector2D boundxy;			//the actual bounding box x,y coordinates
@@ -83,6 +94,8 @@ public:
 
 	//Draws the character to the screen
 	void Draw();
+
+	void SetupCharacterCollision(Vector2D position, Vector2D size);
 
 	//Character destructor
 	~Character();

@@ -14,6 +14,7 @@ Player::Player(int Height, int Width){
 	position = Vector2D(0.f, 0.f);
 	boundoffset = Vector2D(18.f, 0.f);
 	boundwh = Vector2D(12.f, 40.f);
+	this->SetupCharacterCollision(Vector2D(2, 0), Vector2D(46, 64));
 }
 
 void Player::Run(Vector2D vel){

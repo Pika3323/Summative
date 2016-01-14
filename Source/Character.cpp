@@ -37,3 +37,8 @@ void Character::Draw(){
 		al_draw_bitmap(texture, position.x, position.y, ALLEGRO_FLIP_HORIZONTAL);
 	}
 }
+
+void Character::SetupCharacterCollision(Vector2D p, Vector2D s){
+	CollisionBounds.position = p;
+	CollisionBounds.size = s;
+}

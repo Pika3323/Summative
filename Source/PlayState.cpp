@@ -546,6 +546,9 @@ void PlayState::Draw(){
 	if (CurrentWorld->bPlay){
 		al_draw_bitmap(HealthBar, 0, al_get_display_height(GEngine->GetDisplay()) - 42, 0);
 	}
+
+	//Draw Character collision bounds
+	al_draw_rectangle(TinTin->position.x + TinTin->CollisionBounds.position.x, TinTin->position.y + TinTin->CollisionBounds.position.y, TinTin->position.x + TinTin->CollisionBounds.position.x + TinTin->CollisionBounds.size.x, TinTin->position.y + TinTin->CollisionBounds.position.y + TinTin->CollisionBounds.size.y, BLUE500, 1);
 }
 
 void PlayState::Init(){
