@@ -52,7 +52,7 @@ void List::onHoverOut(){
 void List::onMouseDown(){
 	ALLEGRO_MOUSE_STATE mstate = GEngine->GetMouseState();
 	Vector2D Relative = Vector2D(mstate.x, mstate.y) - position;
-	if (InRange(Relative.x, Play.position.x, Play.position.x + Play.width) && InRange(Relative.y, Play.position.y, Play.position.y + Play.height)) {
+	if (IMath::InRange(Relative.x, Play.position.x, Play.position.x + Play.width) && IMath::InRange(Relative.y, Play.position.y, Play.position.y + Play.height)) {
 		Online::GetLevel(Level.id);
 		GEngine->SharedVar.bLoadingLevel = true;
 		strcpy(GEngine->SharedVar.LoadLevelName, Level.Name);

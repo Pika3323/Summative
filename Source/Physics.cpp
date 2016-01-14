@@ -112,10 +112,10 @@ int Physics::ColTick(World* Curr, std::vector<Character*> &All){
 			
 		}
 		if (DankeyCheck){
-			if (!static_cast<bool>(All[0]->GetCharacterDirection()) && ((All[j]->position.x + 32) <= (All[0]->position.x + (All[0]->ActualWidth / 2 + 10)) && (All[j]->position.x + 32) >= (All[0]->position.x + (All[0]->ActualWidth / 2 - 10))) && InRange(All[j]->position.y, All[0]->position.y + 10, All[0]->position.y + 100)) {
+			if (!static_cast<bool>(All[0]->GetCharacterDirection()) && ((All[j]->position.x + 32) <= (All[0]->position.x + (All[0]->ActualWidth / 2 + 10)) && (All[j]->position.x + 32) >= (All[0]->position.x + (All[0]->ActualWidth / 2 - 10))) && IMath::InRange(All[j]->position.y, All[0]->position.y + 10, All[0]->position.y + 100)) {
 				All[0]->Health -= All[j]->Damage;
 			}
-			else if (static_cast<bool>(All[0]->GetCharacterDirection()) && ((All[j]->position.x + 32) <= (All[0]->position.x + (All[0]->ActualWidth / 2 + 10)) && (All[j]->position.x + 32) >= (All[0]->position.x + (All[0]->ActualWidth / 2 - 10))) && InRange(All[j]->position.y, All[0]->position.y + 10, All[0]->position.y + 100)) {
+			else if (static_cast<bool>(All[0]->GetCharacterDirection()) && ((All[j]->position.x + 32) <= (All[0]->position.x + (All[0]->ActualWidth / 2 + 10)) && (All[j]->position.x + 32) >= (All[0]->position.x + (All[0]->ActualWidth / 2 - 10))) && IMath::InRange(All[j]->position.y, All[0]->position.y + 10, All[0]->position.y + 100)) {
 				All[0]->Health -= All[j]->Damage;
 			}
 		}

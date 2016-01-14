@@ -66,7 +66,7 @@ void LevelSelectState::HandleEvents(ALLEGRO_EVENT *ev){
 		switch (ev->mouse.button){
 		case MOUSE_LB:
 			for (int i = 0; i < (int)Components.size(); i++){
-				if (InRange(GEngine->GetMouseState().x, Components[i]->position.x, Components[i]->position.x + Components[i]->width) && InRange(GEngine->GetMouseState().y, Components[i]->position.y, Components[i]->position.y + Components[i]->height)){
+				if (IMath::InRange(GEngine->GetMouseState().x, Components[i]->position.x, Components[i]->position.x + Components[i]->width) && IMath::InRange(GEngine->GetMouseState().y, Components[i]->position.y, Components[i]->position.y + Components[i]->height)){
 					Components[i]->onMouseDown();
 					break;
 				}
@@ -77,7 +77,7 @@ void LevelSelectState::HandleEvents(ALLEGRO_EVENT *ev){
 
 			//Local Tiles
 			for (int i = 0; i < (int)LocalTiles.size(); i++){
-				if (InRange(GEngine->GetMouseState().x, LocalTiles[i]->position.x, LocalTiles[i]->position.x + LocalTiles[i]->width) && InRange(GEngine->GetMouseState().y, LocalTiles[i]->position.y, LocalTiles[i]->position.y + LocalTiles[i]->height)){
+				if (IMath::InRange(GEngine->GetMouseState().x, LocalTiles[i]->position.x, LocalTiles[i]->position.x + LocalTiles[i]->width) && IMath::InRange(GEngine->GetMouseState().y, LocalTiles[i]->position.y, LocalTiles[i]->position.y + LocalTiles[i]->height)){
 					LocalTiles[i]->onMouseDown();
 					break;
 				}
@@ -85,7 +85,7 @@ void LevelSelectState::HandleEvents(ALLEGRO_EVENT *ev){
 
 			//Online Tiles
 			for (int i = 0; i < (int)OnlineTiles.size(); i++){
-				if (InRange(GEngine->GetMouseState().x, OnlineTiles[i]->position.x, OnlineTiles[i]->position.x + OnlineTiles[i]->width) && InRange(GEngine->GetMouseState().y, OnlineTiles[i]->position.y, OnlineTiles[i]->position.y + OnlineTiles[i]->height)){
+				if (IMath::InRange(GEngine->GetMouseState().x, OnlineTiles[i]->position.x, OnlineTiles[i]->position.x + OnlineTiles[i]->width) && IMath::InRange(GEngine->GetMouseState().y, OnlineTiles[i]->position.y, OnlineTiles[i]->position.y + OnlineTiles[i]->height)){
 					OnlineTiles[i]->onMouseDown();
 					break;
 				}
@@ -105,13 +105,13 @@ void LevelSelectState::Tick(float delta){
 	bool bIsHoverComponent = false;
 	UIComponent* HoveredComponent = NULL;
 	for (int i = 0; i < (int)Components.size(); i++){
-		if (InRange(GEngine->GetMouseState().x, Components[i]->position.x, Components[i]->position.x + Components[i]->width) && InRange(GEngine->GetMouseState().y, Components[i]->position.y, Components[i]->position.y + Components[i]->height)){
+		if (IMath::InRange(GEngine->GetMouseState().x, Components[i]->position.x, Components[i]->position.x + Components[i]->width) && IMath::InRange(GEngine->GetMouseState().y, Components[i]->position.y, Components[i]->position.y + Components[i]->height)){
 			Components[i]->onHoverIn();
 		}
 		else {
 			Components[i]->onHoverOut();
 		}
-		if (InRange(GEngine->GetMouseState().x, Components[i]->position.x, Components[i]->position.x + Components[i]->width) && InRange(GEngine->GetMouseState().y, Components[i]->position.y, Components[i]->position.y + Components[i]->height)){
+		if (IMath::InRange(GEngine->GetMouseState().x, Components[i]->position.x, Components[i]->position.x + Components[i]->width) && IMath::InRange(GEngine->GetMouseState().y, Components[i]->position.y, Components[i]->position.y + Components[i]->height)){
 			HoveredComponent = Components[i];
 			bIsHoverComponent = true;
 		}

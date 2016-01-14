@@ -159,11 +159,11 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 						CurrentWorld->EnemySelect = false;
 						SelectedBlock = static_cast<EBlockType>(ev->mouse.x / 100);
 					}
-					else if (InRange(ev->mouse.x, 900, 1000)){
+					else if (IMath::InRange(ev->mouse.x, 900, 1000)){
 						CurrentWorld->EnemySelect = true;
 						SelectedEnemy = EnemyType::E_Dankey;
 					}
-					else if (InRange(ev->mouse.x, 1000, 1100)){
+					else if (IMath::InRange(ev->mouse.x, 1000, 1100)){
 						CurrentWorld->EnemySelect = true;
 						SelectedEnemy = EnemyType::E_Cinas;
 					}
@@ -359,7 +359,7 @@ void PlayState::Tick(float delta){
 		CurrCharacters[i]->Tick(delta, &CurrCharacters);
 	}
 
-	if (InRange(GEngine->GetMouseState().x, PauseButton->position.x, PauseButton->position.x + PauseButton->width) && InRange(GEngine->GetMouseState().y, PauseButton->position.y, PauseButton->position.y + PauseButton->height)){
+	if (IMath::InRange(GEngine->GetMouseState().x, PauseButton->position.x, PauseButton->position.x + PauseButton->width) && IMath::InRange(GEngine->GetMouseState().y, PauseButton->position.y, PauseButton->position.y + PauseButton->height)){
 		PauseButton->onHoverIn();
 	}
 	else{
@@ -475,7 +475,7 @@ void PlayState::Draw(){
 			elem.offset = elem.position + CurrentWorld->offset;
 
 			//If the block has been created, draw it!
-			if (elem.bSpawned && InRange(elem.offset.x, -32, al_get_display_width(GEngine->GetDisplay()) + 32) && InRange(elem.offset.y, -32, al_get_display_height(GEngine->GetDisplay()) + 32)){
+			if (elem.bSpawned && IMath::InRange(elem.offset.x, -32, al_get_display_width(GEngine->GetDisplay()) + 32) && IMath::InRange(elem.offset.y, -32, al_get_display_height(GEngine->GetDisplay()) + 32)){
 				//Draws the block using a texture from the current selected type of block
 				elem.Draw(CurrentWorld->Type[static_cast<int>(elem.type)].texture);
 			}
