@@ -19,6 +19,11 @@ public:
 	//The direction that the character is facing
 	ECharacterDirection direction;
 
+	//Bounding box vectors
+	Vector2D boundxy;			//the actual bounding box x,y coordinates
+	Vector2D boundoffset;		//the offset to be added to the player position to set the bounding box x,y
+	Vector2D boundwh;			//the width and height of the bounding box
+
 	//The character's instantaneous velocity
 	Vector2D velocity;
 
