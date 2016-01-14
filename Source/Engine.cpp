@@ -114,6 +114,15 @@ void Engine::Init(){
 		printf("Font add on loaded\n");
 	}
 
+	//Audio add on
+	if (!al_install_audio()){
+		fprintf(stderr, "Audio add on could not be loaded\n");
+		bExit = true;
+	}
+	else {
+		printf("Audio add on loaded\n");
+	}
+
 	//Create a font for the use of debugging
 	//debug_font = al_create_builtin_font();
 	debug_font = al_load_ttf_font("Roboto-Regular.ttf", 11, 0);

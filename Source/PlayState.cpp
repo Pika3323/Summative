@@ -554,6 +554,8 @@ void PlayState::Draw(){
 }
 
 void PlayState::Init(){
+	music = al_load_sample("Meatball Parade.mp3");
+	al_play_sample(music, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
 	//Set the different types of blocks, as well as load their textures
 	CurrentWorld->Type[0] = BlockType("Rainbow", al_load_bitmap("Textures/Objects/Rainbow.png"), true);
 	CurrentWorld->Type[1] = BlockType("Brick", al_load_bitmap("Textures/Objects/Brick.png"), true);

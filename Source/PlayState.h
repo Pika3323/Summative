@@ -44,6 +44,8 @@ public:
 
 	int UIOffset;
 
+	ALLEGRO_SAMPLE* music;
+
 	//The location of a click
 	Vector2D ClickLocation;	
 
