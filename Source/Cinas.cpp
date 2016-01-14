@@ -12,8 +12,7 @@ Cinas::Cinas(Vector2D pos){
 	texture = al_create_bitmap(ActualWidth, ActualHeight);
 	bOnGround = false;
 	bCharacterLocked = false;
-	boundoffset = Vector2D(5.f, 10.f);
-	boundwh = Vector2D(22.f, 22.f);
+	this->SetupCharacterCollision(Vector2D(6.f, 15.f), Vector2D(20.f, 17.f));
 }
 
 void Cinas::Tick(float delta, std::vector<Character*> *C){
@@ -50,7 +49,6 @@ void Cinas::Tick(float delta, std::vector<Character*> *C){
 		run.GetFrameBitmap(texture);
 		run.PushFrame();
 	}
-	position += velocity;
 }
 
 void Cinas::Run(Vector2D velocity){

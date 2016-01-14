@@ -12,8 +12,7 @@ Dankey::Dankey(Vector2D pos){
 	attack = SpriteSheet(al_load_bitmap("Textures/Characters/Dankeythrow_e.png"), 64, 64, 8);
 	still = SpriteSheet(al_load_bitmap("Textures/Characters/Dankeyidle_e.png"), 64, 64, 5);
 	texture = al_create_bitmap(ActualWidth, ActualHeight);
-	boundoffset = Vector2D(23.f, 0.f);
-	boundwh = Vector2D(18.f, 44.f);
+	this->SetupCharacterCollision(Vector2D(25.f, 2.f), Vector2D(16.f, 62.f));
 }
 
 void Dankey::Tick(float delta, std::vector<Character*> *Curr){

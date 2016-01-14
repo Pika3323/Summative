@@ -92,6 +92,8 @@ public:
 	//Prints debug text to the screen for a set duration of time
 	//Be careful of using these in Tick functions!!
 	void PrintDebugText(ALLEGRO_COLOR c, float duration, const char* text);
+
+	void DrawHitbox(std::vector<class Character*> &C);
 	
 	//Initialize all engine components
 	void Init();

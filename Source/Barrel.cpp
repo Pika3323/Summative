@@ -14,14 +14,12 @@ Barrel::Barrel(ECharacterDirection d, Vector2D pos){
 		velocity = Vector2D(-5.f, 0.f);
 	else
 		velocity = Vector2D(5.f, 0.f);
-	boundoffset = Vector2D(0.f, 0.f);
-	boundwh = Vector2D(16.f, 16.f);
+	this->SetupCharacterCollision(Vector2D(0.f, 0.f), Vector2D(16.f, 16.f));
 }
 
 void Barrel::Tick(float delta, std::vector<Character*> *Curr){
 	Roll.GetFrameBitmap(this->texture);
 	Roll.PushFrame();
-	position += velocity;
 }
 
 void Barrel::Run(Vector2D velocity){

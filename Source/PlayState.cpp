@@ -5,7 +5,7 @@ PlayState::PlayState(){
 	CurrentWorld = new World(Vector2D(4096.f, 2048.f), 32);
 	TinTin = new Player(128, 64);	//The main player character
 	TinTin->SetCharacterWorldPosition(Vector2D(0.f, 0.f));
-	CurrentEffects = new Physics(Vector2D(0.f, 1.f));		//current world gravity
+	Fyzix = new Physics(Vector2D(0.f, 1.f));		//current world gravity
 	notPlayingBuff = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f)); //block buffer for when not playing
 	BlockBuffer = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f));	//play buffer for blocks
 	GridBuffer = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f));	//buffer for grid
@@ -369,8 +369,8 @@ void PlayState::Tick(float delta){
 		if (CurrentWorld->bPlay) {
 
 			//Run Gravity, Collision checking code, and Friction
-			CurrentEffects->GravTick(CurrCharacters);
-			ColChecker = CurrentEffects->ColTick(CurrentWorld, CurrCharacters);
+			Fyzix->GravTick(CurrCharacters);
+			ColChecker = Fyzix->ColTick(CurrentWorld, CurrCharacters);
 			if (ColChecker == 1) {
 				TinTin->Win(CharacterStart);
 				Online::attempts = 1;
@@ -389,7 +389,7 @@ void PlayState::Tick(float delta){
 					DestroyCharacter(CurrCharacters[ColChecker - 2]);
 				}
 			}
-			CurrentEffects->FricTick(CurrCharacters);
+			Fyzix->FricTick(CurrCharacters);
 
 			//Kill the Character if he falls out of the world
 			if (TinTin->position.x > CurrentWorld->dimensions.x || (TinTin->position.x + TinTin->ActualWidth) < 0 || (TinTin->position.y + TinTin->ActualHeight) < 0 || TinTin->Health <= 0) {
@@ -548,7 +548,7 @@ void PlayState::Draw(){
 	}
 
 	//Draw Character collision bounds
-	al_draw_rectangle(TinTin->position.x + TinTin->CollisionBounds.position.x, TinTin->position.y + TinTin->CollisionBounds.position.y, TinTin->position.x + TinTin->CollisionBounds.position.x + TinTin->CollisionBounds.size.x, TinTin->position.y + TinTin->CollisionBounds.position.y + TinTin->CollisionBounds.size.y, BLUE500, 1);
+	GEngine->DrawHitbox(CurrCharacters);
 }
 
 void PlayState::Init(){
@@ -668,7 +668,7 @@ void PlayState::Destroy(){
 }
 
 PlayState::~PlayState(){
-	delete CurrentEffects;
+	delete Fyzix;
 	delete CurrentWorld;
 	delete PauseButton;
 

@@ -259,3 +259,9 @@ GameState* Engine::GetCurrentGameState(){
 void Engine::PrintDebugText(ALLEGRO_COLOR c, float duration, const char* text){
 	DebugStrings.push_back(DebugOutput(c, text, duration));
 }
+
+void Engine::DrawHitbox(std::vector<Character*> &C){
+	for (int i = 0; i < (int)C.size(); i++){
+		al_draw_rectangle(C[i]->position.x + C[i]->CollisionBounds.position.x, C[i]->position.y + C[i]->CollisionBounds.position.y, C[i]->position.x + C[i]->CollisionBounds.position.x + C[i]->CollisionBounds.size.x, C[i]->position.y + C[i]->CollisionBounds.position.y + C[i]->CollisionBounds.size.y, BLUE500, 1);
+	}
+}

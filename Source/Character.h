@@ -30,10 +30,6 @@ public:
 
 	BoundingBox CollisionBounds;
 
-	//Bounding box vectors
-	Vector2D boundxy;			//the actual bounding box x,y coordinates
-	Vector2D boundoffset;		//the offset to be added to the player position to set the bounding box x,y
-	Vector2D boundwh;			//the width and height of the bounding box
 
 	//The character's instantaneous velocity
 	Vector2D velocity;
@@ -79,6 +75,9 @@ public:
 
 	//Called when the character dies
 	virtual void Die() = 0;
+
+	//Called when the character collides with another character
+	virtual void Collide(Character* OtherCharacter) = 0;
 	
 	//Sets the position of the character
 	void SetCharacterWorldPosition(Vector2D NewV);

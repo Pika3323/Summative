@@ -39,6 +39,7 @@
 #include "GameState.h"		//Game states
 #include "UIComponent.h"	//UI
 #include "Share.h"
+#include "Character.h"
 
 static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 {

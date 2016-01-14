@@ -3,18 +3,16 @@
 Player::Player(int Height, int Width){
 	Health = 100.f;
 	Deleted = false;
-	run = SpriteSheet(al_load_bitmap("Textures/Characters/running_e.png"), 48, 64, 11);
-	fall = SpriteSheet(al_load_bitmap("Textures/Characters/fall_e.png"), 48, 64, 3);
-	still = SpriteSheet(al_load_bitmap("Textures/Characters/idle_e.png"), 48, 64, 6);
-	shoot = SpriteSheet(al_load_bitmap("Textures/Characters/shoot_e.png"), 48, 64, 4);
+	run = SpriteSheet(al_load_bitmap("Textures/Characters/running_e.png"), 64, 128, 11);
+	fall = SpriteSheet(al_load_bitmap("Textures/Characters/fall_e.png"), 64, 128, 3);
+	still = SpriteSheet(al_load_bitmap("Textures/Characters/idle_e.png"), 64, 128, 6);
+	shoot = SpriteSheet(al_load_bitmap("Textures/Characters/shoot_e.png"), 64, 128, 4);
 	ActualHeight = Height;
 	ActualWidth = Width;
 	texture = al_create_bitmap(Width, Height);
 	bOnGround = false;
 	position = Vector2D(0.f, 0.f);
-	boundoffset = Vector2D(18.f, 0.f);
-	boundwh = Vector2D(12.f, 40.f);
-	this->SetupCharacterCollision(Vector2D(2, 0), Vector2D(46, 64));
+	this->SetupCharacterCollision(Vector2D(25.f, 64.f), Vector2D(12.f, 64.f));
 }
 
 void Player::Run(Vector2D vel){
@@ -55,28 +53,24 @@ void Player::Tick(float delta, std::vector<Character*> *Curr){
 		shoot.PushFrame();
 		if (shoot.CurrentFrame == 2 && direction == ECharacterDirection::R_Left && !ShotAlready){
 			ShotAlready = true;
-			Curr->push_back(new Bullet(Vector2D(position.x, position.y + 60), direction));
+			//Curr->push_back(new Bullet(Vector2D(position.x, position.y + 60), direction));
 		}
 		else if (shoot.CurrentFrame == 2 && direction == ECharacterDirection::R_Right && !ShotAlready){
 			ShotAlready = true;
-			Curr->push_back(new Bullet(Vector2D(position.x + ActualWidth, position.y + 60), direction));
+			//Curr->push_back(new Bullet(Vector2D(position.x + ActualWidth, position.y + 60), direction));
 		}
-		position += velocity;
 	}
 	else if (bRunning && bOnGround){
 		run.GetFrameBitmap(this->texture);
 		run.PushFrame();
-		position += velocity;
 	}
 	else if (bOnGround){
 		still.GetFrameBitmap(this->texture);
 		still.PushFrame();
-		position += velocity;
 	}
 	else if (!bOnGround){
 		fall.GetFrameBitmap(this->texture);
 		fall.PushFrame();
-		position += velocity;
 	}
 }
 
