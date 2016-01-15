@@ -370,7 +370,7 @@ void PlayState::Tick(float delta){
 
 			//Run Gravity, Collision checking code, and Friction
 			Fyzix->Tick(CurrCharacters);
-			if (ColChecker == 1) {
+			/*if (ColChecker == 1) {
 				TinTin->Win(CharacterStart);
 				Online::attempts = 1;
 				Online::completions = 1;
@@ -387,7 +387,7 @@ void PlayState::Tick(float delta){
 				else{
 					DestroyCharacter(CurrCharacters[ColChecker - 2]);
 				}
-			}
+			}*/
 			//Kill the Character if he falls out of the world
 			if (TinTin->position.x > CurrentWorld->dimensions.x || (TinTin->position.x + TinTin->ActualWidth) < 0 || (TinTin->position.y + TinTin->ActualHeight) < 0 || TinTin->Health <= 0) {
 				CurrCharacters.clear();
@@ -545,7 +545,8 @@ void PlayState::Draw(){
 	}
 
 	//Draw Character collision bounds
-	GEngine->DrawHitbox(CurrCharacters);
+	if (CurrentWorld->bPlay)
+		GEngine->DrawHitbox(CurrCharacters);
 }
 
 void PlayState::Init(){

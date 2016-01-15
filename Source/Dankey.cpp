@@ -1,5 +1,4 @@
 #include "Dankey.h"
-
 Dankey::Dankey(Vector2D pos){
 	Health = 50.f;
 	bOnGround = false;
@@ -46,7 +45,6 @@ void Dankey::Tick(float delta, std::vector<Character*> *Curr){
 			this->BarrelDelay = 0;
 		}
 	}
-	position += velocity;
 }
 
 void Dankey::Run(Vector2D velocity){
@@ -77,6 +75,7 @@ void Dankey::BlockCollide(bool w, int CollisionDirection){
 
 	else if (CollisionDirection == 3){
 		bOnGround = true;
+		velocity.y = 0;
 	}
 
 	else if (CollisionDirection == 4){

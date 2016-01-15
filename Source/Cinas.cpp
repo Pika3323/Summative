@@ -3,7 +3,7 @@
 Cinas::Cinas(Vector2D pos){
 	Health = 10.f;
 	StartPosition = pos;
-	Damage = 0.1f;
+	Damage = 0.2f;
 	position = pos;
 	ActualHeight = 32;
 	ActualWidth = 32;
@@ -85,6 +85,7 @@ void Cinas::BlockCollide(bool w, int CollisionDirection){
 
 	else if (CollisionDirection == 3){
 		bOnGround = true;
+		velocity.y = 0;
 	}
 
 	else if (CollisionDirection == 4){

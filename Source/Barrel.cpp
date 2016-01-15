@@ -1,7 +1,7 @@
 #include "Barrel.h"
 
 Barrel::Barrel(ECharacterDirection d, Vector2D pos){
-	Damage = 10.f;
+	Damage = 1.f;
 	Deleted = false;
 	bOnGround = true;
 	ActualWidth = 16;
@@ -54,6 +54,7 @@ void Barrel::BlockCollide(bool w, int CollisionDirection){
 
 	else if (CollisionDirection == 3){
 		bOnGround = true;
+		velocity.y = 0;
 	}
 
 	else if (CollisionDirection == 4){

@@ -26,5 +26,5 @@ public:
 	void Tick(std::vector<Character*> &All);	//applying force
 private:
 	bool OnScreen(Character* C);
-	bool HitBlock(Character* C);
+	void HitBlock(Character* C);
 };

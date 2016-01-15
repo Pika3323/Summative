@@ -16,7 +16,6 @@ Player::Player(int Height, int Width){
 }
 
 void Player::Run(Vector2D vel){
-
 	velocity.x += vel.x;
 
 	if (velocity.x > 7.f){
@@ -32,7 +31,6 @@ void Player::Run(Vector2D vel){
 void Player::Jump(){
 	if (bOnGround) {
 		velocity.y = -20.f;
-
 		bOnGround = false;
 	}
 }
@@ -98,10 +96,10 @@ void Player::BlockCollide(bool w, int CollisionDirection){
 
 	else if (CollisionDirection == 3){
 		bOnGround = true;
+		velocity.y = 0.f;
 	}
 
 	else if (CollisionDirection == 4){
 		bOnGround = false;
 	}
-
 }

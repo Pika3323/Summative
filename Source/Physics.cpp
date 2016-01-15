@@ -9,14 +9,18 @@ void Physics::Tick(std::vector<Character*> &All){
 		if (!All[i]->bOnGround){
 			All[i]->velocity += Gravforce;
 		}
-		if (All[i]->velocity.y > 50){
-			All[i]->velocity.y = 50;
+		if (All[i]->velocity.y > 50.f){
+			All[i]->velocity.y = 50.f;
 		}
 
 
 		for (int j = 0; j < (int)All.size(); j++){
-			if (j == i)
+			if (j == i){
 				j++;
+				if (j >= (int)All.size()){
+					break;
+				}
+			}
 			if (Physics::OnScreen(All[i]) && Physics::OnScreen(All[j])) {
 				if ((All[i]->position.x + All[i]->CollisionBounds.position.x + All[i]->CollisionBounds.size.x) >= (All[j]->position.x + All[j]->CollisionBounds.position.x)
 					&& (All[i]->position.x + All[i]->CollisionBounds.position.x) <= (All[j]->position.x + All[j]->CollisionBounds.position.x + All[j]->CollisionBounds.size.x)
@@ -34,25 +38,32 @@ void Physics::Tick(std::vector<Character*> &All){
 }
 
 bool Physics::OnScreen(Character* C){
-	return C->position.x > (dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->offset.x * -1) &&
+	if  (C->position.x > (dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->offset.x * -1) &&
 		C->position.x < (dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->offset.x * -1 + GEngine->GetDisplayWidth()) &&
 		C->position.y >(dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->offset.y * -1) &&
-		C->position.y < (dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->offset.y * -1 + GEngine->GetDisplayHeight());
+		C->position.y < (dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->offset.y * -1 + GEngine->GetDisplayHeight())){
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
-bool Physics::HitBlock(Character* C){
+void Physics::HitBlock(Character* C){
 	bool win = false;
 	World* W = dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld;
-	int j = C->ActualHeight / W->gridSize;
-	for (int i = 0; i < j; i++){
-		if (W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x + 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - ((i + 1) * 32)) / (W->gridSize))].type == EBlockType::B_FinishFlag)
+	int j = ceil(C->CollisionBounds.size.y / W->gridSize);
+	for (int i = 0; i <=  j; i++){
+		if (!static_cast<int>(C->direction) && W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x + 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - ((i + 1) * 32)) / (W->gridSize))].type == EBlockType::B_FinishFlag)
 			win = true;
-		if (!static_cast<int>(C->direction) && (W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x + C->CollisionBounds.size.x + 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - ((i + 1) * 32)) / (W->gridSize))].bSpawned &&
+		if (!static_cast<int>(C->direction) && (W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x + C->CollisionBounds.size.x + 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - (i * 32)) / (W->gridSize))].bSpawned &&
 			W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x + C->CollisionBounds.size.x + 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - ((i + 1) * 32)) / (W->gridSize))].bCollision)){
 			C->BlockCollide(win, 0);
 		}
-		else if (static_cast<int>(C->direction) && (W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x - 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - ((i + 1) * 32)) / (W->gridSize))].bSpawned &&
-			W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x - 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - ((i + 1) * 32)) / (W->gridSize))].bCollision)){
+		if (static_cast<int>(C->direction) && W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x - 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - (i* 32)) / (W->gridSize))].type == EBlockType::B_FinishFlag)
+			win = true;
+		if (static_cast<int>(C->direction) && (W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x - 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - (i * 32)) / (W->gridSize))].bSpawned &&
+			W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x - 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - (i * 32)) / (W->gridSize))].bCollision)){
 			C->BlockCollide(win, 1);
 		}
 		win = false;
@@ -66,13 +77,18 @@ bool Physics::HitBlock(Character* C){
 	}
 	win = false;
 
-	if (W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y + 1) / (W->gridSize))].type == EBlockType::B_FinishFlag)
+	if (W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y) / (W->gridSize))].type == EBlockType::B_FinishFlag)
 		win = true;
-	if ((W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y + 1) / (W->gridSize))].bSpawned &&
-		W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y + 1) / (W->gridSize))].bCollision)){
+	if (!C->bOnGround && (W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y) / (W->gridSize))].bSpawned &&
+		W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y) / (W->gridSize))].bCollision)){
+		if (dynamic_cast<Barrel*>(C)){
+			C->SetCharacterWorldPosition(Vector2D(C->position.x, W->Blocks[(int)(C->position.x / W->gridSize)][(int)(C->position.y / W->gridSize)].position.y + 16));
+		}
+		else {
+			C->SetCharacterWorldPosition(Vector2D(C->position.x, W->Blocks[(int)(C->position.x / W->gridSize)][(int)(C->position.y / W->gridSize)].position.y - 1));
+		}
 		C->BlockCollide(win, 3);
 	}
-
 	win = false;
 
 	if (W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y + 1) / (W->gridSize))].bSpawned &&
@@ -83,5 +99,4 @@ bool Physics::HitBlock(Character* C){
 	if (!W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y + 1) / (W->gridSize))].bSpawned){
 		C->BlockCollide(win, 4);
 	}
-	return win;
 }

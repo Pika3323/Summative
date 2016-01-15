@@ -17,7 +17,6 @@ Bullet::Bullet(Vector2D pos, ECharacterDirection d){
 void Bullet::Tick(float delta, std::vector<Character*> *Curr) {
 	bullet.GetFrameBitmap(this->texture);
 	bullet.PushFrame();
-	position += velocity;
 }
 
 void Bullet::Run(Vector2D velocity){}
