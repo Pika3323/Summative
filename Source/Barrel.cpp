@@ -33,3 +33,12 @@ void Barrel::Jump(){
 void Barrel::Die(){
 	delete this;
 }
+
+void Barrel::Collide(Character* OtherCharacter){
+	if (dynamic_cast<Player*>(OtherCharacter)){
+		OtherCharacter->Health -= this->Damage;
+	}
+	if (dynamic_cast<Cinas*>(OtherCharacter)){
+		OtherCharacter->Health -= this->Damage;
+	}
+}

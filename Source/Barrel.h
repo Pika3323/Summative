@@ -15,6 +15,8 @@ public:
 
 	void Die();
 
+	void Collide(Character* OtherCharacter);
+
 	Barrel(ECharacterDirection d, Vector2D pos);
 
 private:

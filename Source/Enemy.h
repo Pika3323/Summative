@@ -26,6 +26,8 @@ public:
 
 	virtual void Die() = 0;
 
+	virtual void Collide(Character* OtherCharacter) = 0;
+
 	Enemy();
 protected:
 	SpriteSheet run;

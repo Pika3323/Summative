@@ -1,6 +1,7 @@
 #include "Cinas.h"
 
 Cinas::Cinas(Vector2D pos){
+	Health = 10.f;
 	StartPosition = pos;
 	Damage = 0.1f;
 	position = pos;
@@ -65,4 +66,10 @@ void Cinas::Jump(){
 
 void Cinas::Die(){
 	delete this;
+}
+
+void Cinas::Collide(Character* OtherCharacter){
+	if (dynamic_cast<Player*>(OtherCharacter)) {
+		OtherCharacter->Health -= this->Damage;
+	}
 }

@@ -14,6 +14,8 @@ public:
 
 	void Die();
 
+	void Collide(Character* OtherCharacter);
+
 	BulletEx(Vector2D pos, ECharacterDirection d);
 	
 	//in public soley for deleting purposes and frame management

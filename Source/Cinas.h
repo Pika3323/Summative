@@ -19,6 +19,8 @@ public:
 
 	void Tick(float delta, std::vector<Character*> *Curr);
 
+	void Collide(Character* OtherCharacter);
+
 	bool bCharacterLocked;
 
 private:

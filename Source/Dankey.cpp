@@ -1,6 +1,7 @@
 #include "Dankey.h"
 
 Dankey::Dankey(Vector2D pos){
+	Health = 50.f;
 	bOnGround = false;
 	Damage = 15.f;
 	Deleted = false;
@@ -58,4 +59,10 @@ void Dankey::Jump(){
 
 void Dankey::Die(){
 	delete this;
+}
+
+void Dankey::Collide(Character* OtherCharacter){
+	if (dynamic_cast<Player*>(OtherCharacter)) {
+		OtherCharacter->Health -= this->Damage;
+	}
 }

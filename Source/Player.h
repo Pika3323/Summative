@@ -22,6 +22,8 @@ public:
 
 	void Win(Vector2D Start);
 
+	void Collide(Character* OtherCharacter);
+
 	Player(int Height, int Width);
 protected:
 	SpriteSheet run;

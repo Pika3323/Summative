@@ -79,3 +79,7 @@ void Player::Win(Vector2D Start){
 	printf("You Won!\n");
 	//add stuff here later
 }
+
+void Player::Collide(Character* OtherCharacter){
+
+}
