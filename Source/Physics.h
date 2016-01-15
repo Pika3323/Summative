@@ -27,5 +27,4 @@ public:
 private:
 	bool OnScreen(Character* C);
 	bool HitBlock(Character* C);
-	bool Fall(Character* C);
 };

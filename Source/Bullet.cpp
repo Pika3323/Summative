@@ -24,3 +24,4 @@ void Bullet::Run(Vector2D velocity){}
 void Bullet::Die(){}
 void Bullet::Jump(){}
 void Bullet::Collide(Character* OtherCharacter){}
+void Bullet::BlockCollide(bool w, int CollisionDirection){}

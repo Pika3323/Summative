@@ -7,6 +7,7 @@
 
 class Player : public Character{
 public:
+	bool PlayerWin;
 
 	bool ShotAlready;
 
@@ -23,6 +24,8 @@ public:
 	void Win(Vector2D Start);
 
 	void Collide(Character* OtherCharacter);
+
+	void BlockCollide(bool w, int CollisionDirection);
 
 	Player(int Height, int Width);
 protected:

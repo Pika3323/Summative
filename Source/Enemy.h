@@ -28,6 +28,8 @@ public:
 
 	virtual void Collide(Character* OtherCharacter) = 0;
 
+	virtual void BlockCollide(bool w, int CollisionDirection) = 0;
+
 	Enemy();
 protected:
 	SpriteSheet run;

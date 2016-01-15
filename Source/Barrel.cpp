@@ -42,3 +42,21 @@ void Barrel::Collide(Character* OtherCharacter){
 		OtherCharacter->Health -= this->Damage;
 	}
 }
+
+void Barrel::BlockCollide(bool w, int CollisionDirection){
+	if (CollisionDirection == 0 || CollisionDirection == 1){
+		this->velocity.x = 0;
+	}
+
+	else if (CollisionDirection == 2){
+		velocity.y = 0;
+	}
+
+	else if (CollisionDirection == 3){
+		bOnGround = true;
+	}
+
+	else if (CollisionDirection == 4){
+		bOnGround = false;
+	}
+}

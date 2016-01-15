@@ -81,5 +81,27 @@ void Player::Win(Vector2D Start){
 }
 
 void Player::Collide(Character* OtherCharacter){
+}
+
+void Player::BlockCollide(bool w, int CollisionDirection){
+	if (w) {
+		PlayerWin = true;
+	}
+
+	if (CollisionDirection == 0 || CollisionDirection == 1){
+		this->velocity.x = 0;
+	}
+	
+	else if (CollisionDirection == 2){
+		velocity.y = 0;
+	}
+
+	else if (CollisionDirection == 3){
+		bOnGround = true;
+	}
+
+	else if (CollisionDirection == 4){
+		bOnGround = false;
+	}
 
 }

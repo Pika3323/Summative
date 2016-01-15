@@ -78,6 +78,9 @@ public:
 
 	//Called when the character collides with another character
 	virtual void Collide(Character* OtherCharacter) = 0;
+
+	//Called when the character collides with a block  (Collision Direction = 0 for right, 1 for left, 2 for up,  3 for down stay, 4 for down stop)
+	virtual void BlockCollide(bool w , int CollisionDirection) = 0;
 	
 	//Sets the position of the character
 	void SetCharacterWorldPosition(Vector2D NewV);

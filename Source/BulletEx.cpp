@@ -19,3 +19,4 @@ void BulletEx::Jump(){}
 void BulletEx::Run(Vector2D velocity){}
 void BulletEx::Die(){}
 void BulletEx::Collide(Character* OtherCharacter){}
+void BulletEx::BlockCollide(bool w, int CollisionDirection){}

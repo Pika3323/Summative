@@ -17,6 +17,8 @@ public:
 
 	void Collide(Character* OtherCharacter);
 
+	void BlockCollide(bool w, int CollisionDirection);
+
 	Bullet(Vector2D pos, ECharacterDirection d);
 
 private:

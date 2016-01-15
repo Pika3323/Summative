@@ -16,6 +16,8 @@ public:
 
 	void Collide(Character* OtherCharacter);
 
+	void BlockCollide(bool w, int CollisionDirection);
+
 	BulletEx(Vector2D pos, ECharacterDirection d);
 	
 	//in public soley for deleting purposes and frame management

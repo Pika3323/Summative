@@ -369,8 +369,7 @@ void PlayState::Tick(float delta){
 		if (CurrentWorld->bPlay) {
 
 			//Run Gravity, Collision checking code, and Friction
-			Fyzix->GravTick(CurrCharacters);
-			ColChecker = Fyzix->ColTick(CurrentWorld, CurrCharacters);
+			Fyzix->Tick(CurrCharacters);
 			if (ColChecker == 1) {
 				TinTin->Win(CharacterStart);
 				Online::attempts = 1;
@@ -389,8 +388,6 @@ void PlayState::Tick(float delta){
 					DestroyCharacter(CurrCharacters[ColChecker - 2]);
 				}
 			}
-			Fyzix->FricTick(CurrCharacters);
-
 			//Kill the Character if he falls out of the world
 			if (TinTin->position.x > CurrentWorld->dimensions.x || (TinTin->position.x + TinTin->ActualWidth) < 0 || (TinTin->position.y + TinTin->ActualHeight) < 0 || TinTin->Health <= 0) {
 				CurrCharacters.clear();
@@ -561,7 +558,7 @@ void PlayState::Init(){
 	CurrentWorld->Type[5] = BlockType("Fancy", al_load_bitmap("Textures/Objects/Fancy.png"), true);
 	CurrentWorld->Type[6] = BlockType("Mossy", al_load_bitmap("Textures/Objects/Mossy.png"), true);
 	CurrentWorld->Type[7] = BlockType("Background Brick", al_load_bitmap("Textures/Objects/Background_Brick.png"), false);
-	CurrentWorld->Type[8] = BlockType("Finish Flag", al_load_bitmap("Textures/Objects/FinishFlag.png"), false);
+	CurrentWorld->Type[8] = BlockType("Finish Flag", al_load_bitmap("Textures/Objects/FinishFlag.png"), true);
 
 	for (int i = 0; i < 9; i++) {
 		SelectBlock.push_back(Buffer(al_create_bitmap(100, 100), Vector2D(100.f * i, 0.f), Vector2D(0.f, 0.f)));
