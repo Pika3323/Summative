@@ -208,24 +208,32 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 						else if (bBoxSelect && !CurrentWorld->EnemySelect) {
 							//If a start location of the rectangle select has been set
 							if (bFirstBoxSelected){
-								Vector2D NewMouseLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1) + 64, GEngine->GetMouseState().y + (GridBuffer.offset.y * -1) + 32);
-								Vector2D BoxVector;
+								Vector2D StartIndex, EndIndex;
 
-								//Handle different directions in which the box extends
-								if (NewMouseLocation > ClickLocation) {
-									BoxVector = ClickLocation;
-								}
-								else{
-									BoxVector = NewMouseLocation;
-								}
-
-								GridTile* Next = CurrentWorld->GetClickedTile(BoxVector);
+								GridTile* Next = CurrentWorld->GetClickedTile(Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1)));
 								GEngine->PrintDebugText(al_map_rgb(255, 0, 0), 5.f, al_ustr_newf("%d, %d", Next->x, Next->y));
 
-								//Place multiple boxes
-								for (int i = 0; i < abs((int)(NewMouseLocation.x - ClickLocation.x) / 32); i++) {
-									for (int j = 0; j < abs((int)(NewMouseLocation.y - ClickLocation.y) / 32); j++) {
-										CurrentWorld->PlaceBlock(CurrentWorld->GetClickedTile(BoxVector + Vector2D(i * 32, j * 32)), SelectedBlock);
+								if (FirstTile->x <= Next->x) {
+									StartIndex.x = FirstTile->x;
+									EndIndex.x = Next->x;
+								}
+								else{
+									StartIndex.x = Next->x;
+									EndIndex.x = FirstTile->x;
+								}
+
+								if (FirstTile->y <= Next->y) {
+									StartIndex.y = FirstTile->y;
+									EndIndex.y = Next->y;
+								}
+								else{
+									StartIndex.y = Next->y;
+									EndIndex.y = FirstTile->y;
+								}
+
+								for (int i = (int)StartIndex.x; i <= (int)EndIndex.x; i++) {
+									for (int j = (int)StartIndex.y; j <= (int)EndIndex.y; j++){
+										CurrentWorld->PlaceBlock(&CurrentWorld->Tile[i][j], SelectedBlock);
 									}
 								}
 							}
@@ -494,8 +502,28 @@ void PlayState::Draw(){
 	
 	//Draws a transparent blue rectangle over the area selected by the box select
 	if (bBoxSelect && bFirstBoxSelected) {
-		GridTile* newTile = CurrentWorld->GetClickedTile(Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1) + 32, GEngine->GetMouseState().y + (GridBuffer.offset.y * -1) + 32));
-		al_draw_filled_rectangle(FirstTile->location.x, FirstTile->location.y, newTile->location.x, newTile->location.y, al_map_rgba(6, 27, 73, 25));
+		GridTile* newTile = CurrentWorld->GetClickedTile(Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1)));
+
+		Vector2D SelectionStart, SelectionEnd;
+
+		SelectionEnd = newTile->location;
+
+		if (newTile->x < FirstTile->x) {
+			SelectionStart.x = FirstTile->location.x + 32;
+		}
+		else {
+			SelectionStart.x = FirstTile->location.x;
+			SelectionEnd.x += 32;
+		}
+		if (newTile->y < FirstTile->y) {
+			SelectionStart.y = FirstTile->location.y + 32;
+		}
+		else {
+			SelectionStart.y = FirstTile->location.y;
+			SelectionEnd.y += 32;
+		}
+		al_draw_filled_rectangle(SelectionStart.x, SelectionStart.y, SelectionEnd.x, SelectionEnd.y, al_map_rgba(50, 132, 135, 25));
+
 	}
 
 	//Draws Health bar
