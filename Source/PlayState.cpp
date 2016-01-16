@@ -168,9 +168,6 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 						SelectedEnemy = EnemyType::E_Cinas;
 					}
 				}
-				else if(CurrentWorld->bPlay) {
-					//TinTin->bShooting = true;
-				}
 				else {
 					if (!CurrentWorld->bPlay) {
 						bClicked = true;
@@ -222,6 +219,9 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 									BoxVector = NewMouseLocation;
 								}
 
+								GridTile* Next = CurrentWorld->GetClickedTile(BoxVector);
+								GEngine->PrintDebugText(al_map_rgb(255, 0, 0), 5.f, al_ustr_newf("%d, %d", Next->x, Next->y));
+
 								//Place multiple boxes
 								for (int i = 0; i < abs((int)(NewMouseLocation.x - ClickLocation.x) / 32); i++) {
 									for (int j = 0; j < abs((int)(NewMouseLocation.y - ClickLocation.y) / 32); j++) {
@@ -233,6 +233,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 							bFirstBoxSelected = !bFirstBoxSelected;
 							ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 							FirstTile = CurrentWorld->GetClickedTile(ClickLocation);
+							GEngine->PrintDebugText(al_map_rgb(0, 255, 0), 5.f, al_ustr_newf("%d, %d", FirstTile->x, FirstTile->y));
 						}
 					}
 				}
@@ -404,7 +405,12 @@ void PlayState::Tick(float delta){
 			}
 		}
 		
-		CurrentWorld->moveWorld(WorldMoveDelta, GridBuffer, Background, BlockBuffer, notPlayingBuff);
+		if (!CurrentWorld->bPlay){
+			CurrentWorld->MoveWorld(WorldMoveDelta, GridBuffer, Background, BlockBuffer, notPlayingBuff);
+		}
+		else{
+			CurrentWorld->FollowCharacter(TinTin, GridBuffer, Background, BlockBuffer, notPlayingBuff);
+		}
 		
 		//Run world tick
 		CurrentWorld->Tick(delta);
@@ -413,7 +419,7 @@ void PlayState::Tick(float delta){
 		Vector2D DragDelta;
 		if (bMouseDrag){
 			DragDelta = DragStart - Vector2D(GEngine->GetMouseState().x, GEngine->GetMouseState().y);
-			CurrentWorld->moveWorld(DragDelta * -1, GridBuffer, Background, BlockBuffer, notPlayingBuff);
+			CurrentWorld->MoveWorld(DragDelta * -1, GridBuffer, Background, BlockBuffer, notPlayingBuff);
 			DragStart = Vector2D(GEngine->GetMouseState().x, GEngine->GetMouseState().y);
 			DragTime += delta;
 		}
@@ -549,6 +555,8 @@ void PlayState::Draw(){
 }
 
 void PlayState::Init(){
+	music = al_load_sample("Meatball Parade.mp3");
+	al_play_sample(music, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
 	//Set the different types of blocks, as well as load their textures
 	CurrentWorld->Type[0] = BlockType("Rainbow", al_load_bitmap("Textures/Objects/Rainbow.png"), true);
 	CurrentWorld->Type[1] = BlockType("Brick", al_load_bitmap("Textures/Objects/Brick.png"), true);
@@ -624,6 +632,12 @@ void PlayState::Init(){
 	}
 	for (int i = 0; i < 65; i++){
 		al_draw_line(0, i * CurrentWorld->gridSize, 4096, i * CurrentWorld->gridSize, al_map_rgba(50, 50, 50, 150), 1);
+	}
+
+	for (int i = 0; i < 128; i++) {
+		for (int j = 0; j < 64; j++) {
+			al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), i * 32, j * 32, 0, "%d, %d", CurrentWorld->Tile[i][j].x, CurrentWorld->Tile[i][j].y);
+		}
 	}
 	//Sets the target bitmap back to the default buffer
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));

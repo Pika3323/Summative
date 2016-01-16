@@ -274,7 +274,7 @@ bool World::Save(const char LevelName[64], std::vector<Character*> enemies) {
 	}
 }
 
-void World::moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, Buffer &block, Buffer &notplay){
+void World::MoveWorld(Vector2D delta, Buffer &grid, Buffer &bg, Buffer &block, Buffer &notplay){
 	int ScreenWidth = GEngine->GetDisplayWidth();
 	int ScreenHeight = GEngine->GetDisplayHeight();
 
@@ -314,5 +314,56 @@ void World::moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, Buffer &block, B
 		block.offset.y = dimensions.y * -1 + ScreenHeight;
 		offset.y = dimensions.y * -1 + ScreenHeight;
 	}
+}
 
+void World::FollowCharacter(Character* C, Buffer &grid, Buffer &bg, Buffer &block, Buffer &notplay){
+	int ScreenWidth = GEngine->GetDisplayWidth();
+	int ScreenHeight = GEngine->GetDisplayHeight();
+	Vector2D NewOffset = C->position * -1;
+
+	if (C->position.x > ScreenWidth / 2 && C->position.x < dimensions.x - ScreenWidth / 2) {
+		offset.x = NewOffset.x + ScreenWidth / 2;
+		grid.offset.x = NewOffset.x + ScreenWidth / 2;
+		bg.offset.x = NewOffset.x / 2 + ScreenWidth / 4;
+		block.offset.x = NewOffset.x + ScreenWidth / 2;
+		notplay.offset.x = NewOffset.x + ScreenWidth / 2;
+	}
+
+	if (C->position.y > ScreenHeight / 2 && C->position.y < dimensions.y - ScreenHeight / 2) {
+		offset.y = NewOffset.y + ScreenHeight / 2;
+		grid.offset.y = NewOffset.y + ScreenHeight / 2;
+		bg.offset.y = NewOffset.y / 2 + ScreenHeight / 4;
+		block.offset.y = NewOffset.y + ScreenHeight / 2;
+		notplay.offset.y = NewOffset.y + ScreenHeight / 2;
+	}
+
+	if (offset.x > 0) {
+		grid.offset.x = 0;
+		bg.offset.x = 0;
+		block.offset.x = 0;
+		notplay.offset.x = 0;
+		offset.x = 0;
+	}
+	else if (offset.x < dimensions.x  * -1 + ScreenWidth){
+		grid.offset.x = dimensions.x  * -1 + ScreenWidth;
+		notplay.offset.x = dimensions.x  * -1 + ScreenWidth;
+		bg.offset.x = dimensions.x  * -0.5 + ScreenWidth / 2;
+		block.offset.x = dimensions.x * -1 + ScreenWidth;
+		offset.x = dimensions.x  * -1 + ScreenWidth;
+	}
+
+	if (offset.y > 0){
+		grid.offset.y = 0;
+		notplay.offset.y = 0;
+		bg.offset.y = 0;
+		block.offset.y = 0;
+		offset.y = 0;
+	}
+	else if (offset.y < dimensions.y * -1 + ScreenHeight){
+		grid.offset.y = dimensions.y * -1 + ScreenHeight;
+		notplay.offset.y = dimensions.y * -1 + ScreenHeight;
+		bg.offset.y = (dimensions.y * -0.5f) + (ScreenHeight / 2);
+		block.offset.y = dimensions.y * -1 + ScreenHeight;
+		offset.y = dimensions.y * -1 + ScreenHeight;
+	}
 }

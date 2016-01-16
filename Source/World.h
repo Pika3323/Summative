@@ -66,7 +66,10 @@ public:
 	bool Load(const char LevelName[64], std::vector<Character*> *enemies);
 	bool Save(const char LevelName[64], std::vector<Character*> enemies);
 
-	void moveWorld(Vector2D delta, Buffer &grid, Buffer &bg, Buffer &block, Buffer &notplay);
+	void MoveWorld(Vector2D delta, Buffer &grid, Buffer &bg, Buffer &block, Buffer &notplay);
+
+	void FollowCharacter(Character* C, Buffer &grid, Buffer &bg, Buffer &block, Buffer &notplay);
+
 	void SetCameraLocation(Vector2D location, Buffer &grid, Buffer &bg, Buffer &block, Buffer &notplay);
 private:
 };
