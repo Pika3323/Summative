@@ -263,21 +263,32 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				else {
 					//If a start location of the rectangle select has been set
 					if (bFirstBoxSelected){
-						Vector2D NewMouseLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
-						Vector2D BoxVector;
+						Vector2D StartIndex, EndIndex;
 
-						//Handle different directions in which the box extends
-						if (NewMouseLocation > ClickLocation) {
-							BoxVector = ClickLocation;
+						GridTile* Next = CurrentWorld->GetClickedTile(Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1)));
+						GEngine->PrintDebugText(al_map_rgb(255, 0, 0), 5.f, al_ustr_newf("%d, %d", Next->x, Next->y));
+
+						if (FirstTile->x <= Next->x) {
+							StartIndex.x = FirstTile->x;
+							EndIndex.x = Next->x;
 						}
 						else{
-							BoxVector = NewMouseLocation;
+							StartIndex.x = Next->x;
+							EndIndex.x = FirstTile->x;
 						}
 
-						//Destroy a rectangle of boxes
-						for (int i = 0; i < abs((int)(NewMouseLocation.x - ClickLocation.x) / 32); i++) {
-							for (int j = 0; j < abs((int)(NewMouseLocation.y - ClickLocation.y) / 32); j++) {
-								CurrentWorld->DestroyBlock(CurrentWorld->GetClickedTile(BoxVector + Vector2D(i * 32, j * 32)));
+						if (FirstTile->y <= Next->y) {
+							StartIndex.y = FirstTile->y;
+							EndIndex.y = Next->y;
+						}
+						else{
+							StartIndex.y = Next->y;
+							EndIndex.y = FirstTile->y;
+						}
+
+						for (int i = (int)StartIndex.x; i <= (int)EndIndex.x; i++) {
+							for (int j = (int)StartIndex.y; j <= (int)EndIndex.y; j++){
+								CurrentWorld->DestroyBlock(&CurrentWorld->Tile[i][j]);
 							}
 						}
 					}
@@ -379,24 +390,7 @@ void PlayState::Tick(float delta){
 
 			//Run Gravity, Collision checking code, and Friction
 			Fyzix->Tick(CurrCharacters);
-			/*if (ColChecker == 1) {
-				TinTin->Win(CharacterStart);
-				Online::attempts = 1;
-				Online::completions = 1;
-				Online::UpdateLevel(CurrentWorld->name, GEngine->SharedVar.id, Completions);
-				Online::UpdateLevel(CurrentWorld->name, GEngine->SharedVar.id, Tries);
-				CurrentWorld->bPlay = false;
-			}
-			if (ColChecker > 2){
-				TypeChecker = dynamic_cast<Bullet*>(CurrCharacters[ColChecker - 2]);
-				if (TypeChecker){
-					CurrCharacters.push_back(new BulletEx(CurrCharacters[ColChecker - 2]->position, CurrCharacters[ColChecker - 2]->direction));
-					DestroyCharacter(CurrCharacters[ColChecker - 2]);
-				}
-				else{
-					DestroyCharacter(CurrCharacters[ColChecker - 2]);
-				}
-			}*/
+
 			//Kill the Character if he falls out of the world
 			if (TinTin->position.x > CurrentWorld->dimensions.x || (TinTin->position.x + TinTin->ActualWidth) < 0 || (TinTin->position.y + TinTin->ActualHeight) < 0 || TinTin->Health <= 0) {
 				CurrCharacters.clear();
