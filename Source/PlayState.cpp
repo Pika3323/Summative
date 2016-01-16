@@ -546,7 +546,9 @@ void PlayState::Draw(){
 
 	//Draw Character collision bounds
 	if (CurrentWorld->bPlay)
-		GEngine->DrawHitbox(CurrCharacters);
+		for (int i = 0; i < (int)CurrCharacters.size(); i++){
+			al_draw_rectangle(CurrCharacters[i]->position.x + CurrCharacters[i]->CollisionBounds.position.x + CurrentWorld->offset.x, CurrCharacters[i]->position.y + CurrCharacters[i]->CollisionBounds.position.y + CurrentWorld->offset.y, CurrCharacters[i]->position.x + CurrCharacters[i]->CollisionBounds.position.x + CurrCharacters[i]->CollisionBounds.size.x + CurrentWorld->offset.x, CurrCharacters[i]->position.y + CurrCharacters[i]->CollisionBounds.position.y + CurrCharacters[i]->CollisionBounds.size.y + CurrentWorld->offset.y, BLUE500, 1);
+	}
 }
 
 void PlayState::Init(){

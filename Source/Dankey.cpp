@@ -37,11 +37,11 @@ void Dankey::Tick(float delta, std::vector<Character*> *Curr){
 
 	if (this->BarrelDelay == 40) {
 		if (this->direction == ECharacterDirection::R_Left){
-			Curr->push_back(new Barrel(ECharacterDirection::R_Left, Vector2D(this->position.x, this->position.y + 48)));
+			Curr->push_back(new Barrel(ECharacterDirection::R_Left, Vector2D(this->position.x, this->position.y + 32)));
 			this->BarrelDelay = 0;
 		}
 		else {
-			Curr->push_back(new Barrel(ECharacterDirection::R_Right, Vector2D(this->position.x + 64, this->position.y + 48)));
+			Curr->push_back(new Barrel(ECharacterDirection::R_Right, Vector2D(this->position.x + 64, this->position.y + 32)));
 			this->BarrelDelay = 0;
 		}
 	}
@@ -71,6 +71,7 @@ void Dankey::BlockCollide(bool w, int CollisionDirection){
 
 	else if (CollisionDirection == 2){
 		velocity.y = 0;
+		position.y += 32.f;
 	}
 
 	else if (CollisionDirection == 3){

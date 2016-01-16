@@ -81,6 +81,7 @@ void Cinas::BlockCollide(bool w, int CollisionDirection){
 
 	else if (CollisionDirection == 2){
 		velocity.y = 0;
+		position.y += 32.f;
 	}
 
 	else if (CollisionDirection == 3){

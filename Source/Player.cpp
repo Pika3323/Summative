@@ -12,7 +12,7 @@ Player::Player(int Height, int Width){
 	texture = al_create_bitmap(Width, Height);
 	bOnGround = false;
 	position = Vector2D(0.f, 0.f);
-	this->SetupCharacterCollision(Vector2D(25.f, 64.f), Vector2D(12.f, 64.f));
+	this->SetupCharacterCollision(Vector2D(25.f, 46.f), Vector2D(12.f, 82.f));
 }
 
 void Player::Run(Vector2D vel){
@@ -92,6 +92,7 @@ void Player::BlockCollide(bool w, int CollisionDirection){
 	
 	else if (CollisionDirection == 2){
 		velocity.y = 0;
+		position.y += 32.f;
 	}
 
 	else if (CollisionDirection == 3){
