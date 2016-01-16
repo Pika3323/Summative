@@ -12,10 +12,10 @@ Player::Player(int Height, int Width){
 	texture = al_create_bitmap(Width, Height);
 	bOnGround = false;
 	position = Vector2D(0.f, 0.f);
+	this->SetupCharacterCollision(Vector2D(25.f, 46.f), Vector2D(12.f, 82.f));
 }
 
 void Player::Run(Vector2D vel){
-
 	velocity.x += vel.x;
 
 	if (velocity.x > 7.f){
@@ -31,7 +31,6 @@ void Player::Run(Vector2D vel){
 void Player::Jump(){
 	if (bOnGround) {
 		velocity.y = -20.f;
-
 		bOnGround = false;
 	}
 }
@@ -52,28 +51,24 @@ void Player::Tick(float delta, std::vector<Character*> *Curr){
 		shoot.PushFrame();
 		if (shoot.CurrentFrame == 2 && direction == ECharacterDirection::R_Left && !ShotAlready){
 			ShotAlready = true;
-			Curr->push_back(new Bullet(Vector2D(position.x, position.y + 60), direction));
+			//Curr->push_back(new Bullet(Vector2D(position.x, position.y + 60), direction));
 		}
 		else if (shoot.CurrentFrame == 2 && direction == ECharacterDirection::R_Right && !ShotAlready){
 			ShotAlready = true;
-			Curr->push_back(new Bullet(Vector2D(position.x + ActualWidth, position.y + 60), direction));
+			//Curr->push_back(new Bullet(Vector2D(position.x + ActualWidth, position.y + 60), direction));
 		}
-		position += velocity;
 	}
 	else if (bRunning && bOnGround){
 		run.GetFrameBitmap(this->texture);
 		run.PushFrame();
-		position += velocity;
 	}
 	else if (bOnGround){
 		still.GetFrameBitmap(this->texture);
 		still.PushFrame();
-		position += velocity;
 	}
 	else if (!bOnGround){
 		fall.GetFrameBitmap(this->texture);
 		fall.PushFrame();
-		position += velocity;
 	}
 }
 
@@ -81,4 +76,31 @@ void Player::Win(Vector2D Start){
 	this->SetCharacterWorldPosition(Start);
 	printf("You Won!\n");
 	//add stuff here later
+}
+
+void Player::Collide(Character* OtherCharacter){
+}
+
+void Player::BlockCollide(bool w, int CollisionDirection){
+	if (w) {
+		PlayerWin = true;
+	}
+
+	if (CollisionDirection == 0 || CollisionDirection == 1){
+		this->velocity.x = 0;
+	}
+	
+	else if (CollisionDirection == 2){
+		velocity.y = 0;
+		position.y += 32.f;
+	}
+
+	else if (CollisionDirection == 3){
+		bOnGround = true;
+		velocity.y = 0.f;
+	}
+
+	else if (CollisionDirection == 4){
+		bOnGround = false;
+	}
 }

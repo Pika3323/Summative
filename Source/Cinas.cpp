@@ -1,8 +1,9 @@
 #include "Cinas.h"
 
 Cinas::Cinas(Vector2D pos){
+	Health = 10.f;
 	StartPosition = pos;
-	Damage = 0.1f;
+	Damage = 0.2f;
 	position = pos;
 	ActualHeight = 32;
 	ActualWidth = 32;
@@ -12,6 +13,7 @@ Cinas::Cinas(Vector2D pos){
 	texture = al_create_bitmap(ActualWidth, ActualHeight);
 	bOnGround = false;
 	bCharacterLocked = false;
+	this->SetupCharacterCollision(Vector2D(6.f, 15.f), Vector2D(20.f, 17.f));
 }
 
 void Cinas::Tick(float delta, std::vector<Character*> *C){
@@ -56,7 +58,6 @@ void Cinas::Tick(float delta, std::vector<Character*> *C){
 	else if (DistanceToC > 700 && W->bPlay){
 		bCharacterLocked = false;
 	}
-	position += velocity;
 }
 
 void Cinas::Run(Vector2D velocity){
@@ -73,4 +74,30 @@ void Cinas::Jump(){
 
 void Cinas::Die(){
 	delete this;
+}
+
+void Cinas::Collide(Character* OtherCharacter){
+	if (dynamic_cast<Player*>(OtherCharacter)) {
+		OtherCharacter->Health -= this->Damage;
+	}
+}
+
+void Cinas::BlockCollide(bool w, int CollisionDirection){
+	if (CollisionDirection == 0 || CollisionDirection == 1){
+		this->velocity.x = 0;
+	}
+
+	else if (CollisionDirection == 2){
+		velocity.y = 0;
+		position.y += 32.f;
+	}
+
+	else if (CollisionDirection == 3){
+		bOnGround = true;
+		velocity.y = 0;
+	}
+
+	else if (CollisionDirection == 4){
+		bOnGround = false;
+	}
 }

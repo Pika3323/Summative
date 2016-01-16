@@ -5,7 +5,7 @@ PlayState::PlayState(){
 	CurrentWorld = new World(Vector2D(4096.f, 2048.f), 32);
 	TinTin = new Player(128, 64);	//The main player character
 	TinTin->SetCharacterWorldPosition(Vector2D(0.f, 0.f));
-	CurrentEffects = new Physics(Vector2D(0.f, 1.f));		//current world gravity
+	Fyzix = new Physics(Vector2D(0.f, 1.f));		//current world gravity
 	notPlayingBuff = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f)); //block buffer for when not playing
 	BlockBuffer = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f));	//play buffer for blocks
 	GridBuffer = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f));	//buffer for grid
@@ -159,11 +159,11 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 						CurrentWorld->EnemySelect = false;
 						SelectedBlock = static_cast<EBlockType>(ev->mouse.x / 100);
 					}
-					else if (InRange(ev->mouse.x, 900, 1000)){
+					else if (IMath::InRange(ev->mouse.x, 900, 1000)){
 						CurrentWorld->EnemySelect = true;
 						SelectedEnemy = EnemyType::E_Dankey;
 					}
-					else if (InRange(ev->mouse.x, 1000, 1100)){
+					else if (IMath::InRange(ev->mouse.x, 1000, 1100)){
 						CurrentWorld->EnemySelect = true;
 						SelectedEnemy = EnemyType::E_Cinas;
 					}
@@ -360,7 +360,7 @@ void PlayState::Tick(float delta){
 		CurrCharacters[i]->Tick(delta, &CurrCharacters);
 	}
 
-	if (InRange(GEngine->GetMouseState().x, PauseButton->position.x, PauseButton->position.x + PauseButton->width) && InRange(GEngine->GetMouseState().y, PauseButton->position.y, PauseButton->position.y + PauseButton->height)){
+	if (IMath::InRange(GEngine->GetMouseState().x, PauseButton->position.x, PauseButton->position.x + PauseButton->width) && IMath::InRange(GEngine->GetMouseState().y, PauseButton->position.y, PauseButton->position.y + PauseButton->height)){
 		PauseButton->onHoverIn();
 	}
 	else{
@@ -370,9 +370,8 @@ void PlayState::Tick(float delta){
 		if (CurrentWorld->bPlay) {
 
 			//Run Gravity, Collision checking code, and Friction
-			CurrentEffects->GravTick(CurrCharacters);
-			ColChecker = CurrentEffects->ColTick(CurrentWorld, CurrCharacters);
-			if (ColChecker == 1) {
+			Fyzix->Tick(CurrCharacters);
+			/*if (ColChecker == 1) {
 				TinTin->Win(CharacterStart);
 				Online::attempts = 1;
 				Online::completions = 1;
@@ -389,9 +388,7 @@ void PlayState::Tick(float delta){
 				else{
 					DestroyCharacter(CurrCharacters[ColChecker - 2]);
 				}
-			}
-			CurrentEffects->FricTick(CurrCharacters);
-
+			}*/
 			//Kill the Character if he falls out of the world
 			if (TinTin->position.x > CurrentWorld->dimensions.x || (TinTin->position.x + TinTin->ActualWidth) < 0 || (TinTin->position.y + TinTin->ActualHeight) < 0 || TinTin->Health <= 0) {
 				CurrCharacters.clear();
@@ -481,7 +478,7 @@ void PlayState::Draw(){
 			elem.offset = elem.position + CurrentWorld->offset;
 
 			//If the block has been created, draw it!
-			if (elem.bSpawned && InRange(elem.offset.x, -32, al_get_display_width(GEngine->GetDisplay()) + 32) && InRange(elem.offset.y, -32, al_get_display_height(GEngine->GetDisplay()) + 32)){
+			if (elem.bSpawned && IMath::InRange(elem.offset.x, -32, al_get_display_width(GEngine->GetDisplay()) + 32) && IMath::InRange(elem.offset.y, -32, al_get_display_height(GEngine->GetDisplay()) + 32)){
 				//Draws the block using a texture from the current selected type of block
 				elem.Draw(CurrentWorld->Type[static_cast<int>(elem.type)].texture);
 			}
@@ -552,6 +549,12 @@ void PlayState::Draw(){
 	if (CurrentWorld->bPlay){
 		al_draw_bitmap(HealthBar, 0, al_get_display_height(GEngine->GetDisplay()) - 42, 0);
 	}
+
+	//Draw Character collision bounds
+	if (CurrentWorld->bPlay)
+		for (int i = 0; i < (int)CurrCharacters.size(); i++){
+			al_draw_rectangle(CurrCharacters[i]->position.x + CurrCharacters[i]->CollisionBounds.position.x + CurrentWorld->offset.x, CurrCharacters[i]->position.y + CurrCharacters[i]->CollisionBounds.position.y + CurrentWorld->offset.y, CurrCharacters[i]->position.x + CurrCharacters[i]->CollisionBounds.position.x + CurrCharacters[i]->CollisionBounds.size.x + CurrentWorld->offset.x, CurrCharacters[i]->position.y + CurrCharacters[i]->CollisionBounds.position.y + CurrCharacters[i]->CollisionBounds.size.y + CurrentWorld->offset.y, BLUE500, 1);
+	}
 }
 
 void PlayState::Init(){
@@ -566,7 +569,7 @@ void PlayState::Init(){
 	CurrentWorld->Type[5] = BlockType("Fancy", al_load_bitmap("Textures/Objects/Fancy.png"), true);
 	CurrentWorld->Type[6] = BlockType("Mossy", al_load_bitmap("Textures/Objects/Mossy.png"), true);
 	CurrentWorld->Type[7] = BlockType("Background Brick", al_load_bitmap("Textures/Objects/Background_Brick.png"), false);
-	CurrentWorld->Type[8] = BlockType("Finish Flag", al_load_bitmap("Textures/Objects/FinishFlag.png"), false);
+	CurrentWorld->Type[8] = BlockType("Finish Flag", al_load_bitmap("Textures/Objects/FinishFlag.png"), true);
 
 	for (int i = 0; i < 9; i++) {
 		SelectBlock.push_back(Buffer(al_create_bitmap(100, 100), Vector2D(100.f * i, 0.f), Vector2D(0.f, 0.f)));
@@ -679,7 +682,7 @@ void PlayState::Destroy(){
 }
 
 PlayState::~PlayState(){
-	delete CurrentEffects;
+	delete Fyzix;
 	delete CurrentWorld;
 	delete PauseButton;
 

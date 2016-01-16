@@ -23,7 +23,7 @@ public:
 	Vector2D Debug;
 
 	//Effects (including gravity) for the current world
-	class Physics* CurrentEffects;	
+	class Physics* Fyzix;	
 
 	//block buffer for when not playing
 	Buffer notPlayingBuff; 

@@ -20,5 +20,9 @@ public:
 	void Die();
 
 	void Tick(float delta, std::vector<Character*> *Curr);
+
+	void BlockCollide(bool w, int CollisionDirection);
+
+	void Collide(Character* OtherCharacter);
 protected:
 };

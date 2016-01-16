@@ -19,6 +19,10 @@ public:
 
 	void Tick(float delta, std::vector<Character*> *Curr);
 
+	void BlockCollide(bool w, int CollisionDirection);
+
+	void Collide(Character* OtherCharacter);
+
 	bool bCharacterLocked;
 
 private:

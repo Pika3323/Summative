@@ -15,12 +15,8 @@ void BulletEx::Tick(float delta, std::vector<Character*> *Curr){
 	explode.PushFrame();
 }
 
-void BulletEx::Jump(){
-
-}
-void BulletEx::Run(Vector2D velocity){
-
-}
-void BulletEx::Die(){
-
-}
+void BulletEx::Jump(){}
+void BulletEx::Run(Vector2D velocity){}
+void BulletEx::Die(){}
+void BulletEx::Collide(Character* OtherCharacter){}
+void BulletEx::BlockCollide(bool w, int CollisionDirection){}

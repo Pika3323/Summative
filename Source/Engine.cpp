@@ -269,6 +269,7 @@ GameState* Engine::GetCurrentGameState(){
 void Engine::PrintDebugText(ALLEGRO_COLOR c, float duration, const char* text){
 	DebugStrings.push_back(DebugOutput(c, text, duration));
 }
+
 void Engine::PrintDebugText(ALLEGRO_COLOR c, float duration, ALLEGRO_USTR* text){
 	DebugStrings.push_back(DebugOutput(c, al_cstr(text), duration));
 }

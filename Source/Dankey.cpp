@@ -1,6 +1,6 @@
 #include "Dankey.h"
-
 Dankey::Dankey(Vector2D pos){
+	Health = 50.f;
 	bOnGround = false;
 	Damage = 15.f;
 	Deleted = false;
@@ -12,6 +12,7 @@ Dankey::Dankey(Vector2D pos){
 	attack = SpriteSheet(al_load_bitmap("Textures/Characters/Dankeythrow_e.png"), 64, 64, 8);
 	still = SpriteSheet(al_load_bitmap("Textures/Characters/Dankeyidle_e.png"), 64, 64, 5);
 	texture = al_create_bitmap(ActualWidth, ActualHeight);
+	this->SetupCharacterCollision(Vector2D(25.f, 2.f), Vector2D(16.f, 62.f));
 }
 
 void Dankey::Tick(float delta, std::vector<Character*> *Curr){
@@ -36,15 +37,14 @@ void Dankey::Tick(float delta, std::vector<Character*> *Curr){
 
 	if (this->BarrelDelay == 40) {
 		if (this->direction == ECharacterDirection::R_Left){
-			Curr->push_back(new Barrel(ECharacterDirection::R_Left, Vector2D(this->position.x, this->position.y + 48)));
+			Curr->push_back(new Barrel(ECharacterDirection::R_Left, Vector2D(this->position.x, this->position.y + 32)));
 			this->BarrelDelay = 0;
 		}
 		else {
-			Curr->push_back(new Barrel(ECharacterDirection::R_Right, Vector2D(this->position.x + 64, this->position.y + 48)));
+			Curr->push_back(new Barrel(ECharacterDirection::R_Right, Vector2D(this->position.x + 64, this->position.y + 32)));
 			this->BarrelDelay = 0;
 		}
 	}
-	position += velocity;
 }
 
 void Dankey::Run(Vector2D velocity){
@@ -57,4 +57,29 @@ void Dankey::Jump(){
 
 void Dankey::Die(){
 	delete this;
+}
+
+void Dankey::Collide(Character* OtherCharacter){
+	if (dynamic_cast<Player*>(OtherCharacter)) {
+		OtherCharacter->Health -= this->Damage;
+	}
+}
+void Dankey::BlockCollide(bool w, int CollisionDirection){
+	if (CollisionDirection == 0 || CollisionDirection == 1){
+		this->velocity.x = 0;
+	}
+
+	else if (CollisionDirection == 2){
+		velocity.y = 0;
+		position.y += 32.f;
+	}
+
+	else if (CollisionDirection == 3){
+		bOnGround = true;
+		velocity.y = 0;
+	}
+
+	else if (CollisionDirection == 4){
+		bOnGround = false;
+	}
 }
