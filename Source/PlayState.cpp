@@ -90,6 +90,9 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 			case ALLEGRO_KEY_SPACE:
 				if (!CurrentWorld->bPlay){
 					CurrentWorld->bPlay = true;
+					bBoxSelect = false;
+					bFirstBoxSelected = false;
+					al_hide_mouse_cursor(GEngine->GetDisplay());
 					for (int i = 0; i < (int)CurrentWorld->EnemiesStored.size(); i++){
 						if (CurrentWorld->EnemiesStored[i].Type == EnemyType::E_Cinas){
 							CurrCharacters.push_back(new Cinas(CurrentWorld->EnemiesStored[i].position));
@@ -102,6 +105,8 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				}
 				else {
 					CurrentWorld->bPlay = false;
+					al_set_system_mouse_cursor(GEngine->GetDisplay(), ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
+					al_show_mouse_cursor(GEngine->GetDisplay());
 					CurrCharacters.clear();
 					CurrCharacters.push_back(TinTin);
 					TinTin->Health = 100.f;
@@ -248,7 +253,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				break;
 			case MOUSE_RB:
 				//Check if the box placement mode isn't enabled
-				if (!bBoxSelect) {
+				if (!bBoxSelect && !CurrentWorld->bPlay) {
 					//Get the mouse's location
 					ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 
@@ -416,7 +421,7 @@ void PlayState::Tick(float delta){
 
 		//Calculate the change in mouse position if the middle mouse button is being held
 		Vector2D DragDelta;
-		if (bMouseDrag){
+		if (bMouseDrag && !CurrentWorld->bPlay){
 			DragDelta = DragStart - Vector2D(GEngine->GetMouseState().x, GEngine->GetMouseState().y);
 			CurrentWorld->MoveWorld(DragDelta * -1, GridBuffer, Background, BlockBuffer, notPlayingBuff);
 			DragStart = Vector2D(GEngine->GetMouseState().x, GEngine->GetMouseState().y);
@@ -442,7 +447,7 @@ void PlayState::Tick(float delta){
 		case MOUSE_MB:
 			break;
 		case MOUSE_RB:
-			if (!bBoxSelect){
+			if (!bBoxSelect && !CurrentWorld->bPlay){
 				ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 				//Get the tile that was clicked
 				clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
