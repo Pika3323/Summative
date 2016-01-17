@@ -9,7 +9,7 @@ Game states are like a program that runs inside the main game program.
 */
 class GameState {
 public:
-	virtual void Init() = 0;
+	virtual void Init() = 0;						//All of the necessary functions to run in the Engine
 
 	virtual void Pause() = 0;
 	virtual void Resume() = 0;

@@ -1,7 +1,7 @@
 #include "Button.h"
 
 Button::Button(ALLEGRO_COLOR bg, ALLEGRO_COLOR tx, int w, int h, Vector2D pos, int i, const char t[], void (*down)()){
-	tex = al_create_bitmap(w, h);
+	tex = al_create_bitmap(w, h);			//standard button information set
 	width = w;
 	height = h;
 	bgColor = bg;
@@ -19,20 +19,20 @@ Button::Button(ALLEGRO_COLOR bg, ALLEGRO_COLOR tx, int w, int h, Vector2D pos, i
 }
 
 void Button::onHoverIn(){
-	al_set_target_bitmap(tex);
+	al_set_target_bitmap(tex);				//effects when user hovers over button
 	al_clear_to_color(al_map_rgba(0, 0, 0, 0));
 	al_draw_filled_rectangle(0, 0, width, height, al_map_rgb(221, 221, 221));
 	al_draw_textf(roboto, textColor, width / 2, height / 2 - 7, ALLEGRO_ALIGN_CENTER, "%s", text);
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 }
-void Button::onHoverOut(){
+void Button::onHoverOut(){					//effects when user leaves button
 	al_set_target_bitmap(tex);
 	al_clear_to_color(al_map_rgba(0, 0, 0, 0));
 	al_draw_filled_rectangle(0, 0, width, height, bgColor);
 	al_draw_textf(roboto, textColor, width / 2, height / 2 - 7, ALLEGRO_ALIGN_CENTER, "%s", text);
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 }
-void Button::onMouseDown(){
+void Button::onMouseDown(){					//effects when user clicks button
 	al_set_target_bitmap(tex);
 	al_draw_filled_rectangle(0, 0, width, height, bgColor);
 	al_draw_textf(roboto, textColor, width / 2, width / 2, ALLEGRO_ALIGN_CENTER, "%s", text);
@@ -40,7 +40,7 @@ void Button::onMouseDown(){
 	onDown();
 }
 
-void Button::onMouseUp(){
+void Button::onMouseUp(){					//effects when user stops clicking
 	al_set_target_bitmap(tex);
 	al_draw_filled_rectangle(0, 0, width, height, bgColor);
 	al_draw_textf(roboto, textColor, width / 2, width / 2, ALLEGRO_ALIGN_CENTER, "%s", text);

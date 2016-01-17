@@ -28,11 +28,11 @@
 
 //An encapsulation for debug outputs
 struct DebugOutput{
-	char output[256];
-	ALLEGRO_COLOR color;
-	float duration;
-	float elapsedTime;
-	DebugOutput(ALLEGRO_COLOR c, const char* text, float d){
+	char output[256];		//the text printed for debug
+	ALLEGRO_COLOR color;		//its colour
+	float duration;			//amount of time it should stay on screen
+	float elapsedTime;		//the actual amount of time it was on screen
+	DebugOutput(ALLEGRO_COLOR c, const char* text, float d){		//constructor
 		color = c;
 		strcpy(output, text);
 		duration = d;
@@ -42,7 +42,7 @@ struct DebugOutput{
 
 class Engine{
 public:
-	const int FPS = 60;
+	const int FPS = 60;		//FPS of the game itself (timer is set to 1.0/FPS)
 
 	int VersionMajor = 1;
 	int VersionMinor = 2;
@@ -111,6 +111,7 @@ public:
 		Active->Init();
 	}
 
+	//essential functions for running game
 	void HandleInput(ALLEGRO_EVENT *ev);
 	void Tick(float delta);
 	void Draw();
@@ -123,7 +124,7 @@ public:
 	bool ShouldTick();
 	bool ShouldRedraw();
 
-	class GameState* States[2];
+	class GameState* States[2];			//PlayState and MainMenu State
 	int ActiveState = 0;
 	double delta;
 	static bool bExit;

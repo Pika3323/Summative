@@ -18,25 +18,25 @@ Dankey::Dankey(Vector2D pos){
 void Dankey::Tick(float delta, std::vector<Character*> *Curr){
 	if (dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->bPlay) {
 		if (Vector2D(dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->Oiram->position - position).Magnitude() <= 500 && dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->bPlay) {
-			attack.GetFrameBitmap(this->texture);
+			attack.GetFrameBitmap(this->texture);		//if the player is within a certain range and the it is playing, attack
 			attack.PushFrame();
 			BarrelDelay++;
 		}
 		else {
-			still.GetFrameBitmap(this->texture);
+			still.GetFrameBitmap(this->texture);		//otherwise, stay still
 			still.PushFrame();
 		}
 	}
 
 	if (position.x - dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->Oiram->position.x > 0){
-		direction = ECharacterDirection::R_Left;
+		direction = ECharacterDirection::R_Left;		//if player is to the left, go left
 	}
 	else{
-		direction = ECharacterDirection::R_Right;
+		direction = ECharacterDirection::R_Right;		//if player is to the right, go right
 	}
 
 	if (this->BarrelDelay == 40) {
-		if (this->direction == ECharacterDirection::R_Left){
+		if (this->direction == ECharacterDirection::R_Left){		//after a certain delay, throw a barrel
 			Curr->push_back(new Barrel(ECharacterDirection::R_Left, Vector2D(this->position.x, this->position.y + 32)));
 			this->BarrelDelay = 0;
 		}
@@ -59,13 +59,13 @@ void Dankey::Die(){
 	delete this;
 }
 
-void Dankey::Collide(Character* OtherCharacter){
+void Dankey::Collide(Character* OtherCharacter){		//if the character collides with the dankey, do damage
 	if (dynamic_cast<Player*>(OtherCharacter)) {
 		OtherCharacter->Health -= this->Damage;
 	}
 }
 void Dankey::BlockCollide(bool w, int CollisionDirection){
-	if (CollisionDirection == 0 || CollisionDirection == 1){
+	if (CollisionDirection == 0 || CollisionDirection == 1){			//all of the possible collisions
 		this->velocity.x = 0;
 	}
 

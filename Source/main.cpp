@@ -1,5 +1,10 @@
 #include "Engine.h"
 
+/*
+This Game was created and developped by Derek Ellis and Isaac Jensen-Large as a summative project for ICS3U at Lisgar Collegiate Institute in the 2015-2016 year
+Development commenced: 
+*/
+
 Engine* GEngine = new Engine();
 
 int main(int argc, char* argv[]){

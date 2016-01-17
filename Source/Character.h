@@ -27,9 +27,8 @@ public:
 	//The direction that the character is facing
 	ECharacterDirection direction;
 
-
+	//The character's hitbox
 	BoundingBox CollisionBounds;
-
 
 	//The character's instantaneous velocity
 	Vector2D velocity;

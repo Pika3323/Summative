@@ -25,13 +25,13 @@ void Cinas::Tick(float delta, std::vector<Character*> *C){
 
 	
 	if ((position.x - (dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->Oiram->position.x + 16)) > 0 && bCharacterLocked){
-		direction = ECharacterDirection::R_Left;
+		direction = ECharacterDirection::R_Left;			//if the character is to the left of the cinas, move left
 		velocity.x = (rand() % (8 + 1 - 2) + 2) * -1;
 		T = W->GetClickedTile(position + Vector2D(-32.f, 0.f));
 		F = W->GetClickedTile(position + Vector2D(-32.f, -32.f));
 	}
 	else if ((position.x - (dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->Oiram->position.x + 16)) < 0 && bCharacterLocked){
-		direction = ECharacterDirection::R_Right;
+		direction = ECharacterDirection::R_Right;		//if the character is to the right of the cinas, move right
 		velocity.x = (rand() % (8 + 1 - 2) + 2);
 		T = W->GetClickedTile(position + Vector2D(32.f, 0.f));
 		F = W->GetClickedTile(position + Vector2D(32.f, -32.f));
@@ -66,7 +66,7 @@ void Cinas::Run(Vector2D velocity){
 
 void Cinas::Jump(){
 	if (bOnGround) {
-		velocity.y = (rand() % (25 + 1 - 15) + 15) * -1;
+		velocity.y = (rand() % (25 + 1 - 15) + 15) * -1;			//adding some variability to the jump height
 
 		bOnGround = false;
 	}
@@ -77,7 +77,7 @@ void Cinas::Die(){
 }
 
 void Cinas::Collide(Character* OtherCharacter){
-	if (dynamic_cast<Player*>(OtherCharacter)) {
+	if (dynamic_cast<Player*>(OtherCharacter)) {		//if it is a player, do damage
 		OtherCharacter->Health -= this->Damage;
 	}
 }

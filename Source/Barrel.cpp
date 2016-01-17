@@ -39,16 +39,13 @@ void Barrel::Die(){
 }
 
 void Barrel::Collide(Character* OtherCharacter){
-	if (dynamic_cast<Player*>(OtherCharacter)){
-		OtherCharacter->Health -= this->Damage;
-	}
-	if (dynamic_cast<Cinas*>(OtherCharacter)){
+	if (dynamic_cast<Player*>(OtherCharacter)){			//if its a player, hurt it
 		OtherCharacter->Health -= this->Damage;
 	}
 }
 
 void Barrel::BlockCollide(bool w, int CollisionDirection){
-	if (CollisionDirection == 0 || CollisionDirection == 1){
+	if (CollisionDirection == 0 || CollisionDirection == 1){		//evaluating the possible collisions
 		this->velocity.x = 0;
 	}
 

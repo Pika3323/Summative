@@ -10,10 +10,10 @@ enum class EADirection{
 
 class SpriteSheet{
 public:
-	void PushFrame();
-	void PushFrame(EADirection Direction);
+	void PushFrame();		//making the frames proceed in the animation
+	void PushFrame(EADirection Direction);		//this would be used if there were ever a reverse in time
 
-	//in public for evaluating purposes
+	//in public for evaluating purposes (the animation's current frame)
 	int CurrentFrame;
 
 	//Draws the current frame of the spritesheet to the Target bitmap
@@ -25,11 +25,11 @@ public:
 
 	~SpriteSheet();
 protected:
-	int FrameHeight;
-	int FrameWidth;
-	int TotFrameCount;
-	int Delay;
-	int FramesInAnimation;
+	int FrameHeight;		//one frame height
+	int FrameWidth;			//one frame width
+	int TotFrameCount;		//counting the frames that have gone by since last 'Delay' set
+	int Delay;				//the delay between switching frames (for this game, it is five)
+	int FramesInAnimation;	//the total count of frames in the animation
 
-	ALLEGRO_BITMAP* Sheet;
+	ALLEGRO_BITMAP* Sheet;	//the sheet itself
 };

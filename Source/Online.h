@@ -3,7 +3,7 @@
 #include "Engine.h"
 #include "World.h"
 
-struct MemoryStruct {
+struct MemoryStruct {			
 	char *memory;
 	size_t size;
 };

@@ -24,28 +24,24 @@ struct GridTile{
 class World{
 public:
 	char name[64];
-	Vector2D dimensions;
-	Vector2D offset;
-	int gridSize;
-	GridTile Tile[128][64];
-	Buffer Background;
-	Block Blocks[128][64];
-	BlockType Type[15];
+	Vector2D dimensions;		//World size
+	Vector2D offset;			//Tracking the world's movement
+	int gridSize;				//the size of each block in the game
+	GridTile Tile[128][64];		//storing the tiles in the game
+	Buffer Background;			//the cloudy background
+	Block Blocks[128][64];		//the blocks stored (this is different from a tile)
+	BlockType Type[15];			//all types of entities
 	class Dankey* dCheck;		//dankey pointer checker 
 	Vector2D dTemp;		//temp for pushing back loading vector
 	char DankeyPres;		//if dankeys are present print y
 	class Cinas *cCheck;		//Cinas pointer checker			for saving files
 	Vector2D cTemp;
 	char CinasPres;
-	//Yash *yCheck;		//Yash pointer checker
-	//Yash yTemp;
-	//char YasPres;
-	bool bPlay;
-	bool EnemySelect;
+	bool bPlay;					//Whether or not the user is playing 
+	bool EnemySelect;			
 	int DankeyCounter;
 	int CinasCounter;
-	int YashCounter;
-	std::vector<EnemyData> EnemiesStored;
+	std::vector<EnemyData> EnemiesStored;		//Keep all enemies ever placed stored here
 	EnemyData Temp;
 	int id;
 
@@ -55,9 +51,9 @@ public:
 	//Returns which tile was clicked based on the location of the click. Returns NULL if inLoc was invalid
 	GridTile* GetClickedTile(Vector2D inLoc);
 
-	void PlaceBlock(GridTile* Target, EBlockType Type);
+	void PlaceBlock(GridTile* Target, EBlockType Type);		//called when block is placed
 
-	void DestroyBlock(GridTile* Target);
+	void DestroyBlock(GridTile* Target);					//called when a block is destroyed
 
 	void PlaceEnemy(GridTile* Target, EnemyType Type);	//add each enemy vector in as it is made
 

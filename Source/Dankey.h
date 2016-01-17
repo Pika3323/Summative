@@ -7,7 +7,7 @@
 class Dankey : public Enemy{
 public:
 
-	int BarrelDelay;
+	int BarrelDelay;			//counts an interval between barrel throws
 
 	bool PlayerinSight;
 

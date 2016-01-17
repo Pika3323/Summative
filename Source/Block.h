@@ -3,7 +3,7 @@
 #include "Engine.h"
 
 enum class EBlockType{
-	B_Rainbow,
+	B_Rainbow,			//All possible block types in the game
 	B_Brick,
 	B_Grass,
 	B_Dirt,
@@ -49,7 +49,7 @@ public:
 
 
 	Block(){ bSpawned = false; }
-	Block(Vector2D pos, EBlockType t);
+	Block(Vector2D pos, EBlockType t);	
 
 	void Draw(ALLEGRO_BITMAP* typeTex);
 private:

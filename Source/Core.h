@@ -12,8 +12,6 @@
 //libcurl headers
 #include "curl/curl.h"
 
-//Standard headers
-
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
@@ -24,6 +22,7 @@
 #include <unistd.h>
 #endif
 
+//Standard headers
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -39,8 +38,8 @@
 #include "IMath.h"			//Isaac's math header
 #include "GameState.h"		//Game states
 #include "UIComponent.h"	//UI
-#include "Share.h"
-#include "Character.h"
+#include "Share.h"			//level loading
+#include "Character.h"		//character class
 
 static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 {
