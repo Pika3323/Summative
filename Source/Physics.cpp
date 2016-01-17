@@ -16,8 +16,7 @@ void Physics::Tick(std::vector<Character*> &All){
 
 		for (int j = 0; j < (int)All.size(); j++){
 			if (j == i){
-				j++;
-				if (j >= (int)All.size()){
+				if (++j >= (int)All.size()){
 					break;
 				}
 			}
