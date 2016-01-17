@@ -9,12 +9,8 @@ Game states are like a program that runs inside the main game program.
 */
 class GameState {
 public:
-<<<<<<< HEAD
 	//Initialize the gamestate
 	virtual void Init() = 0;
-=======
-	virtual void Init() = 0;						//All of the necessary functions to run in the Engine
->>>>>>> origin/isaac
 
 	//Handles all inputs for the gamestate
 	virtual void HandleEvents(ALLEGRO_EVENT *ev) = 0;

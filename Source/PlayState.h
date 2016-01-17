@@ -137,5 +137,3 @@ public:
 	PlayState();
 	~PlayState();
 };
-
-void PauseButtonDown();

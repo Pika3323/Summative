@@ -144,9 +144,6 @@
     <ClInclude Include="Dankey.h">
       <Filter>Game\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="version.h">
-      <Filter>Engine\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Physics.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>

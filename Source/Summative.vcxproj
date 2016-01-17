@@ -40,7 +40,6 @@
     <ClInclude Include="TextBox.h" />
     <ClInclude Include="UIComponent.h" />
     <ClInclude Include="Vector2D.h" />
-    <ClInclude Include="version.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
