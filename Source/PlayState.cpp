@@ -91,6 +91,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 					bBoxSelect = false;
 					bFirstBoxSelected = false;
 					al_hide_mouse_cursor(GEngine->GetDisplay());
+					CurrentWorld->SetCameraLocation(CharacterStart - Vector2D(GEngine->GetDisplayWidth() / 2, GEngine->GetDisplayHeight() / 2), GridBuffer, Background, BlockBuffer, notPlayingBuff);
 					for (int i = 0; i < (int)CurrentWorld->EnemiesStored.size(); i++){
 						if (CurrentWorld->EnemiesStored[i].Type == EnemyType::E_Cinas){
 							CurrCharacters.push_back(new Cinas(CurrentWorld->EnemiesStored[i].position));
@@ -124,7 +125,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				break;
 			case ALLEGRO_KEY_H:
 				if (!CurrentWorld->bPlay)
-					ChangingStart = true;
+					bChangingStart = true;
 				break;
 			default:
 				break;
@@ -147,7 +148,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				GEngine->ChangeGameState<MainMenuState>();
 				break;
 			case ALLEGRO_KEY_H:
-				ChangingStart = false;
+				bChangingStart = false;
 				break;
 			default:
 				break;
@@ -176,7 +177,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 						bClicked = true;
 
 						//check if user is changing start position
-						if (ChangingStart) {
+						if (bChangingStart) {
 							ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 							CharacterStart = ClickLocation;
 						}
@@ -382,12 +383,6 @@ void PlayState::Tick(float delta){
 		CurrCharacters[i]->Tick(delta, &CurrCharacters);
 	}
 
-	if (IMath::InRange(GEngine->GetMouseState().x, PauseButton->position.x, PauseButton->position.x + PauseButton->width) && IMath::InRange(GEngine->GetMouseState().y, PauseButton->position.y, PauseButton->position.y + PauseButton->height)){
-		PauseButton->onHoverIn();
-	}
-	else{
-		PauseButton->onHoverOut();
-	}
 
 	if (!Paused) {
 		if (CurrentWorld->bPlay) {
@@ -447,7 +442,7 @@ void PlayState::Tick(float delta){
 		//Mouse states
 		switch (GEngine->GetMouseState().buttons){
 		case MOUSE_LB:
-			if (!ChangingStart && !CurrentWorld->bPlay ){
+			if (!bChangingStart && !CurrentWorld->bPlay ){
 				if (!bBoxSelect && !CurrentWorld->EnemySelect){
 					ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 					//Get the tile that was clicked
@@ -645,7 +640,7 @@ void PlayState::Init(){
 	CurrCharacters.push_back(Oiram);	//registering main character in Character vector
 	Oiram->velocity = Vector2D(0.f, 0.f);		//velocity starts at zero
 	CharacterStart = Vector2D(0.f, 0.f);		//original character start position is zero
-	ChangingStart = false;				//at beginning, start position is not being changed
+	bChangingStart = false;				//at beginning, start position is not being changed
 	ColChecker = 0;
 
 	//Setting Multiple Images to Background Buffer

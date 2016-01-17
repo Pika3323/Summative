@@ -16,8 +16,11 @@ MainMenuState::MainMenuState(){
 	Background[2] = Buffer(al_load_bitmap("Textures/Scenes/Background_Gauss.png"), Vector2D(1024, 0), Vector2D(0, 0));
 
 	splashTime = 0.f;
+#ifdef _DEBUG
+	bDrawSplash = false;
+#else
 	bDrawSplash = true;
-
+#endif
 	//Load the splash logo
 	splash = al_load_bitmap("Textures/splash.png");
 	if (!splash) {
