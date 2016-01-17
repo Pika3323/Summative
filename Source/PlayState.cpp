@@ -382,13 +382,6 @@ void PlayState::Tick(float delta){
 		CurrCharacters[i]->Tick(delta, &CurrCharacters);
 	}
 
-	if (IMath::InRange(GEngine->GetMouseState().x, PauseButton->position.x, PauseButton->position.x + PauseButton->width) && IMath::InRange(GEngine->GetMouseState().y, PauseButton->position.y, PauseButton->position.y + PauseButton->height)){
-		PauseButton->onHoverIn();
-	}
-	else{
-		PauseButton->onHoverOut();
-	}
-
 	if (!Paused) {
 		if (CurrentWorld->bPlay) {
 			//Run Gravity, Collision checking code, and Friction

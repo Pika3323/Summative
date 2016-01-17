@@ -96,9 +96,9 @@ void Physics::HitBlock(Character* C){
 	for (int i = 0; i < j; i++){
 		if (!static_cast<int>(C->direction) && W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x + 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - (i * 32) - 1) / (W->gridSize))].type == EBlockType::B_FinishFlag)
 			win = true;
-		if (!static_cast<int>(C->direction) && (W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x + C->CollisionBounds.size.x + 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - (i * 32) - 1) / (W->gridSize))].bSpawned &&
-			W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x + C->CollisionBounds.size.x + 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - ((i + 1) * 32) - 1) / (W->gridSize))].bCollision)){
-			C->BlockCollide(win, ECollisionDirection::Right);
+		if (!static_cast<int>(C->direction) && (W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x + 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - (i * 32) - 1) / (W->gridSize))].bSpawned &&
+			W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x + 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - (i * 32) - 1) / (W->gridSize))].bCollision)){
+			C->BlockCollide(win, ECollisionDirection::Left);
 		}
 		if (static_cast<int>(C->direction) && W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x - 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - (i * 32) - 1) / (W->gridSize))].type == EBlockType::B_FinishFlag)
 			win = true;
