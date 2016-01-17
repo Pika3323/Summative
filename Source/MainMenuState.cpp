@@ -20,6 +20,17 @@ MainMenuState::MainMenuState(){
 
 void MainMenuState::Init(){
 	printf("Switched to the menu!\n");
+	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
+	al_clear_to_color(al_map_rgb(0, 0, 0));
+	ALLEGRO_BITMAP* splash = al_load_bitmap("Textures/splash.png");
+	if (splash) {
+		al_draw_bitmap(splash, al_get_display_width(GEngine->GetDisplay()) - 178, al_get_display_height(GEngine->GetDisplay()) - 168, 0);
+		al_rest(5.f);
+	}
+	else {
+		fprintf(stderr, "Could not find splash screen\n");
+	}
+	al_destroy_bitmap(splash);
 }
 
 void MainMenuState::HandleEvents(ALLEGRO_EVENT *ev){
