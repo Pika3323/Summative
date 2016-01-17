@@ -390,9 +390,9 @@ void PlayState::Tick(float delta){
 	else{
 		PauseButton->onHoverOut();
 	}
+
 	if (!Paused) {
 		if (CurrentWorld->bPlay) {
-
 			//Run Gravity, Collision checking code, and Friction
 			Fyzix->Tick(CurrCharacters);
 			//Kill the Character if he falls out of the world
@@ -662,11 +662,6 @@ void PlayState::Init(){
 		al_draw_line(0, i * CurrentWorld->gridSize, 4096, i * CurrentWorld->gridSize, al_map_rgba(50, 50, 50, 150), 1);
 	}
 
-	for (int i = 0; i < 128; i++) {
-		for (int j = 0; j < 64; j++) {
-			al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), i * 32, j * 32, 0, "%d, %d", CurrentWorld->Tile[i][j].x, CurrentWorld->Tile[i][j].y);
-		}
-	}
 	//Sets the target bitmap back to the default buffer
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 
