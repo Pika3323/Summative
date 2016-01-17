@@ -12,7 +12,7 @@
 //libcurl headers
 #include "curl/curl.h"
 
-//Standard header
+//Standard headers
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>

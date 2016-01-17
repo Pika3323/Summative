@@ -6,38 +6,38 @@ Physics::Physics(Vector2D f){
 
 void Physics::Tick(std::vector<Character*> &All){
 	for (int i = 0; i < (int)All.size(); i++){
-		if (!All[i]->bOnGround){
+		if (!All[i]->bOnGround){			//if the character is not on the ground, it is affected by gravity
 			All[i]->velocity += Gravforce;
 		}
-		if (All[i]->velocity.y > 50.f){
+		if (All[i]->velocity.y > 50.f){			//terminal velocity for this game
 			All[i]->velocity.y = 50.f;
 		}
 
 
 		for (int j = 0; j < (int)All.size(); j++){
-			if (j == i){
+			if (j == i){				//cant have the character evluating against itself
 				if (++j >= (int)All.size()){
 					break;
 				}
 			}
 			if (Physics::OnScreen(All[i]) && Physics::OnScreen(All[j])) {
-				if ((All[i]->position.x + All[i]->CollisionBounds.position.x + All[i]->CollisionBounds.size.x) >= (All[j]->position.x + All[j]->CollisionBounds.position.x)
-					&& (All[i]->position.x + All[i]->CollisionBounds.position.x) <= (All[j]->position.x + All[j]->CollisionBounds.position.x + All[j]->CollisionBounds.size.x)
+				if ((All[i]->position.x + All[i]->CollisionBounds.position.x + All[i]->CollisionBounds.size.x) >= (All[j]->position.x + All[j]->CollisionBounds.position.x)		//magic bounding box collision
+					&& (All[i]->position.x + All[i]->CollisionBounds.position.x) <= (All[j]->position.x + All[j]->CollisionBounds.position.x + All[j]->CollisionBounds.size.x)	//with allegro
 					&& (All[i]->position.y + All[i]->CollisionBounds.position.y + All[i]->CollisionBounds.size.y) >= (All[j]->position.y + All[j]->CollisionBounds.position.y)
 					&& (All[i]->position.y + All[i]->CollisionBounds.position.y) <= (All[j]->position.y + All[j]->CollisionBounds.position.y + All[j]->CollisionBounds.size.y)){
-					All[i]->Collide(All[j]);
+					All[i]->Collide(All[j]);		//call both character's collide function
 					All[j]->Collide(All[i]);
 				}
 			}
 		}
 
-		Physics::HitBlock(All[i]);
-		All[i]->position += All[i]->velocity;
+		Physics::HitBlock(All[i]);		//check if the character has hit any blocks
+		All[i]->position += All[i]->velocity;		//add all of the character's velocities to their position
 	}
 }
 
 bool Physics::OnScreen(Character* C){
-	if (C->position.x > (dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->offset.x * -1) &&
+	if (C->position.x > (dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->offset.x * -1) &&					//checking if the character is on the screen
 		C->position.x < (dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->offset.x * -1 + GEngine->GetDisplayWidth()) &&
 		C->position.y >(dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->offset.y * -1) &&
 		C->position.y < (dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->offset.y * -1 + GEngine->GetDisplayHeight())){
@@ -71,7 +71,7 @@ void Physics::HitBlock(Character* C){
 	win = false;
 
 	//Bottom fall, making characters fall through
-	if (W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y + 1) / (W->gridSize))].bSpawned &&
+	if (C->bOnGround && W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y + 1) / (W->gridSize))].bSpawned &&
 		!W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y + 1) / (W->gridSize))].bCollision){
 		C->BlockCollide(win, ECollisionDirection::DownStop);
 	}
@@ -94,7 +94,7 @@ void Physics::HitBlock(Character* C){
 
 	//Right/Left side collision
 	for (int i = 0; i < j; i++){
-		if (!static_cast<int>(C->direction) && W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x + 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - ((i + 1) * 32) - 1) / (W->gridSize))].type == EBlockType::B_FinishFlag)
+		if (!static_cast<int>(C->direction) && W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x + 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - (i * 32) - 1) / (W->gridSize))].type == EBlockType::B_FinishFlag)
 			win = true;
 		if (!static_cast<int>(C->direction) && (W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x + C->CollisionBounds.size.x + 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - (i * 32) - 1) / (W->gridSize))].bSpawned &&
 			W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x + C->CollisionBounds.size.x + 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - ((i + 1) * 32) - 1) / (W->gridSize))].bCollision)){

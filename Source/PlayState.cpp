@@ -409,6 +409,20 @@ void PlayState::Tick(float delta){
 				Oiram->Health = 100.f;
 				CurrentWorld->SetCameraLocation(Vector2D(0.f, 0.f), GridBuffer, Background, BlockBuffer, notPlayingBuff);
 			}
+
+			if (Oiram->PlayerWin){
+				Oiram->Win(CharacterStart);
+				Oiram->PlayerWin = false;
+				CurrCharacters.clear();
+				CurrCharacters.push_back(Oiram);
+				Online::completions = 1;
+				Online::attempts = 1;
+				Online::UpdateLevel(CurrentWorld->name, GEngine->SharedVar.id, Completions);
+				CurrentWorld->bPlay = false;
+				al_show_mouse_cursor(GEngine->GetDisplay());
+				al_set_system_mouse_cursor(GEngine->GetDisplay(), ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
+				Oiram->Health = 100.f;
+			}
 		}
 		
 		if (!CurrentWorld->bPlay){

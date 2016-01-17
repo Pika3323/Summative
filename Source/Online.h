@@ -3,8 +3,12 @@
 #include "Engine.h"
 #include "World.h"
 
+<<<<<<< HEAD
 //Contains a set of memory
 struct MemoryStruct {
+=======
+struct MemoryStruct {			
+>>>>>>> origin/isaac
 	char *memory;
 	size_t size;
 };

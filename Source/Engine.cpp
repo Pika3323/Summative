@@ -261,11 +261,11 @@ void Engine::Draw(){
 }
 
 int Engine::GetDisplayWidth(){
-	return al_get_display_width(display);
+	return al_get_display_width(display);			//returns the display width 
 }
 
 int Engine::GetDisplayHeight(){
-	return al_get_display_height(display);
+	return al_get_display_height(display);			//returns the display height
 }
 
 void Engine::LockInputToUIComponent(UIComponent *c){
@@ -281,11 +281,11 @@ void Engine::ReleaseInput(){
 }
 
 GameState* Engine::GetCurrentGameState(){
-	return Active;
+	return Active;									//returns the current state the game is in
 }
 
 void Engine::PrintDebugText(ALLEGRO_COLOR c, float duration, const char* text){
-	DebugStrings.push_back(DebugOutput(c, text, duration));
+	DebugStrings.push_back(DebugOutput(c, text, duration));						//putting in the added debug information
 }
 
 void Engine::PrintDebugText(ALLEGRO_COLOR c, float duration, ALLEGRO_USTR* text){

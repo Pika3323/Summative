@@ -10,7 +10,7 @@ void Block::Draw(ALLEGRO_BITMAP* typeTex){
 }
 
 BlockType::BlockType(const char n[16], ALLEGRO_BITMAP* tex, bool collision){
-	bCollision = collision;
+	bCollision = collision;			//sets whether or not this block is a collidable block
 	strcpy(name, n);
 	if (tex) {
 		texture = tex;

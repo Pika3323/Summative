@@ -15,7 +15,7 @@ public:
 	void PushFrame();
 	void PushFrame(EADirection Direction);
 
-	//in public for evaluating purposes
+	//in public for evaluating purposes (the animation's current frame)
 	int CurrentFrame;
 
 	//Draws the current frame of the spritesheet to the Target bitmap

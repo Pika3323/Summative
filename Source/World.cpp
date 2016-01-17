@@ -18,6 +18,8 @@ World::World(Vector2D s, int gs){
 		for (int j = 0; j < 64; j++){
 			Tile[i][j].location = Vector2D(i * gridSize, j * gridSize);
 			Blocks[i][j].position = Vector2D(i * gridSize, j * gridSize);
+			Blocks[i][j].bCollision = false;
+			Blocks[i][j].bSpawned = false;
 			Tile[i][j].x = i;
 			Tile[i][j].y = j;
 		}
@@ -36,6 +38,7 @@ GridTile* World::GetClickedTile(Vector2D inLoc){
 	}
 }
 
+//places a block on the selected tile space
 void World::PlaceBlock(GridTile* Target, EBlockType T){
 	Blocks[Target->x][Target->y].bCollision = Type[static_cast<int>(T)].bCollision;
 	Blocks[Target->x][Target->y].position = Target->location;
@@ -44,11 +47,13 @@ void World::PlaceBlock(GridTile* Target, EBlockType T){
 	Target->occupied = true;
 }
 
+//removes block on selected tile space
 void World::DestroyBlock(GridTile* Target){
 	Blocks[Target->x][Target->y].bSpawned = false;
 	Target->occupied = false;
 }
 
+//places enemy on selected tile space
 void World::PlaceEnemy(GridTile* Target, EnemyType Type){
 	Temp = { Target->location, Type };
 	EnemiesStored.push_back(Temp);
@@ -191,7 +196,6 @@ bool World::Save(const char LevelName[64], std::vector<Character*> enemies) {
 	FILE *fptr = NULL;
 	DankeyCounter = 0;
 	CinasCounter = 0;
-	YashCounter = 0;
 
 	char FileName[64];
 	strcpy(FileName, LevelName);
@@ -273,6 +277,8 @@ bool World::Save(const char LevelName[64], std::vector<Character*> enemies) {
 	}
 }
 
+
+//calculating all of the moves in the world and moving all of the required buffers
 void World::MoveWorld(Vector2D delta, Buffer &grid, Buffer &bg, Buffer &block, Buffer &notplay){
 	int ScreenWidth = GEngine->GetDisplayWidth();
 	int ScreenHeight = GEngine->GetDisplayHeight();

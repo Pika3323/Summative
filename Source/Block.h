@@ -4,7 +4,7 @@
 
 //An enum representing the different types of blocks that exist
 enum class EBlockType{
-	B_Rainbow,
+	B_Rainbow,			//All possible block types in the game
 	B_Brick,
 	B_Grass,
 	B_Dirt,
@@ -49,7 +49,7 @@ public:
 	EBlockType type;
 
 	Block(){ bSpawned = false; }
-	Block(Vector2D pos, EBlockType t);
+	Block(Vector2D pos, EBlockType t);	
 
 	//Draws the block to the screen
 	void Draw(ALLEGRO_BITMAP* typeTex);

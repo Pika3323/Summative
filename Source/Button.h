@@ -18,7 +18,7 @@ public:
 	void (*onDown)();
 
 	Button(){}
-	Button(ALLEGRO_COLOR bg, ALLEGRO_COLOR tx, int w, int h, Vector2D pos, int i, const char t[], void (*down)());
+	Button(ALLEGRO_COLOR bg, ALLEGRO_COLOR tx, int w, int h, Vector2D pos, int i, const char t[], void (*down)());		
 
 	//Handle any key events for the button
 	void handleKeyInput(ALLEGRO_EVENT *ev);

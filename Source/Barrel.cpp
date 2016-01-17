@@ -38,10 +38,7 @@ void Barrel::Die(){
 }
 
 void Barrel::Collide(Character* OtherCharacter){
-	if (dynamic_cast<Player*>(OtherCharacter)){
-		OtherCharacter->Health -= this->Damage;
-	}
-	if (dynamic_cast<Cinas*>(OtherCharacter)){
+	if (dynamic_cast<Player*>(OtherCharacter)){			//if its a player, hurt it
 		OtherCharacter->Health -= this->Damage;
 	}
 }
