@@ -51,8 +51,16 @@ bool Physics::OnScreen(Character* C){
 void Physics::HitBlock(Character* C){
 	bool win = false;
 	World* W = dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld;
+	/*All of these collisions are block based, meaning that we take the character position and add its hitbox parameters. Then, we take that value and divide by the gridsize
+	to locate the block that is at his position (we find the array number that is at his position). Right collision (0) means he has colllided with a block on his right side.
+	Left Collision (1) means he has collided with a block on his left side. For both 0 and 1, the number of blocks that one character can hit is based on its hitbox height.
+	Top collision (2) means that the character has hit a block above its hitbox, meaning it will come back down. DownStay (3) means that the character should stay on the ground,
+	as there is a spawned collidable block under him. DownStop (4), means he should stop colliding with the block underneath him as there is no block or there is a block, but it 
+	is not a collidable block. This means he will fall.
+	*/
 
-	//Bottom Collision, setting positions
+
+	//Bottom Collision, setting positions. 
 	if (W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - 1) / (W->gridSize))].type == EBlockType::B_FinishFlag)
 		win = true;
 	if (!C->bOnGround && (W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - 1) / (W->gridSize))].bSpawned &&
