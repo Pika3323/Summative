@@ -89,7 +89,6 @@ bool World::Load(const char LevelName[64], std::vector<Character*> *enemies){
 
 	DankeyCounter = 0;
 	CinasCounter = 0;
-	YashCounter = 0;
 	dCheck = NULL;
 
 	char FileName[64] = "Levels/";

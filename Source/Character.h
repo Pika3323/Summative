@@ -18,18 +18,17 @@ struct BoundingBox{
 
 class Character{
 public:
-	//Damage
+	//Amount of damage that can be dealt by the character
 	float Damage;
 
-	//Health for all characters
+	//Character's health
 	float Health;
 
 	//The direction that the character is facing
 	ECharacterDirection direction;
 
-
+	//Collision bounds for the character
 	BoundingBox CollisionBounds;
-
 
 	//The character's instantaneous velocity
 	Vector2D velocity;
@@ -37,17 +36,8 @@ public:
 	//The position of the character
 	Vector2D position;
 
-	//The gravity effect slot
-	int gravSlot;
-
 	//Whether the character is running
 	bool bRunning;
-
-	//for physics deleting
-	bool Deleted;
-
-	//Whether the character has been flipped
-	bool bFlipped;
 
 	//Whether the character is touching the ground or is in the air
 	bool bOnGround;
@@ -97,6 +87,7 @@ public:
 	//Draws the character to the screen
 	void Draw();
 
+	//Sets up collision bounds for the character
 	void SetupCharacterCollision(Vector2D position, Vector2D size);
 
 	//Character destructor

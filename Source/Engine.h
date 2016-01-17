@@ -21,17 +21,25 @@
 #define BLUE900 al_map_rgb(13, 71, 161)
 
 #define WHITE al_map_rgb(255, 255, 255)
+#define BLACK al_map_rgb(0, 0, 0, 0);
 
 //The core headers of the Engine
 #include "Core.h"
-#include "version.h"
 
 //An encapsulation for debug outputs
 struct DebugOutput{
+	//String to output
 	char output[256];
+
+	//Color of the output
 	ALLEGRO_COLOR color;
+
+	//Maximum duration of the output
 	float duration;
+
+	//Time that the output has been on the screen
 	float elapsedTime;
+
 	DebugOutput(ALLEGRO_COLOR c, const char* text, float d){
 		color = c;
 		strcpy(output, text);
@@ -42,8 +50,7 @@ struct DebugOutput{
 
 class Engine{
 public:
-	const int FPS = 60;
-
+	//The version of the engine that is being run
 	int VersionMajor = 1;
 	int VersionMinor = 2;
 
@@ -93,6 +100,7 @@ public:
 	//Be careful of using these in Tick functions!!
 	void PrintDebugText(ALLEGRO_COLOR c, float duration, const char* text);
 
+	//Prints debug text to the screen from an ALLEGRO_USTR*
 	void PrintDebugText(ALLEGRO_COLOR c, float duration, ALLEGRO_USTR* text);
 	
 	//Initialize all engine components
@@ -103,36 +111,50 @@ public:
 
 	//Change game states
 	template <class T> void ChangeGameState(){
+		//Destroys the active gamestate if one exists
 		if (Active){
 			Active->Destroy();
 			delete Active;
 		}
+		
+		//Creates the new gamestate
 		Active = new T();
 		Active->Init();
 	}
 
+	//Handles all input
 	void HandleInput(ALLEGRO_EVENT *ev);
+	
+	//Called every frame
 	void Tick(float delta);
+
+	//Draws everything to the screen
 	void Draw();
 
-	bool GamePaused();
-	void PauseGame();
-
+	//Quits the game
 	static void Quit();
 
+	//Whether the game should continue to run its main loop, or exit
 	bool ShouldTick();
-	bool ShouldRedraw();
 
-	class GameState* States[2];
-	int ActiveState = 0;
+	//Whether the screen should be redrawn
+	bool ShouldRedraw();
+	
+	//The time between two frames
 	double delta;
+
+	//Determines whether to exit the program
 	static bool bExit;
 
+	//Structure containing cross-gamestate information
 	Share SharedVar;
 
 	Engine();
 	
 private:
+	//Framerate at which the game runs
+	const int FPS = 60;
+
 	//The active game display
 	ALLEGRO_DISPLAY *display;
 
@@ -157,15 +179,21 @@ private:
 	//The master output buffer
 	ALLEGRO_BITMAP* master_buffer;
 
+	//Component in which input is locked to
 	UIComponent* LockedComponent;
 	
+	//Whether to redraw the screen
 	bool bRedraw;
-	bool bGamePaused;
-	int StateIndex;
+
+	//Active game state
 	class GameState* Active;
+
+	//Initial height and width of the screen
 	int DisplayHeight = 720, DisplayWidth = 1280;
 
+	//Vector of all existing debug outputs
 	std::vector<DebugOutput> DebugStrings;
 };
 
+//Declare the global engine instance
 extern Engine* GEngine;

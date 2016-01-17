@@ -2,12 +2,22 @@
 
 #include "Engine.h"
 
+//Abstract class for all UI components
 class UIComponent{
 public:
+	//Width of the component
 	int width;
+
+	//Height of the component
 	int height;
+
+	//Position on the screen of the component
 	Vector2D position;
+
+	//ID of the component
 	int id;
+
+	//Cursor that 
 	ALLEGRO_SYSTEM_MOUSE_CURSOR cursor;
 
 	UIComponent(){}

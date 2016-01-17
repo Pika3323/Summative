@@ -12,8 +12,7 @@
 //libcurl headers
 #include "curl/curl.h"
 
-//Standard headers
-
+//Standard header
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
@@ -23,7 +22,6 @@
 #else
 #include <unistd.h>
 #endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -38,11 +36,12 @@
 #include "Vector2D.h"		//Vector header, including some vector math
 #include "IMath.h"			//Isaac's math header
 #include "GameState.h"		//Game states
-#include "UIComponent.h"	//UI
-#include "Share.h"
-#include "Collision.h"
-#include "Character.h"
+#include "UIComponent.h"	//UI stuff
+#include "Share.h"			//Shared global variables
+#include "Collision.h"		//Collision
+#include "Character.h"		//Characters
 
+//Writes files to a file from libcurl
 static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 {
 	curl_off_t nread;

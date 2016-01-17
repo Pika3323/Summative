@@ -2,6 +2,7 @@
 
 #include "Engine.h"
 
+//An enum representing the different types of blocks that exist
 enum class EBlockType{
 	B_Rainbow,
 	B_Brick,
@@ -14,6 +15,7 @@ enum class EBlockType{
 	B_FinishFlag
 };
 
+//A definition of a single type of block
 struct BlockType{
 	//The name of the type of block
 	char name[32];
@@ -24,12 +26,11 @@ struct BlockType{
 	//Whether this type of block has collision
 	bool bCollision;
 
-	bool bLoaded;
-
 	BlockType(){}
 	BlockType(const char n[16], ALLEGRO_BITMAP* tex, bool collision);
 };
 
+//A single block in the world
 class Block{
 public:
 	//The block's location in the level
@@ -47,10 +48,10 @@ public:
 	//The block's type
 	EBlockType type;
 
-
 	Block(){ bSpawned = false; }
 	Block(Vector2D pos, EBlockType t);
 
+	//Draws the block to the screen
 	void Draw(ALLEGRO_BITMAP* typeTex);
 private:
 	

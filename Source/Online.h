@@ -3,14 +3,17 @@
 #include "Engine.h"
 #include "World.h"
 
+//Contains a set of memory
 struct MemoryStruct {
 	char *memory;
 	size_t size;
 };
 
+//libcurl writeback functions
 static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp);
 static size_t write_save(void *ptr, size_t size, size_t nmemb, FILE *stream);
 
+//Types of data regarding a level
 enum LevelData{
 	File,
 	Completions,
@@ -18,13 +21,14 @@ enum LevelData{
 	Votes
 };
 
+//Votes
 struct LevelVotes{
 	int up;
 	int down;
 };
 
-class Online{
-public:
+//Contains a set of functions for online interaction
+namespace Online{
 	static LevelVotes v;
 	static int completions;
 	static int attempts;

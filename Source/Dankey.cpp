@@ -3,7 +3,6 @@ Dankey::Dankey(Vector2D pos){
 	Health = 50.f;
 	bOnGround = false;
 	Damage = 15.f;
-	Deleted = false;
 	position = pos;
 	BarrelDelay = 0;
 	ActualHeight = 64;

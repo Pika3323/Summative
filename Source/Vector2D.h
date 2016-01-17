@@ -13,10 +13,16 @@ public:
 	Vector2D(float inX, float inY);
 	Vector2D(const Vector2D &V);
 
-	//operators
+	//Adds two vectors
 	Vector2D operator+(const Vector2D &V);
+
+	//Subtracts two vectors
 	Vector2D operator-(const Vector2D &V);
+
+	//Multiplies a vector by a scalar value
 	Vector2D operator*(float Scale);
+
+	//Divides a vector by a scalar value
 	Vector2D operator/(float Scale);
 
 	Vector2D operator+=(const Vector2D &V);
@@ -35,8 +41,8 @@ public:
 	float operator|(const Vector2D &V);	//dot-product
 	float operator^(const Vector2D &V);	//cross-product
 
-	//functions
-	float Magnitude();	//returns the magnitude/length of the vector
+	//returns the magnitude/length of the vector
+	float Magnitude();	
 protected:
 
 };

@@ -2,7 +2,6 @@
 
 Barrel::Barrel(ECharacterDirection d, Vector2D pos){
 	Damage = 1.f;
-	Deleted = false;
 	bOnGround = true;
 	ActualWidth = 16;
 	ActualHeight = 32;
