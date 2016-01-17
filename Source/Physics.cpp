@@ -57,18 +57,18 @@ void Physics::HitBlock(Character* C){
 		win = true;
 	if (!C->bOnGround && (W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - 1) / (W->gridSize))].bSpawned &&
 		W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - 1) / (W->gridSize))].bCollision)){
-		C->SetCharacterWorldPosition(Vector2D(C->position.x, W->Blocks[(int)(C->position.x / W->gridSize)][(int)(C->position.y / W->gridSize)].position.y));
 		C->BlockCollide(win, 3);
+		C->SetCharacterWorldPosition(Vector2D(C->position.x, W->Blocks[(int)(C->position.x / W->gridSize)][(int)(C->position.y / W->gridSize)].position.y));
 	}
 	win = false;
 
 	//Bottom fall, making characters fall through
-	if (W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y + 1) / (W->gridSize))].bSpawned &&
+	if (C->bOnGround && W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y + 1) / (W->gridSize))].bSpawned &&
 		!W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y + 1) / (W->gridSize))].bCollision){
 		C->BlockCollide(win, 4);
 	}
 
-	if (!W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y + 1) / (W->gridSize))].bSpawned){
+	if (C->bOnGround && !W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y + 1) / (W->gridSize))].bSpawned){
 		C->BlockCollide(win, 4);
 	}
 
