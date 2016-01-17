@@ -1,10 +1,5 @@
 #include "Online.h"
 
-LevelVotes Online::v = { 0, 0 };
-int Online::completions = 0;
-int Online::attempts = 0;
-bool Online::bVerbose = true;
-
 void Online::PostLevel(const char* LevelName){
 	char level[64];
 	strcpy(level, LevelName);

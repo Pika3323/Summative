@@ -28,6 +28,9 @@ public:
 
 	~TextBox();
 
+	//Updates the rendered text
+	void UpdateText();
+
 	//Handles all input received to this component
 	void handleKeyInput(ALLEGRO_EVENT *ev);
 

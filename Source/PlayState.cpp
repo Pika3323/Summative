@@ -22,8 +22,6 @@ PlayState::PlayState(){
 
 	CircleSelect = al_create_mouse_cursor(BoxSelectCursor, 8, 8);
 	CurrentWorld->EnemySelect = false;
-
-	PauseButton = new Button(al_map_rgb(255, 255, 255), BLUE500, 32, 32, Vector2D(0.f, 0.f), 2, "||", &PauseButtonDown);
 }
 
 void PlayState::DestroyCharacter(Character* C){
@@ -449,7 +447,7 @@ void PlayState::Tick(float delta){
 		//Mouse states
 		switch (GEngine->GetMouseState().buttons){
 		case MOUSE_LB:
-			if (!ChangingStart && !CurrentWorld->bPlay){
+			if (!ChangingStart && !CurrentWorld->bPlay ){
 				if (!bBoxSelect && !CurrentWorld->EnemySelect){
 					ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 					//Get the tile that was clicked
@@ -463,7 +461,7 @@ void PlayState::Tick(float delta){
 		case MOUSE_MB:
 			break;
 		case MOUSE_RB:
-			if (!bBoxSelect && !CurrentWorld->bPlay){
+			if (!bBoxSelect && !CurrentWorld->bPlay && GEngine->GetMouseState().y > 100){
 				ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 				//Get the tile that was clicked
 				clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
@@ -728,8 +726,4 @@ PlayState::~PlayState(){
 		delete CurrCharacters[i];
 	}
 	CurrCharacters.clear();
-}
-
-void PauseButtonDown(){
-	GEngine->GetCurrentGameState()->Pause();
 }
