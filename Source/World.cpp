@@ -18,6 +18,8 @@ World::World(Vector2D s, int gs){
 		for (int j = 0; j < 64; j++){
 			Tile[i][j].location = Vector2D(i * gridSize, j * gridSize);
 			Blocks[i][j].position = Vector2D(i * gridSize, j * gridSize);
+			Blocks[i][j].bCollision = false;
+			Blocks[i][j].bSpawned = false;
 			Tile[i][j].x = i;
 			Tile[i][j].y = j;
 		}

@@ -85,7 +85,6 @@ void Player::BlockCollide(bool w, int CollisionDirection){
 	if (w) {
 		PlayerWin = true;
 	}
-
 	if (CollisionDirection == 0 || CollisionDirection == 1){
 		this->velocity.x = 0;
 	}
