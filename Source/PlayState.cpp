@@ -49,6 +49,9 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 	if (!Paused) {
 		if (ev->type == ALLEGRO_EVENT_KEY_DOWN) {
 			switch (ev->keyboard.keycode) {
+			case ALLEGRO_KEY_M:
+				GEngine->ChangeGameState<MainMenuState>();
+				break;
 			case ALLEGRO_KEY_D:
 			case ALLEGRO_KEY_RIGHT:
 				if (!CurrentWorld->bPlay){
@@ -91,7 +94,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 					bBoxSelect = false;
 					bFirstBoxSelected = false;
 					al_hide_mouse_cursor(GEngine->GetDisplay());
-					CurrentWorld->SetCameraLocation(CharacterStart - Vector2D(GEngine->GetDisplayWidth() / 2, GEngine->GetDisplayHeight() / 2), GridBuffer, Background, BlockBuffer, notPlayingBuff);
+					CurrentWorld->SetCameraLocation(Vector2D(0, 0), GridBuffer, Background, BlockBuffer, notPlayingBuff);
 					for (int i = 0; i < (int)CurrentWorld->EnemiesStored.size(); i++){
 						if (CurrentWorld->EnemiesStored[i].Type == EnemyType::E_Cinas){
 							CurrCharacters.push_back(new Cinas(CurrentWorld->EnemiesStored[i].position));
@@ -116,12 +119,6 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				break;
 			case ALLEGRO_KEY_ESCAPE:
 				GEngine->Quit();
-				break;
-			case ALLEGRO_KEY_E:
-				if (!CurrentWorld->EnemySelect)
-					CurrentWorld->EnemySelect = true;
-				else if (CurrentWorld->EnemySelect)
-					CurrentWorld->EnemySelect = false;
 				break;
 			case ALLEGRO_KEY_H:
 				if (!CurrentWorld->bPlay)
@@ -442,7 +439,7 @@ void PlayState::Tick(float delta){
 		//Mouse states
 		switch (GEngine->GetMouseState().buttons){
 		case MOUSE_LB:
-			if (!bChangingStart && !CurrentWorld->bPlay ){
+			if (!bChangingStart && !CurrentWorld->bPlay && GEngine->GetMouseState().y > 100){
 				if (!bBoxSelect && !CurrentWorld->EnemySelect){
 					ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 					//Get the tile that was clicked

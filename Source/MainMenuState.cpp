@@ -2,19 +2,20 @@
 #include "PlayState.h"
 #include "LevelSelectState.h"
 
+bool MainMenuState::bDisplayControls = false;
 MainMenuState::MainMenuState(){
 	AllUIComponents[0] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 150, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 - 90), 0, "PLAY GAME", &MainMenu::PlayGame);
 	AllUIComponents[1] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 - 54), 0, "VIEW LEVELS", &PushLevel);
 	AllUIComponents[2] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 - 18), 0, "OPTIONS", &MainMenu::LoadEditor);
 	AllUIComponents[3] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 + 18), 0, "EXIT", &GEngine->Quit);
 	AllUIComponents[4] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 + 54), 0, "TOGGLE FULLSCREEN", &MainMenu::ToggleFullscreen);
-	//AllUIComponents[5] = new TextBox(BLUE500, al_map_rgb(33, 33, 33), 500, 72, Vector2D(GEngine->GetDisplayWidth() / 2 - 250, 0), 1, "Test");
 	ActiveScreen = 0;
 	LargeRoboto = al_load_ttf_font("Roboto-Regular.ttf", 48, 0);
 	Background[0] = Buffer(al_load_bitmap("Textures/Scenes/Background_Gauss.png"), Vector2D(0, 0), Vector2D(0, 0));
 	Background[1] = Buffer(al_load_bitmap("Textures/Scenes/Background_Gauss.png"), Vector2D(1024, 0), Vector2D(0, 0));
-	Background[2] = Buffer(al_load_bitmap("Textures/Scenes/Background_Gauss.png"), Vector2D(1024, 0), Vector2D(0, 0));
+	Background[2] = Buffer(al_load_bitmap("Textures/Scenes/Background_Gauss.png"), Vector2D(2048, 0), Vector2D(0, 0));
 
+	controls = al_load_bitmap("Textures/instructions.png");
 	splashTime = 0.f;
 #ifdef _DEBUG
 	bDrawSplash = false;
@@ -47,10 +48,17 @@ void MainMenuState::HandleEvents(ALLEGRO_EVENT *ev){
 			}
 		}
 	}
-	else if (ev->type == ALLEGRO_EVENT_KEY_DOWN){
+	else if (ev->type == ALLEGRO_EVENT_KEY_DOWN && !bDisplayControls){
 		switch (ev->keyboard.keycode){
 		case ALLEGRO_KEY_ESCAPE:
 			GEngine->Quit();
+			break;
+		}
+	}
+	else if (ev->type == ALLEGRO_EVENT_KEY_DOWN){
+		switch (ev->keyboard.keycode){
+		case ALLEGRO_KEY_ESCAPE:
+			bDisplayControls = false;
 			break;
 		}
 	}
@@ -60,7 +68,7 @@ void MainMenuState::Tick(float delta){
 	bool bIsHoverComponent = false;
 	UIComponent* HoveredComponent = NULL;
 
-	if (!bDrawSplash) {
+	if (!bDrawSplash && !bDisplayControls) {
 		//Run mouse over function on UIComponents
 		for (int i = 0; i < 5; i++){
 			if (IMath::InRange(GEngine->GetMouseState().x, AllUIComponents[i]->position.x, AllUIComponents[i]->position.x + AllUIComponents[i]->width) && IMath::InRange(GEngine->GetMouseState().y, AllUIComponents[i]->position.y, AllUIComponents[i]->position.y + AllUIComponents[i]->height)){
@@ -104,18 +112,18 @@ void MainMenuState::Tick(float delta){
 }
 
 void MainMenuState::Draw(){
-	al_clear_to_color(al_map_rgb(250, 250, 250));
-	for (int i = 0; i < 3; i++) {
-		al_draw_bitmap(Background[i].image, Background[i].offset.x, Background[i].offset.y, 0);
-	}
-	al_draw_text(LargeRoboto, al_map_rgba(100, 100, 100, 225), GEngine->GetDisplayWidth() / 2, 132, ALLEGRO_ALIGN_CENTER, "The Block Game");
-	if (ActiveScreen == 0){
+	al_clear_to_color(al_map_rgb(255, 255, 255));
+	if (!bDisplayControls) {
+		for (int i = 0; i < 3; i++) {
+			al_draw_bitmap(Background[i].image, Background[i].offset.x, Background[i].offset.y, 0);
+		}
+		al_draw_text(LargeRoboto, al_map_rgba(100, 100, 100, 225), GEngine->GetDisplayWidth() / 2, 132, ALLEGRO_ALIGN_CENTER, "The Block Game");
 		for (int i = 0; i < 5; i++){
 			AllUIComponents[i]->Draw();
 		}
 	}
-	else if (ActiveScreen = 1){
-
+	else {
+		al_draw_bitmap(controls, GEngine->GetDisplayWidth() / 2 - 256, GEngine->GetDisplayHeight() / 2 - 182, 0);
 	}
 
 //Only draw the splash screen on release configuration (saves time!)
@@ -154,7 +162,7 @@ void MainMenu::PlayGame(){
 }
 
 void MainMenu::LoadEditor(){
-	Online::PostLevel("Seanisdumb");
+	MainMenuState::bDisplayControls = true;
 }
 
 void MainMenu::OpenSettings(){
@@ -185,5 +193,6 @@ void MainMenu::ToggleFullscreen(){
 }
 
 void PushLevel(){
+	al_set_system_mouse_cursor(GEngine->GetDisplay(), ALLEGRO_SYSTEM_MOUSE_CURSOR_PROGRESS);
 	GEngine->ChangeGameState<LevelSelectState>();
 }

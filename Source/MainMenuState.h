@@ -30,6 +30,9 @@ public:
 
 	Buffer Background[3];
 	
+	ALLEGRO_BITMAP* controls;
+
+	static bool bDisplayControls;
 
 	void Init();
 
