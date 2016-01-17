@@ -177,6 +177,9 @@
     <ClInclude Include="LevelSaveState.h">
       <Filter>Game\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Collision.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Engine">

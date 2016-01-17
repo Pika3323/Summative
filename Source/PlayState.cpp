@@ -407,6 +407,7 @@ void PlayState::Tick(float delta){
 				al_show_mouse_cursor(GEngine->GetDisplay());
 				al_set_system_mouse_cursor(GEngine->GetDisplay(), ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
 				Oiram->Health = 100.f;
+				CurrentWorld->SetCameraLocation(Vector2D(0.f, 0.f), GridBuffer, Background, BlockBuffer, notPlayingBuff);
 			}
 		}
 		
@@ -575,11 +576,13 @@ void PlayState::Draw(){
 		al_draw_bitmap(HealthBar, 0, al_get_display_height(GEngine->GetDisplay()) - 42, 0);
 	}
 
+#ifdef _DEBUG
 	//Draw Character collision bounds
 	if (CurrentWorld->bPlay)
 		for (int i = 0; i < (int)CurrCharacters.size(); i++){
 			al_draw_rectangle(CurrCharacters[i]->position.x + CurrCharacters[i]->CollisionBounds.position.x + CurrentWorld->offset.x, CurrCharacters[i]->position.y + CurrCharacters[i]->CollisionBounds.position.y + CurrentWorld->offset.y, CurrCharacters[i]->position.x + CurrCharacters[i]->CollisionBounds.position.x + CurrCharacters[i]->CollisionBounds.size.x + CurrentWorld->offset.x, CurrCharacters[i]->position.y + CurrCharacters[i]->CollisionBounds.position.y + CurrCharacters[i]->CollisionBounds.size.y + CurrentWorld->offset.y, BLUE500, 1);
 	}
+#endif
 }
 
 void PlayState::Init(){

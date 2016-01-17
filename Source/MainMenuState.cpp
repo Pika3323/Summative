@@ -57,26 +57,28 @@ void MainMenuState::Tick(float delta){
 	bool bIsHoverComponent = false;
 	UIComponent* HoveredComponent = NULL;
 
-	//Run mouse over function on UIComponents
-	for (int i = 0; i < 5; i++){
-		if (IMath::InRange(GEngine->GetMouseState().x, AllUIComponents[i]->position.x, AllUIComponents[i]->position.x + AllUIComponents[i]->width) && IMath::InRange(GEngine->GetMouseState().y, AllUIComponents[i]->position.y, AllUIComponents[i]->position.y + AllUIComponents[i]->height)){
-			AllUIComponents[i]->onHoverIn();
+	if (!bDrawSplash) {
+		//Run mouse over function on UIComponents
+		for (int i = 0; i < 5; i++){
+			if (IMath::InRange(GEngine->GetMouseState().x, AllUIComponents[i]->position.x, AllUIComponents[i]->position.x + AllUIComponents[i]->width) && IMath::InRange(GEngine->GetMouseState().y, AllUIComponents[i]->position.y, AllUIComponents[i]->position.y + AllUIComponents[i]->height)){
+				AllUIComponents[i]->onHoverIn();
+			}
+			else {
+				AllUIComponents[i]->onHoverOut();
+			}
+			if (IMath::InRange(GEngine->GetMouseState().x, AllUIComponents[i]->position.x, AllUIComponents[i]->position.x + AllUIComponents[i]->width) && IMath::InRange(GEngine->GetMouseState().y, AllUIComponents[i]->position.y, AllUIComponents[i]->position.y + AllUIComponents[i]->height)){
+				HoveredComponent = AllUIComponents[i];
+				bIsHoverComponent = true;
+			}
+		}
+
+		//Changes the cursor based on the UIComponent that is being hovered
+		if (bIsHoverComponent) {
+			al_set_system_mouse_cursor(GEngine->GetDisplay(), HoveredComponent->cursor);
 		}
 		else {
-			AllUIComponents[i]->onHoverOut();
+			al_set_system_mouse_cursor(GEngine->GetDisplay(), ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
 		}
-		if (IMath::InRange(GEngine->GetMouseState().x, AllUIComponents[i]->position.x, AllUIComponents[i]->position.x + AllUIComponents[i]->width) && IMath::InRange(GEngine->GetMouseState().y, AllUIComponents[i]->position.y, AllUIComponents[i]->position.y + AllUIComponents[i]->height)){
-			HoveredComponent = AllUIComponents[i];
-			bIsHoverComponent = true;
-		}
-	}
-
-	//Changes the cursor based on the UIComponent that is being hovered
-	if (bIsHoverComponent) {
-		al_set_system_mouse_cursor(GEngine->GetDisplay(), HoveredComponent->cursor);
-	}
-	else {
-		al_set_system_mouse_cursor(GEngine->GetDisplay(), ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
 	}
 	
 	//Moves the background image across the screen
@@ -103,7 +105,7 @@ void MainMenuState::Draw(){
 	for (int i = 0; i < 3; i++) {
 		al_draw_bitmap(Background[i].image, Background[i].offset.x, Background[i].offset.y, 0);
 	}
-	al_draw_text(LargeRoboto, al_map_rgb(100, 100, 100), GEngine->GetDisplayWidth() / 2, 132, ALLEGRO_ALIGN_CENTER, "The Block Game");
+	al_draw_text(LargeRoboto, al_map_rgba(100, 100, 100, 225), GEngine->GetDisplayWidth() / 2, 132, ALLEGRO_ALIGN_CENTER, "The Block Game");
 	if (ActiveScreen == 0){
 		for (int i = 0; i < 5; i++){
 			AllUIComponents[i]->Draw();
@@ -113,14 +115,17 @@ void MainMenuState::Draw(){
 
 	}
 
+//Only draw the splash screen on release configuration (saves time!)
+#ifndef _DEBUG
 	//Display the splash screen
 	if (bDrawSplash){
 		al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
-		al_clear_to_color(al_map_rgb(0, 0, 0));
+		al_clear_to_color(al_map_rgb(250, 250, 250));
 		if (splash) {
 			al_draw_bitmap(splash, GEngine->GetDisplayWidth() / 2 - 128, GEngine->GetDisplayHeight() / 2 - 122, 0);
 		}
 	}
+#endif
 }
 
 void MainMenuState::Destroy(){

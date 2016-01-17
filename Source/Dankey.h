@@ -21,7 +21,7 @@ public:
 
 	void Tick(float delta, std::vector<Character*> *Curr);
 
-	void BlockCollide(bool w, int CollisionDirection);
+	void BlockCollide(bool w, ECollisionDirection direction);
 
 	void Collide(Character* OtherCharacter);
 protected:
