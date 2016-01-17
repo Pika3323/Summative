@@ -16,7 +16,7 @@ public:
 	class World* CurrentWorld;
 
 	//The main player
-	Player* TinTin;
+	Player* Oiram;
 
 	//Vector coordinate for the player from an earlier frame to calculate a delta
 	Vector2D PlayerOldPosition;

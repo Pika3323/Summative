@@ -149,6 +149,17 @@ void Engine::Init(){
 	//Create the main display
 	display = al_create_display(1280, 720);
 
+	//Set the icon of the display
+	ALLEGRO_BITMAP* display_icon = al_load_bitmap("Textures/icon.png");
+	if (display_icon) {
+		al_set_display_icon(display, display_icon);
+	}
+	else {
+		fprintf(stderr, "Could not locate icon.png\n");
+	}
+	al_destroy_bitmap(display_icon);
+	
+	//Gets the display data (including size) of the display
 	al_get_display_mode(al_get_num_display_modes() - 1, &disp_data);
 
 	//Register all of the required event sources
@@ -156,8 +167,6 @@ void Engine::Init(){
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
 	al_register_event_source(event_queue, al_get_mouse_event_source());
-
-	//master_buffer = al_create_bitmap(DisplayWidth, DisplayHeight);
 
 	//Start the game timer
 	al_start_timer(timer);
@@ -211,8 +220,11 @@ void Engine::HandleInput(ALLEGRO_EVENT* ev){
 }
 
 void Engine::Tick(float delta){
+	//Get the state of the keyboard and mouse
 	al_get_mouse_state(&mouse_state);
 	al_get_keyboard_state(&keyboard_state);
+	
+	//Run the tick function of the active game state
 	Active->Tick(delta);
 
 	//Counts the duration of debug outputs and deletes them once they have been on screen for their allotted time
@@ -223,12 +235,18 @@ void Engine::Tick(float delta){
 		}
 	}
 
+	//Tell the engine to redraw the screen
 	bRedraw = true;
 }
 
 void Engine::Draw(){
+	//Draw the active game state to the screen
 	Active->Draw();
+
+	//No more drawing to be done for this tick
 	bRedraw = false;
+
+	//Draw debugging info only in debug mode
 #ifdef _DEBUG
 	DrawFPS(delta);
 

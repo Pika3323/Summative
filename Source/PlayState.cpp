@@ -3,8 +3,8 @@
 
 PlayState::PlayState(){
 	CurrentWorld = new World(Vector2D(4096.f, 2048.f), 32);
-	TinTin = new Player(128, 64);	//The main player character
-	TinTin->SetCharacterWorldPosition(Vector2D(0.f, 0.f));
+	Oiram = new Player(128, 64);	//The main player character
+	Oiram->SetCharacterWorldPosition(Vector2D(0.f, 0.f));
 	Fyzix = new Physics(Vector2D(0.f, 1.f));		//current world gravity
 	notPlayingBuff = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f)); //block buffer for when not playing
 	BlockBuffer = Buffer(NULL, Vector2D(0.f, 0.f), Vector2D(5.f, 5.f));	//play buffer for blocks
@@ -72,7 +72,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 			case ALLEGRO_KEY_W:
 			case ALLEGRO_KEY_UP:
 				if (CurrentWorld->bPlay){
-					TinTin->Jump();
+					Oiram->Jump();
 				}
 				else{
 					WorldMoveDelta.y = 5.f;
@@ -90,6 +90,9 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 			case ALLEGRO_KEY_SPACE:
 				if (!CurrentWorld->bPlay){
 					CurrentWorld->bPlay = true;
+					bBoxSelect = false;
+					bFirstBoxSelected = false;
+					al_hide_mouse_cursor(GEngine->GetDisplay());
 					for (int i = 0; i < (int)CurrentWorld->EnemiesStored.size(); i++){
 						if (CurrentWorld->EnemiesStored[i].Type == EnemyType::E_Cinas){
 							CurrCharacters.push_back(new Cinas(CurrentWorld->EnemiesStored[i].position));
@@ -98,17 +101,19 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 							CurrCharacters.push_back(new Dankey(CurrentWorld->EnemiesStored[i].position));
 						}
 					}
-					TinTin->SetCharacterWorldPosition(CharacterStart);
+					Oiram->SetCharacterWorldPosition(CharacterStart);
 				}
 				else {
 					CurrentWorld->bPlay = false;
+					al_set_system_mouse_cursor(GEngine->GetDisplay(), ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
+					al_show_mouse_cursor(GEngine->GetDisplay());
 					CurrCharacters.clear();
-					CurrCharacters.push_back(TinTin);
-					TinTin->Health = 100.f;
+					CurrCharacters.push_back(Oiram);
+					Oiram->Health = 100.f;
 					WorldMoveDelta = Vector2D(0.f, 0.f);
 				}
-				TinTin->bOnGround = false;
-				TinTin->velocity = Vector2D(0.f, 0.f);
+				Oiram->bOnGround = false;
+				Oiram->velocity = Vector2D(0.f, 0.f);
 				break;
 			case ALLEGRO_KEY_ESCAPE:
 				GEngine->Quit();
@@ -248,7 +253,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				break;
 			case MOUSE_RB:
 				//Check if the box placement mode isn't enabled
-				if (!bBoxSelect) {
+				if (!bBoxSelect && !CurrentWorld->bPlay) {
 					//Get the mouse's location
 					ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 
@@ -263,21 +268,32 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				else {
 					//If a start location of the rectangle select has been set
 					if (bFirstBoxSelected){
-						Vector2D NewMouseLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
-						Vector2D BoxVector;
+						Vector2D StartIndex, EndIndex;
 
-						//Handle different directions in which the box extends
-						if (NewMouseLocation > ClickLocation) {
-							BoxVector = ClickLocation;
+						GridTile* Next = CurrentWorld->GetClickedTile(Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1)));
+						GEngine->PrintDebugText(al_map_rgb(255, 0, 0), 5.f, al_ustr_newf("%d, %d", Next->x, Next->y));
+
+						if (FirstTile->x <= Next->x) {
+							StartIndex.x = FirstTile->x;
+							EndIndex.x = Next->x;
 						}
 						else{
-							BoxVector = NewMouseLocation;
+							StartIndex.x = Next->x;
+							EndIndex.x = FirstTile->x;
 						}
 
-						//Destroy a rectangle of boxes
-						for (int i = 0; i < abs((int)(NewMouseLocation.x - ClickLocation.x) / 32); i++) {
-							for (int j = 0; j < abs((int)(NewMouseLocation.y - ClickLocation.y) / 32); j++) {
-								CurrentWorld->DestroyBlock(CurrentWorld->GetClickedTile(BoxVector + Vector2D(i * 32, j * 32)));
+						if (FirstTile->y <= Next->y) {
+							StartIndex.y = FirstTile->y;
+							EndIndex.y = Next->y;
+						}
+						else{
+							StartIndex.y = Next->y;
+							EndIndex.y = FirstTile->y;
+						}
+
+						for (int i = (int)StartIndex.x; i <= (int)EndIndex.x; i++) {
+							for (int j = (int)StartIndex.y; j <= (int)EndIndex.y; j++){
+								CurrentWorld->DestroyBlock(&CurrentWorld->Tile[i][j]);
 							}
 						}
 					}
@@ -299,7 +315,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 		//On MouseUp
 		else if (ev->type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
 			if (CurrentWorld->bPlay){
-				TinTin->bShooting = false;
+				Oiram->bShooting = false;
 			}
 			bClicked = false;
 
@@ -319,26 +335,26 @@ void PlayState::Tick(float delta){
 	//If both are false, stop moving
 	if ((!(al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_A) || al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_LEFT)) && !(al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_D) || al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_RIGHT))) && CurrentWorld->bPlay){
 		//WorldMoveDelta.x = 0.f;
-		TinTin->bRunning = false;
-		TinTin->velocity.x = 0;
+		Oiram->bRunning = false;
+		Oiram->velocity.x = 0;
 	}
 
 	//Evaluate character directions
 	if ((al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_D) || al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_RIGHT) && CurrentWorld->bPlay)){
-		if (!TinTin->bRunning || Priority == ECharacterDirection::R_Left) {
+		if (!Oiram->bRunning || Priority == ECharacterDirection::R_Left) {
 			Priority = ECharacterDirection::R_Left;
-			TinTin->SetCharacterDirection(ECharacterDirection::R_Right);
-			TinTin->bRunning = true;
+			Oiram->SetCharacterDirection(ECharacterDirection::R_Right);
+			Oiram->bRunning = true;
 		}
 	}
 	else if ((al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_D) || al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_RIGHT) && !CurrentWorld->bPlay)){
 		WorldMoveDelta.x = -5.f;
 	}
 	if ((al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_A) || al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_LEFT) && CurrentWorld->bPlay)){
-		if (!TinTin->bRunning || Priority == ECharacterDirection::R_Right) {
+		if (!Oiram->bRunning || Priority == ECharacterDirection::R_Right) {
 			Priority = ECharacterDirection::R_Right;
-			TinTin->SetCharacterDirection(ECharacterDirection::R_Left);
-			TinTin->bRunning = true;
+			Oiram->SetCharacterDirection(ECharacterDirection::R_Left);
+			Oiram->bRunning = true;
 		}
 	}
 	else if ((al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_A) || al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_LEFT) && !CurrentWorld->bPlay)){
@@ -347,21 +363,21 @@ void PlayState::Tick(float delta){
 
 	if (Priority == ECharacterDirection::R_Right){
 		if ((al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_D) || al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_RIGHT) && CurrentWorld->bPlay)){
-			TinTin->SetCharacterDirection(ECharacterDirection::R_Right);
+			Oiram->SetCharacterDirection(ECharacterDirection::R_Right);
 		}
 	}
 	if (Priority == ECharacterDirection::R_Left){
 		if ((al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_A) || al_key_down(&GEngine->GetKeyboardState(), ALLEGRO_KEY_LEFT) && CurrentWorld->bPlay)){
-			TinTin->SetCharacterDirection(ECharacterDirection::R_Left);
+			Oiram->SetCharacterDirection(ECharacterDirection::R_Left);
 		}
 	}
 
 	//Move character if bRunning is true
-	if (TinTin->bRunning && TinTin->direction == ECharacterDirection::R_Right){
-		TinTin->Run(Vector2D(1.f, 0.f));
+	if (Oiram->bRunning && Oiram->direction == ECharacterDirection::R_Right){
+		Oiram->Run(Vector2D(1.f, 0.f));
 	}
-	else if (TinTin->bRunning && TinTin->direction == ECharacterDirection::R_Left){
-		TinTin->Run(Vector2D(-1.f, 0.f));
+	else if (Oiram->bRunning && Oiram->direction == ECharacterDirection::R_Left){
+		Oiram->Run(Vector2D(-1.f, 0.f));
 	}
 	//Character ticks
 	for (int i = 0; i < (int) CurrCharacters.size(); i++ && CurrentWorld->bPlay) {
@@ -374,39 +390,23 @@ void PlayState::Tick(float delta){
 	else{
 		PauseButton->onHoverOut();
 	}
+
 	if (!Paused) {
 		if (CurrentWorld->bPlay) {
-
 			//Run Gravity, Collision checking code, and Friction
 			Fyzix->Tick(CurrCharacters);
-			/*if (ColChecker == 1) {
-				TinTin->Win(CharacterStart);
-				Online::attempts = 1;
-				Online::completions = 1;
-				Online::UpdateLevel(CurrentWorld->name, GEngine->SharedVar.id, Completions);
-				Online::UpdateLevel(CurrentWorld->name, GEngine->SharedVar.id, Tries);
-				CurrentWorld->bPlay = false;
-			}
-			if (ColChecker > 2){
-				TypeChecker = dynamic_cast<Bullet*>(CurrCharacters[ColChecker - 2]);
-				if (TypeChecker){
-					CurrCharacters.push_back(new BulletEx(CurrCharacters[ColChecker - 2]->position, CurrCharacters[ColChecker - 2]->direction));
-					DestroyCharacter(CurrCharacters[ColChecker - 2]);
-				}
-				else{
-					DestroyCharacter(CurrCharacters[ColChecker - 2]);
-				}
-			}*/
 			//Kill the Character if he falls out of the world
-			if (TinTin->position.x > CurrentWorld->dimensions.x || (TinTin->position.x + TinTin->ActualWidth) < 0 || (TinTin->position.y + TinTin->ActualHeight) < 0 || TinTin->Health <= 0) {
+			if (Oiram->position.x > CurrentWorld->dimensions.x || Oiram->position.x + Oiram->ActualWidth < 0 || Oiram->position.y > CurrentWorld->dimensions.y || Oiram->Health <= 0) {
 				CurrCharacters.clear();
-				CurrCharacters.push_back(TinTin);
-				TinTin->Die();
+				CurrCharacters.push_back(Oiram);
+				Oiram->Die();
 				Online::attempts = 1;
 				Online::UpdateLevel(CurrentWorld->name, GEngine->SharedVar.id, Completions);
-				TinTin->SetCharacterWorldPosition(CharacterStart);
+				Oiram->SetCharacterWorldPosition(CharacterStart);
 				CurrentWorld->bPlay = false;
-				TinTin->Health = 100.f;
+				al_show_mouse_cursor(GEngine->GetDisplay());
+				al_set_system_mouse_cursor(GEngine->GetDisplay(), ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
+				Oiram->Health = 100.f;
 			}
 		}
 		
@@ -414,7 +414,7 @@ void PlayState::Tick(float delta){
 			CurrentWorld->MoveWorld(WorldMoveDelta, GridBuffer, Background, BlockBuffer, notPlayingBuff);
 		}
 		else{
-			CurrentWorld->FollowCharacter(TinTin, GridBuffer, Background, BlockBuffer, notPlayingBuff);
+			CurrentWorld->FollowCharacter(Oiram, GridBuffer, Background, BlockBuffer, notPlayingBuff);
 		}
 		
 		//Run world tick
@@ -422,14 +422,14 @@ void PlayState::Tick(float delta){
 
 		//Calculate the change in mouse position if the middle mouse button is being held
 		Vector2D DragDelta;
-		if (bMouseDrag){
+		if (bMouseDrag && !CurrentWorld->bPlay){
 			DragDelta = DragStart - Vector2D(GEngine->GetMouseState().x, GEngine->GetMouseState().y);
 			CurrentWorld->MoveWorld(DragDelta * -1, GridBuffer, Background, BlockBuffer, notPlayingBuff);
 			DragStart = Vector2D(GEngine->GetMouseState().x, GEngine->GetMouseState().y);
 			DragTime += delta;
 		}
 
-		PlayerOldPosition = TinTin->position;
+		PlayerOldPosition = Oiram->position;
 
 		//Mouse states
 		switch (GEngine->GetMouseState().buttons){
@@ -448,7 +448,7 @@ void PlayState::Tick(float delta){
 		case MOUSE_MB:
 			break;
 		case MOUSE_RB:
-			if (!bBoxSelect){
+			if (!bBoxSelect && !CurrentWorld->bPlay){
 				ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 				//Get the tile that was clicked
 				clickedTile = CurrentWorld->GetClickedTile(ClickLocation);
@@ -523,24 +523,23 @@ void PlayState::Draw(){
 			SelectionEnd.y += 32;
 		}
 		al_draw_filled_rectangle(SelectionStart.x, SelectionStart.y, SelectionEnd.x, SelectionEnd.y, al_map_rgba(50, 132, 135, 25));
-
 	}
 
 	//Draws Health bar
 	if (CurrentWorld->bPlay){
-		if (TinTin->Health >= 50){
+		if (Oiram->Health >= 50){
 			HealthBarColour = al_map_rgb(118, 255, 3);
 		}
-		else if (TinTin->Health < 50 && TinTin->Health >= 15){
+		else if (Oiram->Health < 50 && Oiram->Health >= 15){
 			HealthBarColour = al_map_rgb(255, 255, 0);
 		}
-		else if (TinTin->Health < 15){
+		else if (Oiram->Health < 15){
 			HealthBarColour = al_map_rgb(213, 0, 0);
 		}
 		al_set_target_bitmap(HealthBar);
 		al_clear_to_color(al_map_rgba(0, 0, 0, 0));
-		al_draw_filled_rectangle(0, 0, (int)TinTin->Health, 32, HealthBarColour);
-		al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), (int)TinTin->Health + 1, 10, 0, "%.1f / 100.0", TinTin->Health);
+		al_draw_filled_rectangle(0, 0, (int)Oiram->Health, 32, HealthBarColour);
+		al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), (int)Oiram->Health + 1, 10, 0, "%.1f / 100.0", Oiram->Health);
 	}
 
 	//Reset the target bitmap to the backbuffer
@@ -548,8 +547,6 @@ void PlayState::Draw(){
 
 	//Draw the background image
 	al_draw_bitmap_region(Background.image, Background.offset.x * -1, Background.offset.y * -1, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()), 0, 0, 0);
-
-
 
 	//Draw the grid overlay if editor mode is enabled
 	if (!CurrentWorld->bPlay) {
@@ -630,8 +627,8 @@ void PlayState::Init(){
 	DankeyTemp = al_load_bitmap("Textures/Characters/DankeyTemp.png");
 	CinasTemp = al_load_bitmap("Textures/Characters/CinasTemp.png");
 
-	CurrCharacters.push_back(TinTin);	//registering main character in Character vector
-	TinTin->velocity = Vector2D(0.f, 0.f);		//velocity starts at zero
+	CurrCharacters.push_back(Oiram);	//registering main character in Character vector
+	Oiram->velocity = Vector2D(0.f, 0.f);		//velocity starts at zero
 	CharacterStart = Vector2D(0.f, 0.f);		//original character start position is zero
 	ChangingStart = false;				//at beginning, start position is not being changed
 	ColChecker = 0;
@@ -665,11 +662,6 @@ void PlayState::Init(){
 		al_draw_line(0, i * CurrentWorld->gridSize, 4096, i * CurrentWorld->gridSize, al_map_rgba(50, 50, 50, 150), 1);
 	}
 
-	for (int i = 0; i < 128; i++) {
-		for (int j = 0; j < 64; j++) {
-			al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), i * 32, j * 32, 0, "%d, %d", CurrentWorld->Tile[i][j].x, CurrentWorld->Tile[i][j].y);
-		}
-	}
 	//Sets the target bitmap back to the default buffer
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 
@@ -701,7 +693,7 @@ void PlayState::Destroy(){
 		}
 	}
 
-	delete TinTin;
+	delete Oiram;
 	al_destroy_bitmap(DankeyTemp);
 	al_destroy_bitmap(CinasTemp);
 	al_destroy_bitmap(BlockBuffer.image);
