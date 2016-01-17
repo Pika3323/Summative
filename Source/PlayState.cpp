@@ -395,9 +395,8 @@ void PlayState::Tick(float delta){
 
 			//Run Gravity, Collision checking code, and Friction
 			Fyzix->Tick(CurrCharacters);
-
 			//Kill the Character if he falls out of the world
-			if (TinTin->position.x > CurrentWorld->dimensions.x || (TinTin->position.x + TinTin->ActualWidth) < 0 || (TinTin->position.y + TinTin->ActualHeight) < 0 || TinTin->Health <= 0) {
+			if (TinTin->position.x > CurrentWorld->dimensions.x || TinTin->position.x + TinTin->ActualWidth < 0 || TinTin->position.y > CurrentWorld->dimensions.y || TinTin->Health <= 0) {
 				CurrCharacters.clear();
 				CurrCharacters.push_back(TinTin);
 				TinTin->Die();
@@ -405,6 +404,8 @@ void PlayState::Tick(float delta){
 				Online::UpdateLevel(CurrentWorld->name, GEngine->SharedVar.id, Completions);
 				TinTin->SetCharacterWorldPosition(CharacterStart);
 				CurrentWorld->bPlay = false;
+				al_show_mouse_cursor(GEngine->GetDisplay());
+				al_set_system_mouse_cursor(GEngine->GetDisplay(), ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
 				TinTin->Health = 100.f;
 			}
 		}
@@ -522,7 +523,6 @@ void PlayState::Draw(){
 			SelectionEnd.y += 32;
 		}
 		al_draw_filled_rectangle(SelectionStart.x, SelectionStart.y, SelectionEnd.x, SelectionEnd.y, al_map_rgba(50, 132, 135, 25));
-
 	}
 
 	//Draws Health bar
@@ -547,8 +547,6 @@ void PlayState::Draw(){
 
 	//Draw the background image
 	al_draw_bitmap_region(Background.image, Background.offset.x * -1, Background.offset.y * -1, al_get_display_width(GEngine->GetDisplay()), al_get_display_height(GEngine->GetDisplay()), 0, 0, 0);
-
-
 
 	//Draw the grid overlay if editor mode is enabled
 	if (!CurrentWorld->bPlay) {
