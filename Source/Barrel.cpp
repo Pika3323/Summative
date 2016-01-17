@@ -2,7 +2,6 @@
 
 Barrel::Barrel(ECharacterDirection d, Vector2D pos){
 	Damage = 1.f;
-	Deleted = false;
 	bOnGround = true;
 	ActualWidth = 16;
 	ActualHeight = 32;
@@ -47,22 +46,22 @@ void Barrel::Collide(Character* OtherCharacter){
 	}
 }
 
-void Barrel::BlockCollide(bool w, int CollisionDirection){
-	if (CollisionDirection == 0 || CollisionDirection == 1){
+void Barrel::BlockCollide(bool w, ECollisionDirection direction){
+	if (direction == ECollisionDirection::Right || direction == ECollisionDirection::Left){
 		this->velocity.x = 0;
 	}
 
-	else if (CollisionDirection == 2){
+	else if (direction == ECollisionDirection::Top){
 		velocity.y = 0;
 		position.y += 32.f;
 	}
 
-	else if (CollisionDirection == 3){
+	else if (direction == ECollisionDirection::DownStay){
 		bOnGround = true;
 		velocity.y = 0;
 	}
 
-	else if (CollisionDirection == 4){
+	else if (direction == ECollisionDirection::DownStop){
 		bOnGround = false;
 	}
 }

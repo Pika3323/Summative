@@ -89,7 +89,6 @@ bool World::Load(const char LevelName[64], std::vector<Character*> *enemies){
 
 	DankeyCounter = 0;
 	CinasCounter = 0;
-	YashCounter = 0;
 	dCheck = NULL;
 
 	char FileName[64] = "Levels/";
@@ -336,6 +335,47 @@ void World::FollowCharacter(Character* C, Buffer &grid, Buffer &bg, Buffer &bloc
 		block.offset.y = NewOffset.y + ScreenHeight / 2;
 		notplay.offset.y = NewOffset.y + ScreenHeight / 2;
 	}
+
+	if (offset.x > 0) {
+		grid.offset.x = 0;
+		bg.offset.x = 0;
+		block.offset.x = 0;
+		notplay.offset.x = 0;
+		offset.x = 0;
+	}
+	else if (offset.x < dimensions.x  * -1 + ScreenWidth){
+		grid.offset.x = dimensions.x  * -1 + ScreenWidth;
+		notplay.offset.x = dimensions.x  * -1 + ScreenWidth;
+		bg.offset.x = dimensions.x  * -0.5 + ScreenWidth / 2;
+		block.offset.x = dimensions.x * -1 + ScreenWidth;
+		offset.x = dimensions.x  * -1 + ScreenWidth;
+	}
+
+	if (offset.y > 0){
+		grid.offset.y = 0;
+		notplay.offset.y = 0;
+		bg.offset.y = 0;
+		block.offset.y = 0;
+		offset.y = 0;
+	}
+	else if (offset.y < dimensions.y * -1 + ScreenHeight){
+		grid.offset.y = dimensions.y * -1 + ScreenHeight;
+		notplay.offset.y = dimensions.y * -1 + ScreenHeight;
+		bg.offset.y = (dimensions.y * -0.5f) + (ScreenHeight / 2);
+		block.offset.y = dimensions.y * -1 + ScreenHeight;
+		offset.y = dimensions.y * -1 + ScreenHeight;
+	}
+}
+
+void World::SetCameraLocation(Vector2D location, Buffer &grid, Buffer &bg, Buffer &block, Buffer &notplay){
+	int ScreenWidth = GEngine->GetDisplayWidth();
+	int ScreenHeight = GEngine->GetDisplayHeight();
+
+	offset = location;
+	grid.offset = location;
+	notplay.offset = location;
+	bg.offset = location / 2;
+	block.offset = location;
 
 	if (offset.x > 0) {
 		grid.offset.x = 0;

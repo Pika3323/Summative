@@ -2,7 +2,6 @@
 
 Player::Player(int Height, int Width){
 	Health = 100.f;
-	Deleted = false;
 	run = SpriteSheet(al_load_bitmap("Textures/Characters/running_e.png"), 64, 128, 11);
 	fall = SpriteSheet(al_load_bitmap("Textures/Characters/fall_e.png"), 64, 128, 3);
 	still = SpriteSheet(al_load_bitmap("Textures/Characters/idle_e.png"), 64, 128, 6);
@@ -81,26 +80,26 @@ void Player::Win(Vector2D Start){
 void Player::Collide(Character* OtherCharacter){
 }
 
-void Player::BlockCollide(bool w, int CollisionDirection){
+void Player::BlockCollide(bool w, ECollisionDirection direction){
 	if (w) {
 		PlayerWin = true;
 	}
 
-	if (CollisionDirection == 0 || CollisionDirection == 1){
+	if (direction == ECollisionDirection::Right || direction == ECollisionDirection::Left){
 		this->velocity.x = 0;
 	}
 	
-	else if (CollisionDirection == 2){
+	else if (direction == ECollisionDirection::Top){
 		velocity.y = 0;
 		position.y += 32.f;
 	}
 
-	else if (CollisionDirection == 3){
+	else if (direction == ECollisionDirection::DownStay){
 		bOnGround = true;
 		velocity.y = 0.f;
 	}
 
-	else if (CollisionDirection == 4){
+	else if (direction == ECollisionDirection::DownStop){
 		bOnGround = false;
 	}
 }

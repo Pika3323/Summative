@@ -6,7 +6,6 @@ Character::Character(Vector2D xy, int width, int height){
 	ActualHeight = height;
 	bRunning = false;
 	bOnGround = false;
-	bFlipped = false;
 }
 
 Character::~Character(){

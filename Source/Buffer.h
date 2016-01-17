@@ -2,15 +2,17 @@
 
 #include "Engine.h"
 
+//A buffer containing extra position data
 struct Buffer {
-	//main components of struct
+	//The bitmap containing buffer info
 	ALLEGRO_BITMAP *image;
+
+	//Offset from the top left corner of the screen
 	Vector2D offset;
+	
+	//How to move the buffer
 	Vector2D delta;
-	bool bdx;
-	bool bdy;
 
 	Buffer(){}
 	Buffer(ALLEGRO_BITMAP* i, Vector2D ofs, Vector2D d);
-
 };

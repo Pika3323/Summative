@@ -3,7 +3,6 @@ Dankey::Dankey(Vector2D pos){
 	Health = 50.f;
 	bOnGround = false;
 	Damage = 15.f;
-	Deleted = false;
 	position = pos;
 	BarrelDelay = 0;
 	ActualHeight = 64;
@@ -64,22 +63,22 @@ void Dankey::Collide(Character* OtherCharacter){
 		OtherCharacter->Health -= this->Damage;
 	}
 }
-void Dankey::BlockCollide(bool w, int CollisionDirection){
-	if (CollisionDirection == 0 || CollisionDirection == 1){
+void Dankey::BlockCollide(bool w, ECollisionDirection direction){
+	if (direction == ECollisionDirection::Right || direction == ECollisionDirection::Left){
 		this->velocity.x = 0;
 	}
 
-	else if (CollisionDirection == 2){
+	else if (direction == ECollisionDirection::Top){
 		velocity.y = 0;
 		position.y += 32.f;
 	}
 
-	else if (CollisionDirection == 3){
+	else if (direction == ECollisionDirection::DownStay){
 		bOnGround = true;
 		velocity.y = 0;
 	}
 
-	else if (CollisionDirection == 4){
+	else if (direction == ECollisionDirection::DownStop){
 		bOnGround = false;
 	}
 }

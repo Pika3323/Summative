@@ -17,7 +17,7 @@ public:
 
 	void Collide(Character* OtherCharacter);
 
-	void BlockCollide(bool w, int CollisionDirection);
+	void BlockCollide(bool w, ECollisionDirection direction);
 
 	Barrel(ECharacterDirection d, Vector2D pos);
 

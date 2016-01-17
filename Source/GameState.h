@@ -9,22 +9,24 @@ Game states are like a program that runs inside the main game program.
 */
 class GameState {
 public:
+	//Initialize the gamestate
 	virtual void Init() = 0;
 
-	virtual void Pause() = 0;
-	virtual void Resume() = 0;
-
+	//Handles all inputs for the gamestate
 	virtual void HandleEvents(ALLEGRO_EVENT *ev) = 0;
+
+	//Called every frame
 	virtual void Tick(float delta) = 0;
+
+	//Draws the current gamestate to the screen
 	virtual void Draw() = 0;
 
+	//Destroy the current gamestate
 	virtual void Destroy() = 0;
 
-	ALLEGRO_BITMAP* output;
-	bool Initialized = false;
+	//Whether the state has been paused
 	bool Paused = false;
 
 	GameState(){}
-	//virtual ~GameState() = 0;
 };
 

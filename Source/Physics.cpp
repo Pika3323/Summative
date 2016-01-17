@@ -51,25 +51,33 @@ bool Physics::OnScreen(Character* C){
 void Physics::HitBlock(Character* C){
 	bool win = false;
 	World* W = dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld;
+	/*All of these collisions are block based, meaning that we take the character position and add its hitbox parameters. Then, we take that value and divide by the gridsize
+	to locate the block that is at his position (we find the array number that is at his position). Right collision (0) means he has colllided with a block on his right side.
+	Left Collision (1) means he has collided with a block on his left side. For both 0 and 1, the number of blocks that one character can hit is based on its hitbox height.
+	Top collision (2) means that the character has hit a block above its hitbox, meaning it will come back down. DownStay (3) means that the character should stay on the ground,
+	as there is a spawned collidable block under him. DownStop (4), means he should stop colliding with the block underneath him as there is no block or there is a block, but it 
+	is not a collidable block. This means he will fall.
+	*/
 
-	//Bottom Collision, setting positions
+
+	//Bottom Collision, setting positions. 
 	if (W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - 1) / (W->gridSize))].type == EBlockType::B_FinishFlag)
 		win = true;
 	if (!C->bOnGround && (W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - 1) / (W->gridSize))].bSpawned &&
 		W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - 1) / (W->gridSize))].bCollision)){
 		C->SetCharacterWorldPosition(Vector2D(C->position.x, W->Blocks[(int)(C->position.x / W->gridSize)][(int)(C->position.y / W->gridSize)].position.y));
-		C->BlockCollide(win, 3);
+		C->BlockCollide(win, ECollisionDirection::DownStay);
 	}
 	win = false;
 
 	//Bottom fall, making characters fall through
 	if (W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y + 1) / (W->gridSize))].bSpawned &&
 		!W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y + 1) / (W->gridSize))].bCollision){
-		C->BlockCollide(win, 4);
+		C->BlockCollide(win, ECollisionDirection::DownStop);
 	}
 
 	if (!W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y + 1) / (W->gridSize))].bSpawned){
-		C->BlockCollide(win, 4);
+		C->BlockCollide(win, ECollisionDirection::DownStop);
 	}
 
 	//Top side Collision
@@ -78,7 +86,7 @@ void Physics::HitBlock(Character* C){
 	if ((W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y - 10) / (W->gridSize))].bSpawned &&
 		W->Blocks[(int)((C->position.x + C->CollisionBounds.position.x + (C->CollisionBounds.size.x / 2)) / (W->gridSize))][(int)((C->position.y + C->CollisionBounds.position.y - 10) / (W->gridSize))].bCollision)){
 		C->SetCharacterWorldPosition(Vector2D(C->position.x, W->Blocks[(int)(C->position.x / W->gridSize)][(int)(C->position.y / W->gridSize)].position.y));
-		C->BlockCollide(win, 2);
+		C->BlockCollide(win, ECollisionDirection::Top);
 	}
 	win = false;
 
@@ -90,13 +98,13 @@ void Physics::HitBlock(Character* C){
 			win = true;
 		if (!static_cast<int>(C->direction) && (W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x + C->CollisionBounds.size.x + 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - (i * 32) - 1) / (W->gridSize))].bSpawned &&
 			W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x + C->CollisionBounds.size.x + 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - ((i + 1) * 32) - 1) / (W->gridSize))].bCollision)){
-			C->BlockCollide(win, 0);
+			C->BlockCollide(win, ECollisionDirection::Right);
 		}
 		if (static_cast<int>(C->direction) && W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x - 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - (i * 32) - 1) / (W->gridSize))].type == EBlockType::B_FinishFlag)
 			win = true;
 		if (static_cast<int>(C->direction) && (W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x - 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - (i * 32) - 1) / (W->gridSize))].bSpawned &&
 			W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x - 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - (i * 32) - 1) / (W->gridSize))].bCollision)){
-			C->BlockCollide(win, 1);
+			C->BlockCollide(win, ECollisionDirection::Left);
 		}
 		win = false;
 	}
