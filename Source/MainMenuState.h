@@ -16,6 +16,12 @@ public:
 
 	int ActiveScreen;
 
+	float splashTime;
+	bool bDrawSplash;
+
+	ALLEGRO_BITMAP* splash;
+
+
 	bool bFullscreen = false;
 
 	UIComponent* AllUIComponents[10];

@@ -15,22 +15,18 @@ MainMenuState::MainMenuState(){
 	Background[1] = Buffer(al_load_bitmap("Textures/Scenes/Background_Gauss.png"), Vector2D(1024, 0), Vector2D(0, 0));
 	Background[2] = Buffer(al_load_bitmap("Textures/Scenes/Background_Gauss.png"), Vector2D(1024, 0), Vector2D(0, 0));
 
+	splashTime = 0.f;
+	bDrawSplash = true;
 
+	//Load the splash logo
+	splash = al_load_bitmap("Textures/splash.png");
+	if (!splash) {
+		fprintf(stderr, "Could not find splash screen\n");
+	}
 }
 
 void MainMenuState::Init(){
 	printf("Switched to the menu!\n");
-	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
-	al_clear_to_color(al_map_rgb(0, 0, 0));
-	ALLEGRO_BITMAP* splash = al_load_bitmap("Textures/splash.png");
-	if (splash) {
-		al_draw_bitmap(splash, al_get_display_width(GEngine->GetDisplay()) - 178, al_get_display_height(GEngine->GetDisplay()) - 168, 0);
-		al_rest(5.f);
-	}
-	else {
-		fprintf(stderr, "Could not find splash screen\n");
-	}
-	al_destroy_bitmap(splash);
 }
 
 void MainMenuState::HandleEvents(ALLEGRO_EVENT *ev){
@@ -60,6 +56,8 @@ void MainMenuState::HandleEvents(ALLEGRO_EVENT *ev){
 void MainMenuState::Tick(float delta){
 	bool bIsHoverComponent = false;
 	UIComponent* HoveredComponent = NULL;
+
+	//Run mouse over function on UIComponents
 	for (int i = 0; i < 5; i++){
 		if (IMath::InRange(GEngine->GetMouseState().x, AllUIComponents[i]->position.x, AllUIComponents[i]->position.x + AllUIComponents[i]->width) && IMath::InRange(GEngine->GetMouseState().y, AllUIComponents[i]->position.y, AllUIComponents[i]->position.y + AllUIComponents[i]->height)){
 			AllUIComponents[i]->onHoverIn();
@@ -72,18 +70,30 @@ void MainMenuState::Tick(float delta){
 			bIsHoverComponent = true;
 		}
 	}
+
+	//Changes the cursor based on the UIComponent that is being hovered
 	if (bIsHoverComponent) {
 		al_set_system_mouse_cursor(GEngine->GetDisplay(), HoveredComponent->cursor);
 	}
 	else {
 		al_set_system_mouse_cursor(GEngine->GetDisplay(), ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
 	}
+	
+	//Moves the background image across the screen
 	for (int i = 0; i < 3; i++) {
 		Background[i].offset.x -= 5.f;
 		if (Background[0].offset.x < -1024){
 			Background[0].offset.x = 0;
 			Background[1].offset.x = 1024;
 			Background[2].offset.x = 2048;
+		}
+	}
+
+	//Display the splash screen for only 5 seconds
+	if (bDrawSplash) {
+		splashTime += delta;
+		if (splashTime > 5) {
+			bDrawSplash = false;
 		}
 	}
 }
@@ -102,11 +112,21 @@ void MainMenuState::Draw(){
 	else if (ActiveScreen = 1){
 
 	}
+
+	//Display the splash screen
+	if (bDrawSplash){
+		al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
+		al_clear_to_color(al_map_rgb(0, 0, 0));
+		if (splash) {
+			al_draw_bitmap(splash, GEngine->GetDisplayWidth() / 2 - 128, GEngine->GetDisplayHeight() / 2 - 122, 0);
+		}
+	}
 }
 
 void MainMenuState::Destroy(){
 	//Reset the system cursor to the default cursor
 	al_set_system_mouse_cursor(GEngine->GetDisplay(), ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
+	al_destroy_bitmap(splash);
 }
 
 void MainMenuState::Pause(){
