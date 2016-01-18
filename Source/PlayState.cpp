@@ -382,18 +382,11 @@ void PlayState::Tick(float delta){
 		CurrCharacters[i]->Tick(delta, &CurrCharacters);
 	}
 
-	if (IMath::InRange(GEngine->GetMouseState().x, PauseButton->position.x, PauseButton->position.x + PauseButton->width) && IMath::InRange(GEngine->GetMouseState().y, PauseButton->position.y, PauseButton->position.y + PauseButton->height)){
-		PauseButton->onHoverIn();
-	}
-	else{
-		PauseButton->onHoverOut();
-	}
-
 	if (!Paused) {
 		if (CurrentWorld->bPlay) {
 			//Run Gravity, Collision checking code, and Friction
 			Fyzix->Tick(CurrCharacters);
-			//Kill the Character if he falls out of the world
+			//Kill the Character if he falls out of the world or if health is less than or equal to zero
 			if (Oiram->position.x > CurrentWorld->dimensions.x || Oiram->position.x + Oiram->ActualWidth < 0 || Oiram->position.y > CurrentWorld->dimensions.y || Oiram->Health <= 0) {
 				CurrCharacters.clear();
 				CurrCharacters.push_back(Oiram);
@@ -681,7 +674,7 @@ void PlayState::Init(){
 	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 
 	if (GEngine->SharedVar.bLoadingLevel){
-		CurrentWorld->Load(GEngine->SharedVar.LoadLevelName, &CurrCharacters);
+		CurrentWorld->Load(GEngine->SharedVar.LoadLevelName);
 	}
 }
 
@@ -694,12 +687,13 @@ void PlayState::Resume(){
 }
 
 void PlayState::Destroy(){
-	char cSave = 'y';
+	char cSave;
+	printf("Would you like to save your level?:\t");
+	scanf("%c", &cSave);
 	if (tolower(cSave) == 'y'){
 		char levelName[64];
-
 		_itoa(rand(), levelName, 10);
-		if (CurrentWorld->Save(levelName, CurrCharacters)){
+		if (CurrentWorld->Save(levelName)){
 			printf("Saved level as %s\n", levelName);
 			Online::PostLevel(levelName);
 		}

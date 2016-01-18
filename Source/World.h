@@ -94,10 +94,10 @@ public:
 	void Tick(float delta);
 
 	//Load a level
-	bool Load(const char LevelName[64], std::vector<Character*> *enemies);
+	bool Load(const char LevelName[64]);
 
 	//Save a level
-	bool Save(const char LevelName[64], std::vector<Character*> enemies);
+	bool Save(const char LevelName[64]);
 
 	//Move the world
 	void MoveWorld(Vector2D delta, Buffer &grid, Buffer &bg, Buffer &block, Buffer &notplay);

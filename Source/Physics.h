@@ -11,6 +11,7 @@
 class Physics{
 public:
 	Vector2D Gravforce;	//actual force exerted (dy)
+	bool Deleted;
 
 	Physics();
 	Physics(Vector2D f);	//setting the gravity first
@@ -18,5 +19,5 @@ public:
 	void Tick(std::vector<Character*> &All);	//applying force
 private:
 	bool OnScreen(Character* C);
-	void HitBlock(Character* C);
+	bool HitBlock(Character* C);
 };
