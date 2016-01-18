@@ -686,9 +686,7 @@ void PlayState::Resume(){
 }
 
 void PlayState::Destroy(){
-	char cSave;
-	printf("Would you like to save your level?:\t");
-	scanf("%c", &cSave);
+	char cSave = 'y';
 	if (tolower(cSave) == 'y'){
 		char levelName[64];
 		_itoa(rand(), levelName, 10);
