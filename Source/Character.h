@@ -21,7 +21,7 @@ public:
 	//Amount of damage that can be dealt by the character
 	float Damage;
 
-	//Character's health
+	//The Character's health
 	float Health;
 
 	//The direction that the character is facing
