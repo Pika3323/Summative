@@ -96,11 +96,11 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 					al_hide_mouse_cursor(GEngine->GetDisplay());
 					CurrentWorld->SetCameraLocation(Vector2D(0, 0), GridBuffer, Background, BlockBuffer, notPlayingBuff);
 					for (int i = 0; i < (int)CurrentWorld->EnemiesStored.size(); i++){
-						if (CurrentWorld->EnemiesStored[i].Type == EnemyType::E_Cinas){
-							CurrCharacters.push_back(new Cinas(CurrentWorld->EnemiesStored[i].position));
+						if (CurrentWorld->EnemiesStored[i]->Type == EnemyType::E_Cinas){
+							CurrCharacters.push_back(new Cinas(CurrentWorld->EnemiesStored[i]->position));
 						}
-						else if (CurrentWorld->EnemiesStored[i].Type == EnemyType::E_Dankey){
-							CurrCharacters.push_back(new Dankey(CurrentWorld->EnemiesStored[i].position));
+						else if (CurrentWorld->EnemiesStored[i]->Type == EnemyType::E_Dankey){
+							CurrCharacters.push_back(new Dankey(CurrentWorld->EnemiesStored[i]->position));
 						}
 					}
 					Oiram->SetCharacterWorldPosition(CharacterStart);
@@ -258,6 +258,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 
 					//Destroy the block the target location
 					if (clickedTile){
+						CurrentWorld->DeleteEnemy(clickedTile);
 						CurrentWorld->DestroyBlock(clickedTile);
 					}
 				}
@@ -559,10 +560,10 @@ void PlayState::Draw(){
 		if (!CurrentWorld->bPlay){
 			al_set_target_bitmap(notPlayingBuff.image);
 			for (int i = 0; i < (int)CurrentWorld->EnemiesStored.size(); i++) {
-				if (CurrentWorld->EnemiesStored[i].Type == EnemyType::E_Dankey)
-					al_draw_bitmap(DankeyTemp, CurrentWorld->EnemiesStored[i].position.x, CurrentWorld->EnemiesStored[i].position.y, 0);
-				else if (CurrentWorld->EnemiesStored[i].Type == EnemyType::E_Cinas)
-					al_draw_bitmap(CinasTemp, CurrentWorld->EnemiesStored[i].position.x, CurrentWorld->EnemiesStored[i].position.y, 0);
+				if (CurrentWorld->EnemiesStored[i]->Type == EnemyType::E_Dankey)
+					al_draw_bitmap(DankeyTemp, CurrentWorld->EnemiesStored[i]->position.x, CurrentWorld->EnemiesStored[i]->position.y, 0);
+				else if (CurrentWorld->EnemiesStored[i]->Type == EnemyType::E_Cinas)
+					al_draw_bitmap(CinasTemp, CurrentWorld->EnemiesStored[i]->position.x, CurrentWorld->EnemiesStored[i]->position.y, 0);
 			}
 			al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 		}

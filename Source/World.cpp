@@ -55,8 +55,23 @@ void World::DestroyBlock(GridTile* Target){
 
 //places enemy on selected tile space
 void World::PlaceEnemy(GridTile* Target, EnemyType Type){
-	Temp = { Target->location, Type };
+	EnemyData* Temp = new EnemyData(Target->location, Type);
+	Target->occupied = true;
+	Target->E = Temp;
 	EnemiesStored.push_back(Temp);
+}
+
+void World::DeleteEnemy(GridTile* Target){
+	std::vector<EnemyData*>::iterator it;
+	if (Target->E){
+		//Finds the enemy in the enemy vector
+		it = std::find(EnemiesStored.begin(), EnemiesStored.end(), Target->E);
+
+		Target->occupied = false;
+
+		//Removes the enemy
+		EnemiesStored.erase(it);
+	}
 }
 
 //Called on every frame For Logic Updates.
