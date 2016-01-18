@@ -65,7 +65,7 @@ public:
 	Vector2D CharacterStart;
 
 	//bool for if user is changing start position
-	bool ChangingStart;
+	bool bChangingStart;
 
 	//for fixing character movement
 	ECharacterDirection Priority;

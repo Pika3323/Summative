@@ -9,6 +9,8 @@
 struct EnemyData{
 	Vector2D position;
 	EnemyType Type;
+	EnemyData(){}
+	EnemyData(Vector2D pos, EnemyType t) : position(pos), Type(t){}
 };
 //A struct containing info on a tile in the world
 struct GridTile{
@@ -17,6 +19,7 @@ struct GridTile{
 	int id;
 	int x;
 	int y;
+	EnemyData* E;
 
 	GridTile(){ occupied = false; }
 };
@@ -67,10 +70,9 @@ public:
 	int CinasCounter;
 
 	//Vector of stored enemies
-	std::vector<EnemyData> EnemiesStored;
+	std::vector<EnemyData*> EnemiesStored;
 
-	//Temporary data for an enemy
-	EnemyData Temp;
+	EnemyData* Temp;
 
 	//ID for the world
 	int id;
@@ -89,6 +91,9 @@ public:
 
 	//Place an enemy at the target tile
 	void PlaceEnemy(GridTile* Target, EnemyType Type);
+
+	//Delete an enemy at the target tile, if one exists
+	void DeleteEnemy(GridTile* Target);
 
 	//Called every frame
 	void Tick(float delta);

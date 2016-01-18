@@ -49,6 +49,9 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 	if (!Paused) {
 		if (ev->type == ALLEGRO_EVENT_KEY_DOWN) {
 			switch (ev->keyboard.keycode) {
+			case ALLEGRO_KEY_M:
+				GEngine->ChangeGameState<MainMenuState>();
+				break;
 			case ALLEGRO_KEY_D:
 			case ALLEGRO_KEY_RIGHT:
 				if (!CurrentWorld->bPlay){
@@ -91,12 +94,13 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 					bBoxSelect = false;
 					bFirstBoxSelected = false;
 					al_hide_mouse_cursor(GEngine->GetDisplay());
+					CurrentWorld->SetCameraLocation(Vector2D(0, 0), GridBuffer, Background, BlockBuffer, notPlayingBuff);
 					for (int i = 0; i < (int)CurrentWorld->EnemiesStored.size(); i++){
-						if (CurrentWorld->EnemiesStored[i].Type == EnemyType::E_Cinas){
-							CurrCharacters.push_back(new Cinas(CurrentWorld->EnemiesStored[i].position));
+						if (CurrentWorld->EnemiesStored[i]->Type == EnemyType::E_Cinas){
+							CurrCharacters.push_back(new Cinas(CurrentWorld->EnemiesStored[i]->position));
 						}
-						else if (CurrentWorld->EnemiesStored[i].Type == EnemyType::E_Dankey){
-							CurrCharacters.push_back(new Dankey(CurrentWorld->EnemiesStored[i].position));
+						else if (CurrentWorld->EnemiesStored[i]->Type == EnemyType::E_Dankey){
+							CurrCharacters.push_back(new Dankey(CurrentWorld->EnemiesStored[i]->position));
 						}
 					}
 					Oiram->SetCharacterWorldPosition(CharacterStart);
@@ -116,15 +120,9 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 			case ALLEGRO_KEY_ESCAPE:
 				GEngine->Quit();
 				break;
-			case ALLEGRO_KEY_E:
-				if (!CurrentWorld->EnemySelect)
-					CurrentWorld->EnemySelect = true;
-				else if (CurrentWorld->EnemySelect)
-					CurrentWorld->EnemySelect = false;
-				break;
 			case ALLEGRO_KEY_H:
 				if (!CurrentWorld->bPlay)
-					ChangingStart = true;
+					bChangingStart = true;
 				break;
 			default:
 				break;
@@ -147,7 +145,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 				GEngine->ChangeGameState<MainMenuState>();
 				break;
 			case ALLEGRO_KEY_H:
-				ChangingStart = false;
+				bChangingStart = false;
 				break;
 			default:
 				break;
@@ -176,7 +174,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 						bClicked = true;
 
 						//check if user is changing start position
-						if (ChangingStart) {
+						if (bChangingStart) {
 							ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 							CharacterStart = ClickLocation;
 						}
@@ -260,6 +258,7 @@ void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
 
 					//Destroy the block the target location
 					if (clickedTile){
+						CurrentWorld->DeleteEnemy(clickedTile);
 						CurrentWorld->DestroyBlock(clickedTile);
 					}
 				}
@@ -440,7 +439,7 @@ void PlayState::Tick(float delta){
 		//Mouse states
 		switch (GEngine->GetMouseState().buttons){
 		case MOUSE_LB:
-			if (!ChangingStart && !CurrentWorld->bPlay ){
+			if (!bChangingStart && !CurrentWorld->bPlay && GEngine->GetMouseState().y > 100){
 				if (!bBoxSelect && !CurrentWorld->EnemySelect){
 					ClickLocation = Vector2D(GEngine->GetMouseState().x + (GridBuffer.offset.x * -1), GEngine->GetMouseState().y + (GridBuffer.offset.y * -1));
 					//Get the tile that was clicked
@@ -560,10 +559,10 @@ void PlayState::Draw(){
 		if (!CurrentWorld->bPlay){
 			al_set_target_bitmap(notPlayingBuff.image);
 			for (int i = 0; i < (int)CurrentWorld->EnemiesStored.size(); i++) {
-				if (CurrentWorld->EnemiesStored[i].Type == EnemyType::E_Dankey)
-					al_draw_bitmap(DankeyTemp, CurrentWorld->EnemiesStored[i].position.x, CurrentWorld->EnemiesStored[i].position.y, 0);
-				else if (CurrentWorld->EnemiesStored[i].Type == EnemyType::E_Cinas)
-					al_draw_bitmap(CinasTemp, CurrentWorld->EnemiesStored[i].position.x, CurrentWorld->EnemiesStored[i].position.y, 0);
+				if (CurrentWorld->EnemiesStored[i]->Type == EnemyType::E_Dankey)
+					al_draw_bitmap(DankeyTemp, CurrentWorld->EnemiesStored[i]->position.x, CurrentWorld->EnemiesStored[i]->position.y, 0);
+				else if (CurrentWorld->EnemiesStored[i]->Type == EnemyType::E_Cinas)
+					al_draw_bitmap(CinasTemp, CurrentWorld->EnemiesStored[i]->position.x, CurrentWorld->EnemiesStored[i]->position.y, 0);
 			}
 			al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
 		}
@@ -638,7 +637,7 @@ void PlayState::Init(){
 	CurrCharacters.push_back(Oiram);	//registering main character in Character vector
 	Oiram->velocity = Vector2D(0.f, 0.f);		//velocity starts at zero
 	CharacterStart = Vector2D(0.f, 0.f);		//original character start position is zero
-	ChangingStart = false;				//at beginning, start position is not being changed
+	bChangingStart = false;				//at beginning, start position is not being changed
 	ColChecker = 0;
 
 	//Setting Multiple Images to Background Buffer

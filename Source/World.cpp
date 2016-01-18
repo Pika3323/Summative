@@ -54,8 +54,23 @@ void World::DestroyBlock(GridTile* Target){
 
 //places enemy on selected tile space
 void World::PlaceEnemy(GridTile* Target, EnemyType Type){
-	Temp = { Target->location, Type };
+	Temp = new EnemyData(Target->location, Type);
+	Target->occupied = true;
+	Target->E = Temp;
 	EnemiesStored.push_back(Temp);
+}
+
+void World::DeleteEnemy(GridTile* Target){
+	std::vector<EnemyData*>::iterator it;
+	if (Target->E){
+		//Finds the enemy in the enemy vector
+		it = std::find(EnemiesStored.begin(), EnemiesStored.end(), Target->E);
+
+		Target->occupied = false;
+
+		//Removes the enemy
+		EnemiesStored.erase(it);
+	}
 }
 
 //Called on every frame For Logic Updates.
@@ -129,18 +144,21 @@ bool World::Load(const char LevelName[64]){
 		if (CinasPres == 'y')
 			fread(&CinasCounter, sizeof(int), 1, fptr);
 
+
+		Vector2D ELoc;
+		EnemyType EType;
 		if (DankeyPres == 'y'){
 			for (int i = 0; i < DankeyCounter; i++) {
-				fread(&Temp.position, sizeof(Vector2D), 1, fptr);
-				Temp.Type = EnemyType::E_Dankey;
-				EnemiesStored.push_back(Temp);
+				fread(&ELoc, sizeof(Vector2D), 1, fptr);
+				EType = EnemyType::E_Dankey;
+				EnemiesStored.push_back(new EnemyData(ELoc, EType));
 			}
 		}
 		if (CinasPres == 'y'){
 			for (int i = 0; i < CinasCounter; i++) {
-				fread(&Temp.position, sizeof(Vector2D), 1, fptr);
-				Temp.Type = EnemyType::E_Cinas;
-				EnemiesStored.push_back(Temp);
+				fread(&ELoc, sizeof(Vector2D), 1, fptr);
+				EType = EnemyType::E_Cinas;
+				EnemiesStored.push_back(new EnemyData(ELoc, EType));
 			}
 		}
 
@@ -218,13 +236,13 @@ bool World::Save(const char LevelName[64]) {
 		//count amount of each type of enemy in enemy vector
 		for (int i = 0; i < (int)EnemiesStored.size(); i++) {
 			Temp = EnemiesStored[i];
-			if (Temp.Type == EnemyType::E_Dankey){
+			if (Temp->Type == EnemyType::E_Dankey){
 				DankeyCounter += 1;
 			}
 		}
 		for (int i = 0; i < (int)EnemiesStored.size(); i++) {
 			Temp = EnemiesStored[i];
-			if (Temp.Type == EnemyType::E_Cinas){
+			if (Temp->Type == EnemyType::E_Cinas){
 				CinasCounter += 1;
 			}
 		}
@@ -250,14 +268,14 @@ bool World::Save(const char LevelName[64]) {
 		cCheck = NULL;
 		for (int i = 0; i < (int)EnemiesStored.size(); i++) {
 			Temp = EnemiesStored[i];
-			if (Temp.Type == EnemyType::E_Dankey){
-				fwrite(&Temp.position, sizeof(Vector2D), 1, fptr);
+			if (Temp->Type == EnemyType::E_Dankey){
+				fwrite(&Temp->position, sizeof(Vector2D), 1, fptr);
 			}
 		}
 		for (int i = 0; i < (int)EnemiesStored.size(); i++) {
 			Temp = EnemiesStored[i];
-			if (Temp.Type == EnemyType::E_Cinas){
-				fwrite(&Temp.position, sizeof(Vector2D), 1, fptr);
+			if (Temp->Type == EnemyType::E_Cinas){
+				fwrite(&Temp->position, sizeof(Vector2D), 1, fptr);
 			}
 		}
 
