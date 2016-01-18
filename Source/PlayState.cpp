@@ -543,8 +543,9 @@ void PlayState::Draw(){
 		}
 		al_set_target_bitmap(HealthBar);
 		al_clear_to_color(al_map_rgba(0, 0, 0, 0));
-		al_draw_filled_rectangle(0, 0, (int)Oiram->Health, 32, HealthBarColour);
-		al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), (int)Oiram->Health + 1, 10, 0, "%.1f / 100.0", Oiram->Health);
+		al_draw_filled_rectangle(0, 0, (int)Oiram->Health * 5, 32, HealthBarColour);
+		al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(0, 0, 0), ((int)Oiram->Health * 5) / 2 + 1, 11, ALLEGRO_ALIGN_CENTER, "%.1f %%", Oiram->Health);
+		al_draw_textf(GEngine->GetDebugFont(), al_map_rgb(255, 255, 255), ((int)Oiram->Health * 5) / 2, 10, ALLEGRO_ALIGN_CENTER, "%.1f %%", Oiram->Health);
 	}
 
 	//Reset the target bitmap to the backbuffer
@@ -577,7 +578,7 @@ void PlayState::Draw(){
 		al_draw_bitmap(UI.image, 0, 0, 0);
 	}
 	if (CurrentWorld->bPlay){
-		al_draw_bitmap(HealthBar, 0, al_get_display_height(GEngine->GetDisplay()) - 42, 0);
+		al_draw_bitmap(HealthBar, (al_get_display_width(GEngine->GetDisplay()) / 2) - 250, 0, 0);
 	}
 
 #ifdef _DEBUG
