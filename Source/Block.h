@@ -26,8 +26,11 @@ struct BlockType{
 	//Whether this type of block has collision
 	bool bCollision;
 
+	//If true, block texture will have random direction
+	bool bRandomD;
+
 	BlockType(){}
-	BlockType(const char n[16], ALLEGRO_BITMAP* tex, bool collision);
+	BlockType(const char n[16], ALLEGRO_BITMAP* tex, bool collision, bool randomD);
 };
 
 //A single block in the world
@@ -45,11 +48,14 @@ public:
 	//Whether this block has collision
 	bool bCollision;
 
+	//Direction for the block
+	int Direction;
+
 	//The block's type
 	EBlockType type;
 
-	Block(){ bSpawned = false; }
-	Block(Vector2D pos, EBlockType t);	
+	Block(){ bSpawned = false; Direction = 0; }
+	Block(Vector2D pos, EBlockType t, int d);	
 
 	//Draws the block to the screen
 	void Draw(ALLEGRO_BITMAP* typeTex);

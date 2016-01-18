@@ -593,15 +593,15 @@ void PlayState::Init(){
 	music = al_load_sample("Meatball Parade.mp3");
 	al_play_sample(music, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
 	//Set the different types of blocks, as well as load their textures
-	CurrentWorld->Type[0] = BlockType("Rainbow", al_load_bitmap("Textures/Objects/Rainbow.png"), true);
-	CurrentWorld->Type[1] = BlockType("Brick", al_load_bitmap("Textures/Objects/Brick.png"), true);
-	CurrentWorld->Type[2] = BlockType("Grass", al_load_bitmap("Textures/Objects/Grass.png"), true);
-	CurrentWorld->Type[3] = BlockType("Dirt", al_load_bitmap("Textures/Objects/Dirt.png"), true);
-	CurrentWorld->Type[4] = BlockType("Stone", al_load_bitmap("Textures/Objects/Stone.png"), true);
-	CurrentWorld->Type[5] = BlockType("Background Stone", al_load_bitmap("Textures/Objects/Background_Stone.png"), false);
-	CurrentWorld->Type[6] = BlockType("Mossy", al_load_bitmap("Textures/Objects/Mossy.png"), true);
-	CurrentWorld->Type[7] = BlockType("Background Brick", al_load_bitmap("Textures/Objects/Background_Brick.png"), false);
-	CurrentWorld->Type[8] = BlockType("Finish Flag", al_load_bitmap("Textures/Objects/FinishFlag.png"), true);
+	CurrentWorld->Type[0] = BlockType("Rainbow", al_load_bitmap("Textures/Objects/Rainbow.png"), true, false);
+	CurrentWorld->Type[1] = BlockType("Brick", al_load_bitmap("Textures/Objects/Brick.png"), true, false);
+	CurrentWorld->Type[2] = BlockType("Grass", al_load_bitmap("Textures/Objects/Grass.png"), true, false);
+	CurrentWorld->Type[3] = BlockType("Dirt", al_load_bitmap("Textures/Objects/Dirt.png"), true, true);
+	CurrentWorld->Type[4] = BlockType("Stone", al_load_bitmap("Textures/Objects/Stone.png"), true, true);
+	CurrentWorld->Type[5] = BlockType("Background Stone", al_load_bitmap("Textures/Objects/Background_Stone.png"), false, true);
+	CurrentWorld->Type[6] = BlockType("Mossy", al_load_bitmap("Textures/Objects/Mossy.png"), true, true);
+	CurrentWorld->Type[7] = BlockType("Background Brick", al_load_bitmap("Textures/Objects/Background_Brick.png"), false, false);
+	CurrentWorld->Type[8] = BlockType("Finish Flag", al_load_bitmap("Textures/Objects/FinishFlag.png"), true, false);
 
 	for (int i = 0; i < 9; i++) {
 		SelectBlock.push_back(Buffer(al_create_bitmap(100, 100), Vector2D(100.f * i, 0.f), Vector2D(0.f, 0.f)));
@@ -702,6 +702,7 @@ void PlayState::Destroy(){
 	}
 
 	delete Oiram;
+	al_set_system_mouse_cursor(GEngine->GetDisplay(), ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
 	al_destroy_bitmap(DankeyTemp);
 	al_destroy_bitmap(CinasTemp);
 	al_destroy_bitmap(BlockBuffer.image);
