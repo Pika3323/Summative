@@ -11,6 +11,7 @@
 class Physics{
 public:
 	Vector2D Gravforce;	//actual force exerted (dy)
+	bool Deleted;
 
 	Physics();
 	Physics(Vector2D f);	//setting the gravity first

@@ -65,7 +65,7 @@ void World::Tick(float delta){
 }
 
 //Loads a level from a path
-bool World::Load(const char LevelName[64], std::vector<Character*> *enemies){
+bool World::Load(const char LevelName[64]){
 	FILE *levelList = NULL;
 	std::vector<WorldLevelData> Levels;
 
@@ -132,14 +132,16 @@ bool World::Load(const char LevelName[64], std::vector<Character*> *enemies){
 
 		if (DankeyPres == 'y'){
 			for (int i = 0; i < DankeyCounter; i++) {
-				fread(&dTemp, sizeof(Vector2D), 1, fptr);
-				enemies->push_back(new Dankey(dTemp));
+				fread(&Temp.position, sizeof(Vector2D), 1, fptr);
+				Temp.Type = EnemyType::E_Dankey;
+				EnemiesStored.push_back(Temp);
 			}
 		}
 		if (CinasPres == 'y'){
 			for (int i = 0; i < CinasCounter; i++) {
-				fread(&cTemp, sizeof(Vector2D), 1, fptr);
-				enemies->push_back(new Cinas(cTemp));
+				fread(&Temp.position, sizeof(Vector2D), 1, fptr);
+				Temp.Type = EnemyType::E_Cinas;
+				EnemiesStored.push_back(Temp);
 			}
 		}
 
@@ -152,7 +154,7 @@ bool World::Load(const char LevelName[64], std::vector<Character*> *enemies){
 }
 
 //Saves a level 
-bool World::Save(const char LevelName[64], std::vector<Character*> enemies) {
+bool World::Save(const char LevelName[64]) {
 	FILE *levelList = NULL;
 	std::vector<WorldLevelData> Levels;
 	bool bLevelExists = false;
@@ -215,19 +217,15 @@ bool World::Save(const char LevelName[64], std::vector<Character*> enemies) {
 			}
 		}
 		//count amount of each type of enemy in enemy vector
-		for (int i = 0; i < (int)enemies.size(); i++) {
-			dCheck = dynamic_cast<Dankey*>(enemies[i]);
-			if (!dCheck) {
-			}
-			else {
+		for (int i = 0; i < (int)EnemiesStored.size(); i++) {
+			Temp = EnemiesStored[i];
+			if (Temp.Type == EnemyType::E_Dankey){
 				DankeyCounter += 1;
 			}
 		}
-		for (int i = 0; i < (int)enemies.size(); i++) {
-			cCheck = dynamic_cast<Cinas*>(enemies[i]);
-			if (!cCheck) {
-			}
-			else {
+		for (int i = 0; i < (int)EnemiesStored.size(); i++) {
+			Temp = EnemiesStored[i];
+			if (Temp.Type == EnemyType::E_Cinas){
 				CinasCounter += 1;
 			}
 		}
@@ -251,20 +249,16 @@ bool World::Save(const char LevelName[64], std::vector<Character*> enemies) {
 		}
 		dCheck = NULL;
 		cCheck = NULL;
-		for (int i = 0; i < (int)enemies.size(); i++) {
-			dCheck = dynamic_cast<Dankey*>(enemies[i]);
-			if (!dCheck) {
-			}
-			else {
-				fwrite(&enemies[i]->position, sizeof(Vector2D), 1, fptr);
+		for (int i = 0; i < (int)EnemiesStored.size(); i++) {
+			Temp = EnemiesStored[i];
+			if (Temp.Type == EnemyType::E_Dankey){
+				fwrite(&Temp.position, sizeof(Vector2D), 1, fptr);
 			}
 		}
-		for (int i = 0; i < (int)enemies.size(); i++) {
-			cCheck = dynamic_cast<Cinas*>(enemies[i]);
-			if (!cCheck) {
-			}
-			else {
-				fwrite(&enemies[i]->position, sizeof(Vector2D), 1, fptr);
+		for (int i = 0; i < (int)EnemiesStored.size(); i++) {
+			Temp = EnemiesStored[i];
+			if (Temp.Type == EnemyType::E_Cinas){
+				fwrite(&Temp.position, sizeof(Vector2D), 1, fptr);
 			}
 		}
 
