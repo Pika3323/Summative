@@ -2,7 +2,6 @@
 
 Cinas::Cinas(Vector2D pos){
 	Health = 10.f;
-	StartPosition = pos;
 	Damage = 0.2f;
 	position = pos;
 	ActualHeight = 32;

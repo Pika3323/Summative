@@ -4,6 +4,8 @@
 #include "SpriteSheet.h"
 #include "Character.h"
 
+//Explosion of a bullet
+//UNUSED
 class BulletEx : public Character{
 public:
 	void Run(Vector2D velocity);
