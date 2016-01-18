@@ -86,11 +86,11 @@ void Player::BlockCollide(bool w, ECollisionDirection direction){
 	}
 
 	if (direction == ECollisionDirection::Right || direction == ECollisionDirection::Left){
-		this->velocity.x = 0;
+		velocity.x = 0.f;
 	}
 	
 	else if (direction == ECollisionDirection::Top){
-		velocity.y = 0;
+		velocity.y = 0.f;
 		position.y += 32.f;
 	}
 

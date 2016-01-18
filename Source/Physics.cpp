@@ -31,8 +31,10 @@ void Physics::Tick(std::vector<Character*> &All){
 			}
 		}
 
-		All[i]->position += All[i]->velocity;		//add all of the character's velocities to their position
-		Physics::HitBlock(All[i]);		//check if the character has hit any blocks
+		if (!Physics::HitBlock(All[i])){		//check if the character has hit any blocks)
+			All[i]->position += All[i]->velocity;		//add all of the character's velocities to their position
+		
+		}
 	}
 }
 
@@ -48,7 +50,8 @@ bool Physics::OnScreen(Character* C){
 	}
 }
 
-void Physics::HitBlock(Character* C){
+bool Physics::HitBlock(Character* C){
+	Deleted = false;
 	bool win = false;
 	World* W = dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld;
 	/*All of these collisions are block based, meaning that we take the character position and add its hitbox parameters. Then, we take that value and divide by the gridsize
@@ -94,16 +97,17 @@ void Physics::HitBlock(Character* C){
 
 	//Right/Left side collision
 	for (int i = 0; i < j; i++){
-		if (!static_cast<int>(C->direction) && W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x + 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - (i * 32) - 1) / (W->gridSize))].type == EBlockType::B_FinishFlag)
+		if (!static_cast<int>(C->direction) && W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x + C->CollisionBounds.size.x + 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - (i * 32) - 1) / (W->gridSize))].type == EBlockType::B_FinishFlag)
 			win = true;
-		if (!static_cast<int>(C->direction) && (W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x + 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - (i * 32) - 1) / (W->gridSize))].bSpawned &&
-			W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x + 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - (i * 32) - 1) / (W->gridSize))].bCollision)){
-			C->BlockCollide(win, ECollisionDirection::Left);
+		if (!static_cast<int>(C->direction) && (W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x + C->CollisionBounds.size.x + 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - (i * 32) - 1) / (W->gridSize))].bSpawned &&
+			W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x + C->CollisionBounds.size.x + 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - (i * 32) - 1) / (W->gridSize))].bCollision)){
+			C->BlockCollide(win, ECollisionDirection::Right);
 			if (dynamic_cast<Barrel*>(C)){
 				dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->DestroyCharacter(C);
 				Deleted = true;
 			}
 		}
+		win = false;
 		if (static_cast<int>(C->direction) && W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x - 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - (i * 32) - 1) / (W->gridSize))].type == EBlockType::B_FinishFlag)
 			win = true;
 		if (static_cast<int>(C->direction) && (W->Blocks[(int)(C->position.x + C->CollisionBounds.position.x - 1) / (W->gridSize)][(int)((C->position.y + C->CollisionBounds.position.y + C->CollisionBounds.size.y - (i * 32) - 1) / (W->gridSize))].bSpawned &&
@@ -120,7 +124,8 @@ void Physics::HitBlock(Character* C){
 	if (!Deleted && !dynamic_cast<Player*>(C)){
 		if (C->position.x < 0 || C->position.x + C->ActualWidth >(dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->dimensions.x) || C->position.y > (dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->CurrentWorld->dimensions.y) || C->position.y + C->ActualHeight < 0){
 			dynamic_cast<PlayState*>(GEngine->GetCurrentGameState())->DestroyCharacter(C);
+			Deleted = true;
 		}
 	}
-	Deleted = false;
+	return Deleted;
 }
