@@ -5,11 +5,10 @@
 bool MainMenuState::bDisplayControls = false;
 MainMenuState::MainMenuState(){
 	AllUIComponents[0] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 150, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 - 90), 0, "PLAY GAME", &MainMenu::PlayGame);
-	AllUIComponents[1] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 - 54), 0, "VIEW LEVELS", &PushLevel);
-	AllUIComponents[2] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 - 18), 0, "OPTIONS", &MainMenu::LoadEditor);
+	AllUIComponents[1] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 - 54), 0, "VIEW LEVELS", &ViewLevels);
+	AllUIComponents[2] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 - 18), 0, "CONTROLS", &MainMenu::OpenControls);
 	AllUIComponents[3] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 + 18), 0, "EXIT", &GEngine->Quit);
 	AllUIComponents[4] = new Button(al_map_rgb(250, 250, 250), al_map_rgb(33, 140, 243), 200, 36, Vector2D(GEngine->GetDisplayWidth() / 2 - 100, GEngine->GetDisplayHeight() / 2 + 54), 0, "TOGGLE FULLSCREEN", &MainMenu::ToggleFullscreen);
-	ActiveScreen = 0;
 	LargeRoboto = al_load_ttf_font("Roboto-Regular.ttf", 48, 0);
 	Background[0] = Buffer(al_load_bitmap("Textures/Scenes/Background_Gauss.png"), Vector2D(0, 0), Vector2D(0, 0));
 	Background[1] = Buffer(al_load_bitmap("Textures/Scenes/Background_Gauss.png"), Vector2D(1024, 0), Vector2D(0, 0));
@@ -145,14 +144,6 @@ void MainMenuState::Destroy(){
 	al_destroy_bitmap(splash);
 }
 
-void MainMenuState::Pause(){
-
-}
-
-void MainMenuState::Resume(){
-
-}
-
 MainMenuState::~MainMenuState(){
 
 }
@@ -161,7 +152,7 @@ void MainMenu::PlayGame(){
 	GEngine->ChangeGameState<PlayState>();
 }
 
-void MainMenu::LoadEditor(){
+void MainMenu::OpenControls(){
 	MainMenuState::bDisplayControls = true;
 }
 
@@ -192,7 +183,7 @@ void MainMenu::ToggleFullscreen(){
 	}
 }
 
-void PushLevel(){
+void ViewLevels(){
 	al_set_system_mouse_cursor(GEngine->GetDisplay(), ALLEGRO_SYSTEM_MOUSE_CURSOR_PROGRESS);
 	GEngine->ChangeGameState<LevelSelectState>();
 }
