@@ -30,6 +30,7 @@ List::List(Vector2D pos, WorldLevelData l){
 	else {
 		al_draw_textf(RobotoMedium, WHITE, 6, height - 24, 0, "Completion rate: %s%%", "NaN");
 	}
+	al_draw_textf(RobotoSmall, al_map_rgba(255, 255, 255, 100), width - 3, 150 - 16, ALLEGRO_ALIGN_RIGHT, "%s", Level.Date);
 	
 	Play.Draw();
 	al_draw_textf(RobotoMedium, WHITE, width - 64, 64, ALLEGRO_ALIGN_CENTER, "Completions: %d", Level.Completions);
