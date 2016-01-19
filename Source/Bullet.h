@@ -4,6 +4,8 @@
 #include "Character.h"
 #include "SpriteSheet.h"
 
+//Bullet fired by the player
+//UNUSED
 class Bullet : public Character {
 public:
 

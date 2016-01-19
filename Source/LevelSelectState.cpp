@@ -54,13 +54,6 @@ void LevelSelectState::Draw(){
 	}
 }
 
-void LevelSelectState::Pause(){
-
-}
-void LevelSelectState::Resume(){
-
-}
-
 void LevelSelectState::HandleEvents(ALLEGRO_EVENT *ev){
 	if (ev->type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
 		switch (ev->mouse.button){

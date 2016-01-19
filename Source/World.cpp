@@ -43,6 +43,12 @@ void World::PlaceBlock(GridTile* Target, EBlockType T){
 	Blocks[Target->x][Target->y].position = Target->location;
 	Blocks[Target->x][Target->y].type = T;
 	Blocks[Target->x][Target->y].bSpawned = true;
+	if (Type[static_cast<int>(T)].bRandomD) {
+		Blocks[Target->x][Target->y].Direction = rand() % 4;
+	}
+	else {
+		Blocks[Target->x][Target->y].Direction = 0;
+	}
 	Target->occupied = true;
 }
 

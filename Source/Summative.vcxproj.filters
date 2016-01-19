@@ -43,9 +43,6 @@
     <ClCompile Include="SpriteSheet.cpp">
       <Filter>Engine\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EditorState.cpp">
-      <Filter>Game\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Engine\Source Files</Filter>
     </ClCompile>
