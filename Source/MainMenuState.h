@@ -55,9 +55,9 @@ public:
 };
 namespace MainMenu{
 	void PlayGame();
-	void LoadEditor();
+	void OpenControls();
 	void OpenSettings();
 	void ToggleFullscreen();
 }
 
-void PushLevel();
+void ViewLevels();
