@@ -24,6 +24,101 @@ PlayState::PlayState(){
 	CurrentWorld->EnemySelect = false;
 }
 
+void PlayState::Init(){
+	//music = al_load_sample("Meatball Parade.mp3");
+	//al_play_sample(music, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
+
+	//Define the different types of blocks, as well as load their textures
+	CurrentWorld->Type[0] = BlockType("Rainbow", al_load_bitmap("Textures/Objects/Rainbow.png"), true, false);
+	CurrentWorld->Type[1] = BlockType("Brick", al_load_bitmap("Textures/Objects/Brick.png"), true, false);
+	CurrentWorld->Type[2] = BlockType("Grass", al_load_bitmap("Textures/Objects/Grass.png"), true, false);
+	CurrentWorld->Type[3] = BlockType("Dirt", al_load_bitmap("Textures/Objects/Dirt.png"), true, true);
+	CurrentWorld->Type[4] = BlockType("Stone", al_load_bitmap("Textures/Objects/Stone.png"), true, true);
+	CurrentWorld->Type[5] = BlockType("Background Stone", al_load_bitmap("Textures/Objects/Background_Stone.png"), false, true);
+	CurrentWorld->Type[6] = BlockType("Mossy", al_load_bitmap("Textures/Objects/Mossy.png"), true, true);
+	CurrentWorld->Type[7] = BlockType("Background Brick", al_load_bitmap("Textures/Objects/Background_Brick.png"), false, false);
+	CurrentWorld->Type[8] = BlockType("Finish Flag", al_load_bitmap("Textures/Objects/FinishFlag.png"), true, false);
+
+	//Create buttons for all different types of blocks for users to select different blocks
+	for (int i = 0; i < 9; i++) {
+		SelectBlock.push_back(Buffer(al_create_bitmap(100, 100), Vector2D(100.f * i, 0.f), Vector2D(0.f, 0.f)));
+		al_set_target_bitmap(SelectBlock[i].image);
+		al_clear_to_color(BLUE500);
+		al_draw_bitmap(CurrentWorld->Type[i].texture, 34, 8, 0);
+		al_draw_textf(GEngine->GetDebugFont(), WHITE, 50, 80, ALLEGRO_ALIGN_CENTER, "%s", CurrentWorld->Type[i].name);
+	}
+
+	//Create two buttons for the two kinds of enemies
+	SelectBlock.push_back(Buffer(al_create_bitmap(100, 100), Vector2D(900.f, 0.f), Vector2D(0.f, 0.f)));
+	al_set_target_bitmap(SelectBlock[9].image);
+	al_clear_to_color(BLUE500);
+	al_draw_bitmap_region(al_load_bitmap("Textures/Characters/Dankeyidle_e.png"), 0, 0, 64, 64, 18, 8, 0);
+	al_draw_textf(GEngine->GetDebugFont(), WHITE, 50, 80, ALLEGRO_ALIGN_CENTER, "%s", "Dankey");
+
+	SelectBlock.push_back(Buffer(al_create_bitmap(100, 100), Vector2D(1000.f, 0.f), Vector2D(0.f, 0.f)));
+	al_set_target_bitmap(SelectBlock[10].image);
+	al_clear_to_color(BLUE500);
+	al_draw_bitmap_region(al_load_bitmap("Textures/Characters/Cinasidle_e.png"), 0, 0, 32, 32, 18, 8, 0);
+	al_draw_textf(GEngine->GetDebugFont(), WHITE, 34, 80, ALLEGRO_ALIGN_CENTER, "%s", "Cinas");
+
+	//Reset target buffer to display
+	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
+
+	//Create buffers used for rendering
+	GridBuffer.image = al_create_bitmap(4096, 2048);
+	notPlayingBuff.image = al_create_bitmap(4096, 2048);
+	Background.image = al_create_bitmap(4096, 2048);
+	BlockBuffer.image = al_create_bitmap(4096, 2048);
+	UI.image = al_create_bitmap(GEngine->GetDisplayWidth(), 100);
+	HealthBar = al_create_bitmap(500, 32);
+	DankeyTemp = al_load_bitmap("Textures/Characters/DankeyTemp.png");
+	CinasTemp = al_load_bitmap("Textures/Characters/CinasTemp.png");
+
+	CurrCharacters.push_back(Oiram);	//registering main character in Character vector
+	Oiram->velocity = Vector2D(0.f, 0.f);		//velocity starts at zero
+	CharacterStart = Vector2D(0.f, 0.f);		//original character start position is zero
+	bChangingStart = false;				//at beginning, start position is not being changed
+	ColChecker = 0;
+
+	//Setting Multiple Images to Background Buffer
+	al_set_target_bitmap(Background.image);
+
+	//Load the background image
+	for (int i = 0; i < 2; i++) {
+		for (int y = 0; y < 3; y++) {
+			ALLEGRO_BITMAP* BackgroundTexture = al_load_bitmap("Textures/Scenes/Background_Gauss.png");
+			if (BackgroundTexture) {
+				al_draw_bitmap(BackgroundTexture, (y * 1024), (i * 1024), 0);
+			}
+			else {
+				fprintf(stderr, "Could not load background image\n");
+				GEngine->Quit();
+			}
+		}
+	}
+
+	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
+
+	//Sets the draw target to the grid bitmap
+	al_set_target_bitmap(GridBuffer.image);
+
+	//Draw a grid onto the grid buffer
+	for (int i = 0; i < 129; i++){
+		al_draw_line(i * CurrentWorld->gridSize, 0, i * CurrentWorld->gridSize, 2048, al_map_rgba(50, 50, 50, 150), 1);
+	}
+	for (int i = 0; i < 65; i++){
+		al_draw_line(0, i * CurrentWorld->gridSize, 4096, i * CurrentWorld->gridSize, al_map_rgba(50, 50, 50, 150), 1);
+	}
+
+	//Sets the target bitmap back to the default buffer
+	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
+
+	//Load a level if a level was set to be loaded
+	if (GEngine->SharedVar.bLoadingLevel){
+		CurrentWorld->Load(GEngine->SharedVar.LoadLevelName);
+	}
+}
+
 void PlayState::DestroyCharacter(Character* C){
 	std::vector<Character*>::iterator it;
 
@@ -38,14 +133,14 @@ void PlayState::DestroyCharacter(Character* C){
 }
 
 void PlayState::HandleEvents(ALLEGRO_EVENT *ev){
-	if (ev->keyboard.keycode == ALLEGRO_KEY_P && ev->type == ALLEGRO_EVENT_KEY_DOWN) {
+	/*if (ev->keyboard.keycode == ALLEGRO_KEY_P && ev->type == ALLEGRO_EVENT_KEY_DOWN) {
 		if (!Paused){
-			this->Pause();
+		this->Pause();
 		}
 		else{
-			this->Resume();
+		this->Resume();
 		}
-	}
+	}*/
 	if (!Paused) {
 		if (ev->type == ALLEGRO_EVENT_KEY_DOWN) {
 			switch (ev->keyboard.keycode) {
@@ -588,94 +683,6 @@ void PlayState::Draw(){
 			al_draw_rectangle(CurrCharacters[i]->position.x + CurrCharacters[i]->CollisionBounds.position.x + CurrentWorld->offset.x, CurrCharacters[i]->position.y + CurrCharacters[i]->CollisionBounds.position.y + CurrentWorld->offset.y, CurrCharacters[i]->position.x + CurrCharacters[i]->CollisionBounds.position.x + CurrCharacters[i]->CollisionBounds.size.x + CurrentWorld->offset.x, CurrCharacters[i]->position.y + CurrCharacters[i]->CollisionBounds.position.y + CurrCharacters[i]->CollisionBounds.size.y + CurrentWorld->offset.y, BLUE500, 1);
 	}
 #endif
-}
-
-void PlayState::Init(){
-	music = al_load_sample("Meatball Parade.mp3");
-	al_play_sample(music, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
-	//Set the different types of blocks, as well as load their textures
-	CurrentWorld->Type[0] = BlockType("Rainbow", al_load_bitmap("Textures/Objects/Rainbow.png"), true, false);
-	CurrentWorld->Type[1] = BlockType("Brick", al_load_bitmap("Textures/Objects/Brick.png"), true, false);
-	CurrentWorld->Type[2] = BlockType("Grass", al_load_bitmap("Textures/Objects/Grass.png"), true, false);
-	CurrentWorld->Type[3] = BlockType("Dirt", al_load_bitmap("Textures/Objects/Dirt.png"), true, true);
-	CurrentWorld->Type[4] = BlockType("Stone", al_load_bitmap("Textures/Objects/Stone.png"), true, true);
-	CurrentWorld->Type[5] = BlockType("Background Stone", al_load_bitmap("Textures/Objects/Background_Stone.png"), false, true);
-	CurrentWorld->Type[6] = BlockType("Mossy", al_load_bitmap("Textures/Objects/Mossy.png"), true, true);
-	CurrentWorld->Type[7] = BlockType("Background Brick", al_load_bitmap("Textures/Objects/Background_Brick.png"), false, false);
-	CurrentWorld->Type[8] = BlockType("Finish Flag", al_load_bitmap("Textures/Objects/FinishFlag.png"), true, false);
-
-	for (int i = 0; i < 9; i++) {
-		SelectBlock.push_back(Buffer(al_create_bitmap(100, 100), Vector2D(100.f * i, 0.f), Vector2D(0.f, 0.f)));
-		al_set_target_bitmap(SelectBlock[i].image);
-		al_clear_to_color(BLUE500);
-		al_draw_bitmap(CurrentWorld->Type[i].texture, 34, 8, 0);
-		al_draw_textf(GEngine->GetDebugFont(), WHITE, 50, 80, ALLEGRO_ALIGN_CENTER, "%s", CurrentWorld->Type[i].name);
-	}
-	SelectBlock.push_back(Buffer(al_create_bitmap(100, 100), Vector2D(900.f, 0.f), Vector2D(0.f, 0.f)));
-	al_set_target_bitmap(SelectBlock[9].image);
-	al_clear_to_color(BLUE500);
-	al_draw_bitmap_region(al_load_bitmap("Textures/Characters/Dankeyidle_e.png"), 0, 0, 64, 64, 18, 8, 0);
-	al_draw_textf(GEngine->GetDebugFont(), WHITE, 50, 80, ALLEGRO_ALIGN_CENTER, "%s", "Dankey");
-
-	SelectBlock.push_back(Buffer(al_create_bitmap(100, 100), Vector2D(1000.f, 0.f), Vector2D(0.f, 0.f)));
-	al_set_target_bitmap(SelectBlock[10].image);
-	al_clear_to_color(BLUE500);
-	al_draw_bitmap_region(al_load_bitmap("Textures/Characters/Cinasidle_e.png"), 0, 0, 32, 32, 18, 8, 0);
-	al_draw_textf(GEngine->GetDebugFont(), WHITE, 34, 80, ALLEGRO_ALIGN_CENTER, "%s", "Cinas");
-
-	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
-
-	//Create buffers used for rendering
-	GridBuffer.image = al_create_bitmap(4096, 2048);
-	notPlayingBuff.image = al_create_bitmap(4096, 2048);
-	Background.image = al_create_bitmap(4096, 2048);
-	BlockBuffer.image = al_create_bitmap(4096, 2048);
-	UI.image = al_create_bitmap(GEngine->GetDisplayWidth(), 100);
-	HealthBar = al_create_bitmap(500, 32);
-	DankeyTemp = al_load_bitmap("Textures/Characters/DankeyTemp.png");
-	CinasTemp = al_load_bitmap("Textures/Characters/CinasTemp.png");
-
-	CurrCharacters.push_back(Oiram);	//registering main character in Character vector
-	Oiram->velocity = Vector2D(0.f, 0.f);		//velocity starts at zero
-	CharacterStart = Vector2D(0.f, 0.f);		//original character start position is zero
-	bChangingStart = false;				//at beginning, start position is not being changed
-	ColChecker = 0;
-
-	//Setting Multiple Images to Background Buffer
-	al_set_target_bitmap(Background.image);
-
-	//Load the background image
-	for (int i = 0; i < 2; i++) {
-		for (int y = 0; y < 3; y++) {
-			ALLEGRO_BITMAP* BackgroundTexture = al_load_bitmap("Textures/Scenes/Background_Gauss.png");
-			if (BackgroundTexture) {
-				al_draw_bitmap(BackgroundTexture, (y * 1024), (i * 1024), 0);
-			}
-			else {
-				fprintf(stderr, "Could not load background image\n");
-				GEngine->Quit();
-			}
-		}
-	}
-
-	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
-	//Sets the draw target to the grid bitmap
-
-	al_set_target_bitmap(GridBuffer.image);
-
-	for (int i = 0; i < 129; i++){
-		al_draw_line(i * CurrentWorld->gridSize, 0, i * CurrentWorld->gridSize, 2048, al_map_rgba(50, 50, 50, 150), 1);
-	}
-	for (int i = 0; i < 65; i++){
-		al_draw_line(0, i * CurrentWorld->gridSize, 4096, i * CurrentWorld->gridSize, al_map_rgba(50, 50, 50, 150), 1);
-	}
-
-	//Sets the target bitmap back to the default buffer
-	al_set_target_bitmap(al_get_backbuffer(GEngine->GetDisplay()));
-
-	if (GEngine->SharedVar.bLoadingLevel){
-		CurrentWorld->Load(GEngine->SharedVar.LoadLevelName);
-	}
 }
 
 void PlayState::Pause(){

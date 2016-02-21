@@ -23,7 +23,6 @@
     <ClInclude Include="LevelSelectState.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="Core.h" />
-    <ClInclude Include="EditorState.h" />
     <ClInclude Include="Online.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="Enemy.h" />

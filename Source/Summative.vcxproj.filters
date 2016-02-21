@@ -120,9 +120,6 @@
     <ClInclude Include="Core.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EditorState.h">
-      <Filter>Game\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TextBox.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
